@@ -1,6 +1,12 @@
-package jp.meridiani.volumeprofile;
+package jp.meridiani.volumeprofile.profile;
 
 import java.util.Locale;
+
+import jp.meridiani.volumeprofile.R;
+import jp.meridiani.volumeprofile.R.id;
+import jp.meridiani.volumeprofile.R.layout;
+import jp.meridiani.volumeprofile.R.menu;
+import jp.meridiani.volumeprofile.R.string;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
@@ -19,7 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements
+public class VolumeProfileActivity extends FragmentActivity implements
 		ActionBar.TabListener {
 
 	/**
