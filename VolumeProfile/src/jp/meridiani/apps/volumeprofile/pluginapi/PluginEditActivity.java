@@ -1,10 +1,10 @@
-package jp.meridiani.volumeprofile.pluginapi;
+package jp.meridiani.apps.volumeprofile.pluginapi;
 
 import java.util.ArrayList;
 
-import jp.meridiani.volumeprofile.R;
-import jp.meridiani.volumeprofile.profile.ProfileStore;
-import jp.meridiani.volumeprofile.profile.VolumeProfile;
+import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,8 +18,6 @@ import android.widget.Button;
 import android.widget.ListView;
 
 public class PluginEditActivity extends Activity implements OnItemSelectedListener, OnItemClickListener {
-
-    public static final String BUNDLE_PROFILEID   = "jp.meridiani.apps.volumeprofile.extra.INTEGER_PROFILEID";
 
 	private int mSelectedProfileId;
 	private ListView mProfileListView;
@@ -38,12 +36,14 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 			return;
 		}
 
-		Bundle bundle = getIntent().getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE);
-
-		mSelectedProfileId = -1;
-		if (bundle != null) {
-			mSelectedProfileId = bundle.getInt(BUNDLE_PROFILEID);
+		BundleUtil bundle;
+		try {
+			bundle = new BundleUtil(getIntent().getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE));
+		} catch (InvalidBundleException e) {
+			return;
 		}
+
+		mSelectedProfileId = bundle.getProfileId();
 
 		mCanceled = false;
 
@@ -83,11 +83,12 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 
         Intent resultIntent = new Intent();
         if (! mCanceled && profile != null && profile.getProfileId() >= 0) {
-            Bundle resultBundle = new Bundle();
-            resultBundle.putInt(BUNDLE_PROFILEID, profile.getProfileId());
+            BundleUtil resultBundle = new BundleUtil();
+            resultBundle.setProfileId(profile.getProfileId());
+            resultBundle.setProfileName(profile.getProfileName());
 
             resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_STRING_BLURB, profile.getProfileName());
-            resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE, resultBundle);
+            resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE, resultBundle.getBundle());
 
             setResult(RESULT_OK, resultIntent);
         }
@@ -110,9 +111,7 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 	}
 
 	private void updateProfileList() {
-		ProfileStore pstore = new ProfileStore(this);
-
-		ArrayList<VolumeProfile> plist = pstore.listProfiles();
+		ArrayList<VolumeProfile> plist = ProfileStore.getInstance(this).listProfiles();
 
 		ArrayAdapter<VolumeProfile> adapter = new ArrayAdapter<VolumeProfile>(this,
 							android.R.layout.simple_list_item_single_choice);

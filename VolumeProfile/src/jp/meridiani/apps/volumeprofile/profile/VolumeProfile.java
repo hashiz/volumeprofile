@@ -1,10 +1,10 @@
-package jp.meridiani.volumeprofile.profile;
+package jp.meridiani.apps.volumeprofile.profile;
 
 public class VolumeProfile {
 	private int mProfileId;
 
 	private String mProfileName;
-	private int mRingerMode;
+	private RingerMode mRingerMode;
 	private int mAlarmVolume;
 	private int mDTMFVolume;
 	private int mMusicVolume;
@@ -12,6 +12,12 @@ public class VolumeProfile {
 	private int mRingVolume;
 	private int mSystemVolume;
 	private int mVoiceCallVolume;
+
+	public static enum RingerMode {
+		normal,
+		vibrate,
+		sirent
+	}
 
 	VolumeProfile() {
 		this(-1);
@@ -21,7 +27,7 @@ public class VolumeProfile {
 		mProfileId = id;
 		mProfileName = "";
 
-		mRingerMode = 0;
+		mRingerMode = RingerMode.normal;
 		mAlarmVolume = 0;
 		mDTMFVolume = 0;
 		mMusicVolume = 0;
@@ -36,7 +42,7 @@ public class VolumeProfile {
 			return this.getProfileName();
 		}
 		else if (key.equals(ProfileStore.KEY_RINGERMODE)) {
-			return Integer.toString(this.getRingerMode());
+			return this.getRingerMode().name();
 		}
 		else if (key.equals(ProfileStore.KEY_ALARMVOLUME)) {
 			return Integer.toString(this.getAlarmVolume());
@@ -67,7 +73,7 @@ public class VolumeProfile {
 			this.setProfileName(value);
 		}
 		else if (key.equals(ProfileStore.KEY_RINGERMODE)) {
-			this.setRingerMode(Integer.parseInt(value));
+			this.setRingerMode(RingerMode.valueOf(value));
 		}
 		else if (key.equals(ProfileStore.KEY_ALARMVOLUME)) {
 			this.setAlarmVolume(Integer.parseInt(value));
@@ -104,11 +110,11 @@ public class VolumeProfile {
 		mProfileName = name;
 	}
 
-	public int getRingerMode() {
+	public RingerMode getRingerMode() {
 		return mRingerMode;
 	}
 
-	public void setRingerMode(int mode) {
+	public void setRingerMode(RingerMode mode) {
 		mRingerMode = mode;
 	}
 

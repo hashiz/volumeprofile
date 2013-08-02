@@ -1,6 +1,8 @@
-package jp.meridiani.volumeprofile.profile;
+package jp.meridiani.apps.volumeprofile.profile;
 
-import jp.meridiani.volumeprofile.R;
+import java.util.ArrayList;
+
+import jp.meridiani.apps.volumeprofile.R;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -13,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class VolumeProfileActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -156,7 +160,29 @@ public class VolumeProfileActivity extends FragmentActivity implements
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main_profileedit,
 					container, false);
+			
 			return rootView;
+		}
+
+		private void updateProfileList() {
+			ArrayList<VolumeProfile> plist = ProfileStore.getInstance(getActivity()).listProfiles();
+
+			ArrayAdapter<VolumeProfile> adapter = new ArrayAdapter<VolumeProfile>(getActivity(),
+								android.R.layout.simple_list_item_single_choice);
+			int selPos = 0;
+			for ( VolumeProfile profile : plist) {
+				adapter.add(profile);
+				if (mSelectedProfileId == profile.getProfileId()) {
+					selPos = adapter.getCount() - 1;
+				}
+			}
+
+			ListView profileListView = (ListView)findViewById(R.id.ProfileList);
+			profileListView.setAdapter(adapter);
+			profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+			profileListView.setItemChecked(selPos, true);
+			profileListView.setOnItemSelectedListener(this);
+			profileListView.setOnItemClickListener(this);
 		}
 	}
 

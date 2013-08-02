@@ -1,4 +1,4 @@
-package jp.meridiani.volumeprofile.profile;
+package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class ProfileStore {
-	private Context mContext;
+
+	private static ProfileStore mInstance = null;
+
+	private SQLiteDatabase mDB;
 
 	private static final String DATABASE_NAME = "profilelist.db";
 	private static final int DATABASE_VERSION = 1;
@@ -43,7 +46,7 @@ public class ProfileStore {
 		KEY_VOICECALLVALUME     ,
 	};
 
-	private class DBHelper extends SQLiteOpenHelper {
+	private static class DBHelper extends SQLiteOpenHelper {
 
 		public DBHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -66,19 +69,24 @@ public class ProfileStore {
 		
 	}
 
-	public ProfileStore(Context context) {
-		mContext = context;
+	private ProfileStore(Context context) {
+		mDB = new DBHelper(context).getWritableDatabase();
+	}
+
+	public static synchronized ProfileStore getInstance(Context context) {
+		if ( mInstance == null ) {
+			mInstance = new ProfileStore(context);
+		}
+		return mInstance;
 	}
 
 	public ArrayList<VolumeProfile> listProfiles() {
-		SQLiteDatabase db = new DBHelper(mContext).getReadableDatabase();
-
 		ArrayList<VolumeProfile> list = new ArrayList<VolumeProfile>();
 
-		Cursor listCur = db.query(LIST_TABLE_NAME, null, null, null, null, null, DATA_COL_ID);
+		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, null, null, null, null, DATA_COL_ID);
 		while (listCur.moveToNext()) {
 			int id = listCur.getInt(listCur.getColumnIndex(LIST_COL_ID));
-			VolumeProfile profile = loadProfile(mContext, id);
+			VolumeProfile profile = loadProfile(id);
 			if (profile != null) {
 				list.add(profile);
 			}
@@ -86,12 +94,10 @@ public class ProfileStore {
 		return list;
 	}
 
-	public VolumeProfile loadProfile(Context context, int id) {
-		SQLiteDatabase db = new DBHelper(context).getReadableDatabase();
-
-		Cursor listCur = db.query(LIST_TABLE_NAME, null, LIST_COL_ID + "=?", new String[]{Integer.toString(id)}, null, null, null);
+	public VolumeProfile loadProfile(int id) {
+		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, LIST_COL_ID + "=?", new String[]{Integer.toString(id)}, null, null, null);
 		if (listCur.moveToFirst()) {
-			Cursor dataCur = db.query(DATA_TABLE_NAME, null, DATA_COL_ID + "=?", new String[]{Integer.toString(id)}, null, null, null);
+			Cursor dataCur = mDB.query(DATA_TABLE_NAME, null, DATA_COL_ID + "=?", new String[]{Integer.toString(id)}, null, null, null);
 			VolumeProfile profile = new VolumeProfile(id);
 			while (dataCur.moveToNext()) {
 				String key = dataCur.getString(dataCur.getColumnIndex(DATA_COL_KEY));
@@ -103,10 +109,8 @@ public class ProfileStore {
 		return null;
 	}
 
-	public void storeProfile(Context context, VolumeProfile profile) {
-		SQLiteDatabase db = new DBHelper(context).getWritableDatabase();
-
-		db.beginTransaction();
+	public void storeProfile(VolumeProfile profile) {
+		mDB.beginTransaction();
 
 		try {
 			if (profile.getProfileId() < 0) {
@@ -114,14 +118,14 @@ public class ProfileStore {
 	
 				// insert list
 				ContentValues values = new ContentValues();
-				db.insert(LIST_TABLE_NAME, null, values);
+				mDB.insert(LIST_TABLE_NAME, null, values);
 	
 				// insert data
 				values.clear();
 				for (String key : KEYLIST) {
 					values.put(DATA_COL_ID, profile.getProfileId());
 					values.put(DATA_COL_KEY, key);
-					db.insert(DATA_TABLE_NAME, null, values);
+					mDB.insert(DATA_TABLE_NAME, null, values);
 				}
 			}
 			else {
@@ -133,21 +137,21 @@ public class ProfileStore {
 				values.clear();
 				for (String key : KEYLIST) {
 					values.put(DATA_COL_VALUE, profile.getValue(key));
-					int rows = db.update(DATA_TABLE_NAME, values, "id=? and key=?", new String[]{Integer.toString(profile.getProfileId()), key});
+					int rows = mDB.update(DATA_TABLE_NAME, values, "id=? and key=?", new String[]{Integer.toString(profile.getProfileId()), key});
 					if (rows < 1) {
 						values.put(DATA_COL_ID, profile.getProfileId());
 						values.put(DATA_COL_KEY, key);
-						db.insert(DATA_TABLE_NAME, null, values);
+						mDB.insert(DATA_TABLE_NAME, null, values);
 					}
 				}
 			}
 		}
 		finally {
-			db.endTransaction();
+			mDB.endTransaction();
 		}
 	}
 
-	public void deleteProfile(Context context, VolumeProfile profile) {
+	public static void deleteProfile(Context context, VolumeProfile profile) {
 		if (profile.getProfileId() < 0) {
 			return;
 		}
@@ -170,7 +174,7 @@ public class ProfileStore {
 		}
 	}
 
-	public VolumeProfile newProfile() {
+	public static VolumeProfile newProfile() {
 		return new VolumeProfile(-1);
 	}
 }

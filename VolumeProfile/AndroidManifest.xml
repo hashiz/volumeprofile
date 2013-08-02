@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="jp.meridiani.volumeprofile"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="jp.meridiani.apps.volumeprofile"
     android:versionCode="1"
     android:versionName="1.0" android:installLocation="auto">
 
@@ -14,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="jp.meridiani.volumeprofile.profile.VolumeProfileActivity"
+            android:name=".profile.VolumeProfileActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +23,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="EditActivity"></activity>
-    </application>
+        <activity android:name=".pluginapi.PluginEditActivity"></activity>
+        <receiver android:name=".plubinapi.PluginFireReceiver"
+            android:exported="true"
+            android:process=":background"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING"/>
+            </intent-filter>
+        </receiver>
+		<receiver
+			android:name=".soundlevelalerthack.Receiver"
+            android:exported="true"
+            android:process=":background"
+            tools:ignore="ExportedReceiver">
+			>
+			<intent-filter
+				>
+				<action
+					android:name="com.sonyericsson.media.SOUND_LEVEL_ALERT"
+					>
+				</action>
+			</intent-filter>
+		</receiver>
+        </application>
 
 </manifest>

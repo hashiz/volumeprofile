@@ -20,5 +20,7 @@
     <string name="zerozero">00/00</string>
     <string name="page_title_volumeedit">Volumes</string>
     <string name="page_title_profileedit">Profiles</string>
+    <string name="msg_profile_notfound">Profile "%1$s" not found.</string> 
+    <string name="msg_profile_applied">Profile "%1$s" Applied.</string> 
     
 </resources>
