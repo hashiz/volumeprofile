@@ -23,14 +23,12 @@
             android:layout_height="wrap_content"
             android:text="@string/ringer_mode_title" />
 
-        <TextView
+        <Spinner
             android:id="@+id/ringer_mode_value"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_marginLeft="15dp"
 	        android:scaleX="0.8"
-	        android:scaleY="0.8"
-	        android:text="@string/ringer_mode_normal" />
+	        android:scaleY="0.8" />
 
     </LinearLayout>
 

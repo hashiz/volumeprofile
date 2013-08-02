@@ -11,7 +11,7 @@
     <string name="ringer_mode_title">Ringer Mode</string>
     <string name="alarm_volume_title">Alarm</string>
     <string name="media_volume_title">Media</string>
-    <string name="ring_volume_title">Ring</string>
+    <string name="ring_volume_title">Ring/Nofification</string>
     <string name="system_volume_title">System</string>
     <string name="voicecall_volume_title">Voice Call</string>
     <string name="ringer_mode_normal">Normal</string>

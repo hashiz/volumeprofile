@@ -3,20 +3,40 @@ package jp.meridiani.apps.volumeprofile.profile;
 import java.util.ArrayList;
 
 import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
+import jp.meridiani.apps.volumeprofile.settings.Settings;
+import android.accounts.Account;
+import android.accounts.OnAccountsUpdateListener;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.location.GpsStatus.Listener;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TextView;
 
 public class VolumeProfileActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -150,10 +170,16 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	 * Profile Edit
 	 *
 	 */
-	public static class ProfileEditFragment extends Fragment {
+	public static class ProfileEditFragment extends Fragment implements OnItemClickListener, OnItemLongClickListener {
 
 		public ProfileEditFragment() {
 		}
+
+		@Override public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+
+			updateProfileList();
+		};
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -165,6 +191,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		}
 
 		private void updateProfileList() {
+			Activity activity = getActivity();
 			ArrayList<VolumeProfile> plist = ProfileStore.getInstance(getActivity()).listProfiles();
 
 			ArrayAdapter<VolumeProfile> adapter = new ArrayAdapter<VolumeProfile>(getActivity(),
@@ -172,17 +199,28 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			int selPos = 0;
 			for ( VolumeProfile profile : plist) {
 				adapter.add(profile);
-				if (mSelectedProfileId == profile.getProfileId()) {
+				if (Settings.getInstance(activity).getCurrentProfileId() == profile.getProfileId()) {
 					selPos = adapter.getCount() - 1;
 				}
 			}
 
-			ListView profileListView = (ListView)findViewById(R.id.ProfileList);
+			ListView profileListView = (ListView)activity.findViewById(R.id.profile_edit);
 			profileListView.setAdapter(adapter);
 			profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			profileListView.setItemChecked(selPos, true);
-			profileListView.setOnItemSelectedListener(this);
 			profileListView.setOnItemClickListener(this);
+		}
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+			ListView listView = (ListView)view;
+			VolumeProfile profile = (VolumeProfile)listView.getAdapter().getItem(pos);
+			new AudioUtil(parent.getContext()).applyProfile(profile);
+		}
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
+			return false;
 		}
 	}
 
@@ -194,8 +232,142 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	 */
 	public static class VolumeEditFragment extends Fragment {
 
+		private class VolumeBarListener implements SeekBar.OnSeekBarChangeListener {
+			private StreamType mStreamType ;
+			private AudioUtil  mAudio ;
+			private SeekBar    mSeekBar ;
+			private TextView   mValueTextView;
+
+			public VolumeBarListener(Context context, StreamType type) {
+				mStreamType = type;
+				mAudio = new AudioUtil(context);
+				mSeekBar = findSeekBar(type);
+				mValueTextView = findValueView(type);
+
+				int volume = mAudio.getVolume(mStreamType);
+				int maxVolume = mAudio.getMaxVolume(mStreamType);
+
+				mSeekBar.setMax(mAudio.getMaxVolume(type));
+				mSeekBar.setProgress(mAudio.getVolume(type));
+				mValueTextView.setText(String.format("%2d/%2d", volume, maxVolume));
+				mSeekBar.setOnSeekBarChangeListener(this);
+			}
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				mAudio.setVolume(mStreamType, progress);
+				int volume = mAudio.getVolume(mStreamType);
+				seekBar.setProgress(volume);
+				mValueTextView.setText(String.format("%2d/%2d", volume, seekBar.getMax()));
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO 自動生成されたメソッド・スタブ
+				
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO 自動生成されたメソッド・スタブ
+				
+			}
+			
+		}
+
+		private class RingerModeItem {
+			private Context    mContext;
+			private RingerMode mRingerMode;
+
+			public RingerModeItem(Context context, RingerMode mode) {
+				mContext    = context;
+				mRingerMode = mode;
+			}
+			public String toString() {
+				switch (mRingerMode) {
+				case NORMAL:
+					return mContext.getString(R.string.ringer_mode_normal);
+				case VIBRATE:
+					return mContext.getString(R.string.ringer_mode_vibrate);
+				case SIRENT:
+					return mContext.getString(R.string.ringer_mode_sirent);
+				}
+				return null;
+			}
+			public RingerMode getValue() {
+				return mRingerMode;
+			}
+		}
+
 		public VolumeEditFragment() {
 		}
+
+		private class RingerModeAdapter extends ArrayAdapter<RingerModeItem> {
+
+			public RingerModeAdapter(Context context, int textViewResourceId) {
+				super(context, textViewResourceId);
+				// TODO 自動生成されたコンストラクター・スタブ
+			}
+
+			public int getPosition(RingerMode mode) {
+				for (int i = 0; i < this.getCount(); i++ ) {
+					if (this.getItem(i).getValue() == mode) {
+						return i;
+					}
+				}
+				return -1;
+			}
+			
+		}
+
+		@Override public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+
+			Activity activity = getActivity();
+			final AudioUtil audio = new AudioUtil(getActivity());
+
+			// Ringer Mode
+			final Spinner ringerModeView = (Spinner)activity.findViewById(R.id.ringer_mode_value);
+
+			final RingerModeAdapter adapter = new RingerModeAdapter(activity,
+					android.R.layout.simple_list_item_single_choice);
+			final RingerModeItem[] itemList = new RingerModeItem[] {
+					new RingerModeItem(activity, RingerMode.NORMAL),
+					new RingerModeItem(activity, RingerMode.VIBRATE),
+					new RingerModeItem(activity, RingerMode.SIRENT),
+			};
+
+			for (RingerModeItem item : itemList ) {
+				adapter.add(item);
+			}
+			ringerModeView.setAdapter(adapter);
+			ringerModeView.setSelection(adapter.getPosition(audio.getRingerMode()));
+			ringerModeView.setOnItemSelectedListener(new OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view,
+						int pos, long id) {
+					RingerModeItem item = adapter.getItem(pos);
+					audio.setRingerMode(item.getValue());
+					ringerModeView.setSelection(adapter.getPosition(audio.getRingerMode()));
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+					// nop
+				}
+			});
+
+			// Volumes
+			for (StreamType streamType : new StreamType[] {
+					StreamType.ALARM,
+					StreamType.MUSIC,
+					StreamType.RING,
+					StreamType.SYSTEM,
+					StreamType.VOICE_CALL}) {
+				new VolumeBarListener(activity, streamType);
+			}
+		};
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -203,6 +375,54 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			View rootView = inflater.inflate(R.layout.fragment_main_volumeedit,
 					container, false);
 			return rootView;
+		}
+
+		private TextView findValueView(StreamType type) {
+			int id = -1;
+			switch (type) {
+			case ALARM:
+				id = R.id.alarm_volume_text;
+				break;
+			case MUSIC:
+				id = R.id.media_volume_text;
+				break;
+			case RING:
+				id = R.id.ring_volume_text;
+				break;
+			case SYSTEM:
+				id = R.id.system_volume_text;
+				break;
+			case VOICE_CALL:
+				id = R.id.voicecall_volume_text;
+				break;
+			default:
+				return null;
+			}
+			return (TextView)getActivity().findViewById(id);
+		}
+
+		private SeekBar findSeekBar(StreamType type) {
+			int id = -1;
+			switch (type) {
+			case ALARM:
+				id = R.id.alarm_volume_seekBar;
+				break;
+			case MUSIC:
+				id = R.id.media_volume_seekBar;
+				break;
+			case RING:
+				id = R.id.ring_volume_seekBar;
+				break;
+			case SYSTEM:
+				id = R.id.system_volume_seekBar;
+				break;
+			case VOICE_CALL:
+				id = R.id.voicecall_volume_seekBar;
+				break;
+			default:
+				return null;
+			}
+			return (SeekBar)getActivity().findViewById(id);
 		}
 	}
 }

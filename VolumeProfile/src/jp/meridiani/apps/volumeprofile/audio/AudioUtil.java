@@ -8,6 +8,22 @@ public class AudioUtil {
 	private Context      mContext;
 	private AudioManager mAmgr;
 
+	public static enum RingerMode {
+		NORMAL,
+		VIBRATE,
+		SIRENT
+	}
+
+	public static enum StreamType {
+		ALARM,
+		DTMF,
+		MUSIC,
+		NOTIFICATION,
+		RING,
+		SYSTEM,
+		VOICE_CALL,
+	}
+
 	public AudioUtil(Context context) {
 		mContext = context;
 		mAmgr    = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
@@ -15,13 +31,13 @@ public class AudioUtil {
 	
 	public void applyProfile(VolumeProfile profile) {
 		switch (profile.getRingerMode()) {
-		case normal:
+		case NORMAL:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			break;
-		case vibrate:
+		case VIBRATE:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 			break;
-		case sirent:
+		case SIRENT:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 		}
 
@@ -34,24 +50,82 @@ public class AudioUtil {
 		mAmgr.setStreamVolume(AudioManager.STREAM_VOICE_CALL, profile.getVoiceCallVolume(), 0);
 	}
 
-	public int getMaxVolume(int streamType) {
-		return mAmgr.getStreamMaxVolume(streamType);
+	private int getStreamType(StreamType type) {
+		switch (type) {
+		case ALARM:
+			return AudioManager.STREAM_ALARM;
+		case DTMF:
+			return AudioManager.STREAM_DTMF;
+		case MUSIC:
+			return AudioManager.STREAM_MUSIC;
+		case NOTIFICATION:
+			return AudioManager.STREAM_NOTIFICATION;
+		case RING:
+			return AudioManager.STREAM_RING;
+		case SYSTEM:
+			return AudioManager.STREAM_SYSTEM;
+		case VOICE_CALL:
+			return AudioManager.STREAM_VOICE_CALL;
+		}
+		return AudioManager.STREAM_RING;
 	}
 
-	public int getVolume(int streamType) {
-		return mAmgr.getStreamVolume(streamType);
+	private StreamType getStreamType(int streamType) {
+		switch (streamType) {
+		case AudioManager.STREAM_ALARM:
+			return StreamType.ALARM;
+		case AudioManager.STREAM_DTMF:
+			return StreamType.DTMF;
+		case AudioManager.STREAM_MUSIC:
+			return StreamType.MUSIC;
+		case AudioManager.STREAM_NOTIFICATION:
+			return StreamType.NOTIFICATION;
+		case AudioManager.STREAM_RING:
+			return StreamType.RING;
+		case AudioManager.STREAM_SYSTEM:
+			return StreamType.SYSTEM;
+		case AudioManager.STREAM_VOICE_CALL:
+			return StreamType.VOICE_CALL;
+		}
+		return StreamType.RING;
 	}
 
-	public VolumeProfile.RingerMode getRingerMode() {
+	public int getMaxVolume(StreamType type) {
+		return mAmgr.getStreamMaxVolume(getStreamType(type));
+	}
+
+	public int getVolume(StreamType type) {
+		return mAmgr.getStreamVolume(getStreamType(type));
+	}
+
+	public RingerMode getRingerMode() {
 		switch (mAmgr.getRingerMode()) {
 		case AudioManager.RINGER_MODE_NORMAL:
-			return VolumeProfile.RingerMode.normal;
+			return RingerMode.NORMAL;
 		case AudioManager.RINGER_MODE_VIBRATE:
-			return VolumeProfile.RingerMode.vibrate;
+			return RingerMode.VIBRATE;
 		case AudioManager.RINGER_MODE_SILENT:
-			return VolumeProfile.RingerMode.sirent;
+			return RingerMode.SIRENT;
 		}
-		return VolumeProfile.RingerMode.normal;
+		return RingerMode.NORMAL;
+	}
+
+	public void setRingerMode(RingerMode mode) {
+		switch (mode) {
+		case NORMAL:
+			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+			break;
+		case VIBRATE:
+			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+			break;
+		case SIRENT:
+			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+			break;
+		}
+	}
+
+	public void setVolume(StreamType type, int volume) {
+		mAmgr.setStreamVolume(getStreamType(type), volume, 0);
 	}
 
 }

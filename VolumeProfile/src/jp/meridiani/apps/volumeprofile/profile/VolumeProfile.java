@@ -1,5 +1,8 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
+
 public class VolumeProfile {
 	private int mProfileId;
 
@@ -13,12 +16,6 @@ public class VolumeProfile {
 	private int mSystemVolume;
 	private int mVoiceCallVolume;
 
-	public static enum RingerMode {
-		normal,
-		vibrate,
-		sirent
-	}
-
 	VolumeProfile() {
 		this(-1);
 	}
@@ -27,7 +24,7 @@ public class VolumeProfile {
 		mProfileId = id;
 		mProfileName = "";
 
-		mRingerMode = RingerMode.normal;
+		mRingerMode = RingerMode.NORMAL;
 		mAlarmVolume = 0;
 		mDTMFVolume = 0;
 		mMusicVolume = 0;
@@ -95,6 +92,52 @@ public class VolumeProfile {
 		}
 		else if (key.equals(ProfileStore.KEY_VOICECALLVALUME)) {
 			this.setVoiceCallVolume(Integer.parseInt(value));
+		}
+	}
+
+	public int getVolume(StreamType type) {
+		switch (type) {
+		case ALARM:
+			return getAlarmVolume();
+		case DTMF:
+			return getDTMFVolume();
+		case MUSIC:
+			return getMusicVolume();
+		case NOTIFICATION:
+			return getNotificationVolume();
+		case RING:
+			return getRingVolume();
+		case SYSTEM:
+			return getSystemVolume();
+		case VOICE_CALL:
+			return getVoiceCallVolume();
+		}
+		return 0;
+	}
+
+	public void setVolume(StreamType type, int volume) {
+		switch (type) {
+		case ALARM:
+			setAlarmVolume(volume);
+			break;
+		case DTMF:
+			setDTMFVolume(volume);
+			break;
+		case MUSIC:
+			setMusicVolume(volume);
+			break;
+		case NOTIFICATION:
+			setNotificationVolume(volume);
+			break;
+		case RING:
+			setRingVolume(volume);
+			break;
+		case SYSTEM:
+			setSystemVolume(volume);
+			break;
+		case VOICE_CALL:
+			setVoiceCallVolume(volume);
+			break;
 		}
 	}
 
