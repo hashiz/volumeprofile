@@ -24,7 +24,7 @@ public class Settings {
 	private static final String KEY_PLAYSOUNDONVOLUMECHANGE     = "PlaySoundOnVolumeChange"       ;
 	private static final String KEY_CURRENTPROFILEID            = "CurrentProfileId"              ;
 	private static final String KEY_VOLUEMLOCK                  = "VoluemLock"                    ;
-	private static final String KEY_SOUNRALERTHACK              = "SoundAlertHack"                ;
+	private static final String KEY_SOUNDALERTHACK              = "SoundAlertHack"                ;
 
 	private boolean mVibrateOnProfileChange;
 	private boolean mDisplayToastOnProfileChange;
@@ -69,7 +69,7 @@ public class Settings {
 			i.insert(KEY_PLAYSOUNDONVOLUMECHANGE     , false);
 			i.insert(KEY_CURRENTPROFILEID            , -1);
 			i.insert(KEY_VOLUEMLOCK                  , false);
-			i.insert(KEY_SOUNRALERTHACK              , false);
+			i.insert(KEY_SOUNDALERTHACK              , false);
 		}
 
 		@Override
@@ -112,7 +112,7 @@ public class Settings {
 			else if (key.equals(KEY_VOLUEMLOCK)) {
 				mVoluemLock = Boolean.parseBoolean(value);
 			}
-			else if (key.equals(KEY_SOUNRALERTHACK)) {
+			else if (key.equals(KEY_SOUNDALERTHACK)) {
 				mSoundAlertHack = Boolean.parseBoolean(value);
 			}
 		}
@@ -197,7 +197,7 @@ public class Settings {
 
 	public void setSoundAlertHack(boolean value) {
 		mSoundAlertHack = value;
-		store(KEY_SOUNRALERTHACK, value);
+		store(KEY_SOUNDALERTHACK, value);
 	}
 	
 }

@@ -59,7 +59,7 @@ public class ProfileStore {
 						          LIST_TABLE_NAME, LIST_COL_ID));
 
 			db.execSQL(String.format(
-					"CREATE TABLE %1$s ( %2$s INTEGER, %3$s TEXT NOT NULL, %4$s TEXT NOT NULL, PRIMARY KEY( %2$s,%3$s );",
+					"CREATE TABLE %1$s ( %2$s INTEGER, %3$s TEXT NOT NULL, %4$s TEXT NOT NULL, PRIMARY KEY( %2$s,%3$s ));",
 						          DATA_TABLE_NAME, DATA_COL_ID, DATA_COL_KEY, DATA_COL_VALUE));
 		}
 

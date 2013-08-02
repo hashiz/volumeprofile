@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="jp.meridiani.apps.volumeprofile"
+    android:installLocation="auto"
     android:versionCode="1"
-    android:versionName="1.0" android:installLocation="auto">
+    android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -23,29 +24,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".pluginapi.PluginEditActivity"></activity>
-        <receiver android:name=".plubinapi.PluginFireReceiver"
+        <activity android:name="jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity" >
+        </activity>
+
+        <receiver
+            android:name=".plubinapi.PluginFireReceiver"
             android:exported="true"
             android:process=":background"
-            tools:ignore="ExportedReceiver">
+            tools:ignore="ExportedReceiver" >
             <intent-filter>
-                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING"/>
+                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
-		<receiver
-			android:name=".soundlevelalerthack.Receiver"
+        <receiver
+            android:name=".soundlevelalerthack.Receiver"
             android:exported="true"
             android:process=":background"
-            tools:ignore="ExportedReceiver">
-			>
-			<intent-filter
-				>
-				<action
-					android:name="com.sonyericsson.media.SOUND_LEVEL_ALERT"
-					>
-				</action>
-			</intent-filter>
-		</receiver>
-        </application>
+            tools:ignore="ExportedReceiver" >
+            <intent-filter>
+                <action android:name="com.sonyericsson.media.SOUND_LEVEL_ALERT" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+    </application>
 
 </manifest>

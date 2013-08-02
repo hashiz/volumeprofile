@@ -78,7 +78,7 @@
             android:id="@+id/media_volume_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/media_volume_title" />
+            android:text="@string/music_volume_title" />
 
         <RelativeLayout
             android:layout_width="match_parent"

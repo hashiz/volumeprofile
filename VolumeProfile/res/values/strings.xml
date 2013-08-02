@@ -3,15 +3,13 @@
 
     <string name="app_name">Volume Profile</string>
     <string name="action_settings">Settings</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_activity_settings">Settings</string>
     <string name="button_select">Select</string>
     <string name="button_cancel">Cancel</string>
     <string name="ringer_mode_title">Ringer Mode</string>
     <string name="alarm_volume_title">Alarm</string>
-    <string name="media_volume_title">Media</string>
-    <string name="ring_volume_title">Ring/Nofification</string>
+    <string name="music_volume_title">Music/Media</string>
+    <string name="ring_volume_title">Ring/Notification</string>
     <string name="system_volume_title">System</string>
     <string name="voicecall_volume_title">Voice Call</string>
     <string name="ringer_mode_normal">Normal</string>
@@ -21,6 +19,10 @@
     <string name="page_title_volumeedit">Volumes</string>
     <string name="page_title_profileedit">Profiles</string>
     <string name="msg_profile_notfound">Profile "%1$s" not found.</string> 
-    <string name="msg_profile_applied">Profile "%1$s" Applied.</string> 
-    
+    <string name="msg_profile_applied">Profile "%1$s" applied.</string>
+    <string name="vibrate_on_profile_change">Vibrate on profile change</string> 
+    <string name="display_toast_on_profile_change">Display Toast on profile change</string> 
+    <string name="play_sound_on_volume_change">Play sound on volume change</string> 
+    <string name="sound_alert_hack">Sony/SEMC Sound Level Alert Hack</string> 
+        
 </resources>

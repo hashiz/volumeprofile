@@ -1,10 +1,11 @@
 <resources>
 
     <string name="action_settings">設定</string>
+    <string name="title_activity_settings">設定</string>
     <string name="alarm_volume_title">アラーム</string>
     <string name="button_cancel">取消</string>
     <string name="button_select">選択</string>
-    <string name="media_volume_title">メディア</string>
+    <string name="music_volume_title">音楽/メディア</string>
     <string name="page_title_profileedit">プロファイル</string>
     <string name="page_title_volumeedit">ボリューム</string>
     <string name="ring_volume_title">着信/通知</string>
@@ -14,5 +15,10 @@
     <string name="ringer_mode_vibrate">バイブレーション</string>
     <string name="system_volume_title">システム</string>
     <string name="voicecall_volume_title">通話音</string>
-
+    <string name="display_toast_on_profile_change">プロファイル変更時にToast表示</string>
+    <string name="msg_profile_notfound">プロファイル"%1$s"が見つかりません</string>
+    <string name="msg_profile_applied">プロファイル"%1$s"を適用しました</string>
+    <string name="play_sound_on_volume_change">音量変更時に音を鳴らす</string>
+    <string name="vibrate_on_profile_change">プロファイル変更時にバイブレーション</string>
+    
 </resources>

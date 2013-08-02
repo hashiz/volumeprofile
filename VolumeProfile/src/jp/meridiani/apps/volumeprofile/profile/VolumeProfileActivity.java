@@ -7,35 +7,28 @@ import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.settings.Settings;
-import android.accounts.Account;
-import android.accounts.OnAccountsUpdateListener;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.location.GpsStatus.Listener;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 
 public class VolumeProfileActivity extends FragmentActivity implements
@@ -137,10 +130,10 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			Fragment fragment = null;
 			switch (position) {
 			case 0:
-				fragment = new ProfileEditFragment();
+				fragment = new VolumeEditFragment();
 				break;
 			case 1:
-				fragment = new VolumeEditFragment();
+				fragment = new ProfileEditFragment();
 				break;
 			}
 			return fragment;
@@ -381,19 +374,19 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			int id = -1;
 			switch (type) {
 			case ALARM:
-				id = R.id.alarm_volume_text;
+				id = R.id.aloarm_volume_value;
 				break;
 			case MUSIC:
-				id = R.id.media_volume_text;
+				id = R.id.media_volume_value;
 				break;
 			case RING:
-				id = R.id.ring_volume_text;
+				id = R.id.ring_volume_value;
 				break;
 			case SYSTEM:
-				id = R.id.system_volume_text;
+				id = R.id.system_volume_value;
 				break;
 			case VOICE_CALL:
-				id = R.id.voicecall_volume_text;
+				id = R.id.voicecall_volume_value;
 				break;
 			default:
 				return null;
