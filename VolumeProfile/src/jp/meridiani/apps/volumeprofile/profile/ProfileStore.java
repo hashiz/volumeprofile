@@ -1,6 +1,7 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,16 +16,19 @@ public class ProfileStore {
 	private SQLiteDatabase mDB;
 
 	private static final String DATABASE_NAME = "profilelist.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int    DATABASE_VERSION = 1;
 	  
+	private static final String MISC_TABLE_NAME = "misc";
+	private static final String COL_KEY         = "key";
+	private static final String COL_VALUE       = "value";
+	
 	private static final String LIST_TABLE_NAME = "profilelist";
-	private static final String LIST_COL_ID     = "id";
+	private static final String COL_UUID        = "uuid";
+	private static final String COL_DISPORDER   = "displayorder";
 	
 	private static final String DATA_TABLE_NAME = "profiledata";
-	private static final String DATA_COL_ID     = "id";
-	private static final String DATA_COL_KEY    = "key";
-	private static final String DATA_COL_VALUE  = "value";
 	
+	public static final String KEY_CURRENTPROFILE      = "CurrentProfile"     ;
 	public static final String KEY_PROFILENAME         = "ProfileName"        ;
 	public static final String KEY_RINGERMODE          = "RingerMode"         ;
 	public static final String KEY_ALARMVOLUME         = "AlarmVolume"        ;
@@ -55,12 +59,16 @@ public class ProfileStore {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(String.format(
-					"CREATE TABLE %1$s ( %2$s INTEGER PRIMARY KEY AUTOINCREMENT);",
-						          LIST_TABLE_NAME, LIST_COL_ID));
+					"CREATE TABLE %1$s ( _id INTEGER PRIMARY KEY AUTOINCREMENT, %2$s TEXT NOT NULL UNIQUE, %3$s TEXT);",
+						MISC_TABLE_NAME, COL_KEY, COL_VALUE));
 
 			db.execSQL(String.format(
-					"CREATE TABLE %1$s ( %2$s INTEGER, %3$s TEXT NOT NULL, %4$s TEXT NOT NULL, PRIMARY KEY( %2$s,%3$s ));",
-						          DATA_TABLE_NAME, DATA_COL_ID, DATA_COL_KEY, DATA_COL_VALUE));
+					"CREATE TABLE %1$s ( _id INTEGER PRIMARY KEY AUTOINCREMENT, %2$s TEXT NOT NULL UNIQUE, %3$s INTEGER);",
+						LIST_TABLE_NAME, COL_UUID, COL_DISPORDER));
+
+			db.execSQL(String.format(
+					"CREATE TABLE %1$s ( _id INTEGER PRIMARY KEY AUTOINCREMENT, %2$s TEXT NOT NULL, %3$s TEXT NOT NULL, %4$s TEXT NOT NULL);",
+						DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE));
 		}
 
 		@Override
@@ -83,28 +91,37 @@ public class ProfileStore {
 	public ArrayList<VolumeProfile> listProfiles() {
 		ArrayList<VolumeProfile> list = new ArrayList<VolumeProfile>();
 
-		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, null, null, null, null, DATA_COL_ID);
+		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, null, null, null, null, COL_DISPORDER);
 		while (listCur.moveToNext()) {
-			int id = listCur.getInt(listCur.getColumnIndex(LIST_COL_ID));
-			VolumeProfile profile = loadProfile(id);
-			if (profile != null) {
-				list.add(profile);
-			}
+			UUID uuid = UUID.fromString(listCur.getString(listCur.getColumnIndex(COL_UUID)));
+			int order = listCur.getInt(listCur.getColumnIndex(COL_DISPORDER));
+			VolumeProfile profile = new VolumeProfile(uuid);
+			profile.setDisplayOrder(order);
+			loadProfileInternal(profile);
+			profile.setDisplayOrder(order);
+			list.add(profile);
 		}
 		return list;
 	}
 
-	public VolumeProfile loadProfile(int id) {
-		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, LIST_COL_ID + "=?", new String[]{Integer.toString(id)}, null, null, null);
+	private VolumeProfile loadProfileInternal(VolumeProfile profile) {
+		String uuid = profile.getUuid().toString();
+		Cursor dataCur = mDB.query(DATA_TABLE_NAME, null, COL_UUID + "=?", new String[]{uuid}, null, null, null);
+		while (dataCur.moveToNext()) {
+			String key = dataCur.getString(dataCur.getColumnIndex(COL_KEY));
+			String value = dataCur.getString(dataCur.getColumnIndex(COL_VALUE));
+			profile.setValue(key, value);
+		}
+		return profile;
+	}
+
+	public VolumeProfile loadProfile(UUID uuid) {
+		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, COL_UUID + "=?", new String[] {uuid.toString()}, null, null, null);
 		if (listCur.moveToFirst()) {
-			Cursor dataCur = mDB.query(DATA_TABLE_NAME, null, DATA_COL_ID + "=?", new String[]{Integer.toString(id)}, null, null, null);
-			VolumeProfile profile = new VolumeProfile(id);
-			while (dataCur.moveToNext()) {
-				String key = dataCur.getString(dataCur.getColumnIndex(DATA_COL_KEY));
-				String value = dataCur.getString(dataCur.getColumnIndex(DATA_COL_VALUE));
-				profile.setValue(key, value);
-			}
-			return profile;
+			int order = listCur.getInt(listCur.getColumnIndex(COL_DISPORDER));
+			VolumeProfile profile = new VolumeProfile(uuid);
+			profile.setDisplayOrder(order);
+			return loadProfileInternal(profile);
 		}
 		return null;
 	}
@@ -113,36 +130,18 @@ public class ProfileStore {
 		mDB.beginTransaction();
 
 		try {
-			if (profile.getProfileId() < 0) {
-				// create new profile
-	
-				// insert list
-				ContentValues values = new ContentValues();
-				mDB.insert(LIST_TABLE_NAME, null, values);
-	
-				// insert data
-				values.clear();
-				for (String key : KEYLIST) {
-					values.put(DATA_COL_ID, profile.getProfileId());
-					values.put(DATA_COL_KEY, key);
+			ContentValues values = new ContentValues();
+
+			// update/insert data
+			for (String key : KEYLIST) {
+				values.put(COL_VALUE, profile.getValue(key));
+				int rows = mDB.update(DATA_TABLE_NAME, values,
+						String.format("%1$s=? and %2$s=?", COL_UUID, COL_KEY),
+						new String[]{profile.getUuid().toString(), key});
+				if (rows < 1) {
+					values.put(COL_UUID, profile.getUuid().toString());
+					values.put(COL_KEY, key);
 					mDB.insert(DATA_TABLE_NAME, null, values);
-				}
-			}
-			else {
-				// update existent profile
-	
-				ContentValues values = new ContentValues();
-	
-				// update data
-				values.clear();
-				for (String key : KEYLIST) {
-					values.put(DATA_COL_VALUE, profile.getValue(key));
-					int rows = mDB.update(DATA_TABLE_NAME, values, "id=? and key=?", new String[]{Integer.toString(profile.getProfileId()), key});
-					if (rows < 1) {
-						values.put(DATA_COL_ID, profile.getProfileId());
-						values.put(DATA_COL_KEY, key);
-						mDB.insert(DATA_TABLE_NAME, null, values);
-					}
 				}
 			}
 		}
@@ -151,30 +150,67 @@ public class ProfileStore {
 		}
 	}
 
-	public static void deleteProfile(Context context, VolumeProfile profile) {
-		if (profile.getProfileId() < 0) {
-			return;
-		}
-
-		SQLiteDatabase db = new DBHelper(context).getWritableDatabase();
-
-		db.beginTransaction();
+	public void deleteProfile(Context context, VolumeProfile profile) {
+		mDB.beginTransaction();
 
 		try {
 			// delete existent profile
 
 			// delete data
-			db.delete(DATA_TABLE_NAME, "id=?", new String[]{Integer.toString(profile.getProfileId())});
+			mDB.delete(DATA_TABLE_NAME, COL_UUID+"=?", new String[]{profile.getUuid().toString()});
 
 			// delete list
-			db.delete(LIST_TABLE_NAME, "id=?", new String[]{Integer.toString(profile.getProfileId())});
+			mDB.delete(LIST_TABLE_NAME, COL_UUID+"=?", new String[]{profile.getUuid().toString()});
 		}
 		finally {
-			db.endTransaction();
+			mDB.endTransaction();
 		}
 	}
 
-	public static VolumeProfile newProfile() {
-		return new VolumeProfile(-1);
+	private int getMaxOrder() {
+		Cursor listCur = mDB.rawQuery(String.format(
+				"select max(%2$s) from %1$s;", LIST_TABLE_NAME, COL_DISPORDER),null);
+		if (listCur.moveToFirst()) {
+			return listCur.getInt(0);
+		}
+		return 0;
 	}
+
+	public VolumeProfile newProfile() {
+		VolumeProfile profile = new VolumeProfile();
+		profile.setDisplayOrder(getMaxOrder()+1);
+		return profile;
+	}
+
+	public UUID getCurrentProfile() {
+		Cursor cur = mDB.query(MISC_TABLE_NAME, null, COL_KEY + "=?", new String[] {KEY_CURRENTPROFILE}, null, null, null);
+		if (cur.moveToFirst()) {
+			return UUID.fromString(cur.getString(cur.getColumnIndex(COL_VALUE)));
+		}
+		return null;
+	}
+
+	public void setCurrentProfile(UUID uuid) {
+		mDB.beginTransaction();
+
+		try {
+			ContentValues values = new ContentValues();
+
+			// update/insert data
+			values.put(COL_KEY,   KEY_CURRENTPROFILE);
+			values.put(COL_VALUE, uuid.toString());
+			int rows = mDB.update(MISC_TABLE_NAME, values,
+					String.format("%1$s=?", COL_KEY),
+					new String[]{KEY_CURRENTPROFILE});
+			if (rows < 1) {
+				values.put(COL_KEY,   KEY_CURRENTPROFILE);
+				values.put(COL_VALUE, uuid.toString());
+				mDB.insert(MISC_TABLE_NAME, null, values);
+			}
+		}
+		finally {
+			mDB.endTransaction();
+		}
+	}
+
 }

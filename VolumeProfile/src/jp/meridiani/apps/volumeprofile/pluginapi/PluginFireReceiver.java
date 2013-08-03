@@ -1,5 +1,7 @@
 package jp.meridiani.apps.volumeprofile.pluginapi;
 
+import java.util.UUID;
+
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
@@ -28,7 +30,7 @@ public class PluginFireReceiver extends BroadcastReceiver {
 		} catch (InvalidBundleException e) {
 			return;
 		}
-        int profileId = bundle.getProfileId();
+        UUID profileId = bundle.getProfileId();
 
         VolumeProfile profile = ProfileStore.getInstance(context).loadProfile(profileId);
         if ( profile == null ) {
@@ -38,6 +40,6 @@ public class PluginFireReceiver extends BroadcastReceiver {
         }
 
         new AudioUtil(context).applyProfile(profile);
-   		Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getProfileName()), Toast.LENGTH_LONG).show();
+   		Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
     }
 }

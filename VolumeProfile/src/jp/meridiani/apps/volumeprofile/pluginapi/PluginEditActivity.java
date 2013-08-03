@@ -1,6 +1,7 @@
 package jp.meridiani.apps.volumeprofile.pluginapi;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
@@ -19,7 +20,7 @@ import android.widget.ListView;
 
 public class PluginEditActivity extends Activity implements OnItemSelectedListener, OnItemClickListener {
 
-	private int mSelectedProfileId;
+	private UUID mSelectedProfileId;
 	private ListView mProfileListView;
 	private Button mSelectButton;
 	private Button mCancelButton;
@@ -82,12 +83,12 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 		}
 
         Intent resultIntent = new Intent();
-        if (! mCanceled && profile != null && profile.getProfileId() >= 0) {
+        if (! mCanceled && profile != null && profile.getUuid() != null) {
             BundleUtil resultBundle = new BundleUtil();
-            resultBundle.setProfileId(profile.getProfileId());
-            resultBundle.setProfileName(profile.getProfileName());
+            resultBundle.setProfileId(profile.getUuid());
+            resultBundle.setProfileName(profile.getName());
 
-            resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_STRING_BLURB, profile.getProfileName());
+            resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_STRING_BLURB, profile.getName());
             resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE, resultBundle.getBundle());
 
             setResult(RESULT_OK, resultIntent);
@@ -118,7 +119,7 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 		int selPos = 0;
 		for ( VolumeProfile profile : plist) {
 			adapter.add(profile);
-			if (mSelectedProfileId == profile.getProfileId()) {
+			if (mSelectedProfileId.equals(profile.getUuid())) {
 				selPos = adapter.getCount() - 1;
 			}
 		}

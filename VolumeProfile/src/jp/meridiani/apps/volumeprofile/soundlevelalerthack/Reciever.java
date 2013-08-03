@@ -1,5 +1,7 @@
 package jp.meridiani.apps.volumeprofile.soundlevelalerthack;
 
+import java.util.UUID;
+
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
@@ -44,8 +46,8 @@ public class Reciever extends BroadcastReceiver {
 	}
 
 	private void restoreVolume(Context context) {
-		int profileId = Settings.getInstance(context).getCurrentProfileId();
-		if (profileId < 0) {
+		UUID profileId = ProfileStore.getInstance(context).getCurrentProfile();
+		if (profileId == null) {
 			return;
 		}
 		VolumeProfile profile = ProfileStore.getInstance(context).loadProfile(profileId);

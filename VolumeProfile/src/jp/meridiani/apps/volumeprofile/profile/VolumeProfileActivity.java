@@ -6,12 +6,16 @@ import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
+import jp.meridiani.apps.volumeprofile.profile.InputDialog.InputDialogListener;
 import jp.meridiani.apps.volumeprofile.settings.Settings;
+import jp.meridiani.apps.volumeprofile.settings.SettingsActivity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +23,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,7 +37,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 public class VolumeProfileActivity extends FragmentActivity implements
-		ActionBar.TabListener {
+		ActionBar.TabListener, InputDialogListener{
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -95,6 +100,20 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			startActivity(new Intent(this, SettingsActivity.class));
+			return true;
+		case R.id.action_save_as_new_profile:
+			InputDialog dialog = InputDialog.newInstance(null, null, null);
+			dialog.show(getSupportFragmentManager(), dialog.getClass().getCanonicalName());
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -192,7 +211,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			int selPos = 0;
 			for ( VolumeProfile profile : plist) {
 				adapter.add(profile);
-				if (Settings.getInstance(activity).getCurrentProfileId() == profile.getProfileId()) {
+				if (ProfileStore.getInstance(activity).getCurrentProfile().equals(profile.getUuid())) {
 					selPos = adapter.getCount() - 1;
 				}
 			}
@@ -283,7 +302,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 					return mContext.getString(R.string.ringer_mode_normal);
 				case VIBRATE:
 					return mContext.getString(R.string.ringer_mode_vibrate);
-				case SIRENT:
+				case SILENT:
 					return mContext.getString(R.string.ringer_mode_sirent);
 				}
 				return null;
@@ -328,7 +347,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			final RingerModeItem[] itemList = new RingerModeItem[] {
 					new RingerModeItem(activity, RingerMode.NORMAL),
 					new RingerModeItem(activity, RingerMode.VIBRATE),
-					new RingerModeItem(activity, RingerMode.SIRENT),
+					new RingerModeItem(activity, RingerMode.SILENT),
 			};
 
 			for (RingerModeItem item : itemList ) {
@@ -417,5 +436,17 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			}
 			return (SeekBar)getActivity().findViewById(id);
 		}
+	}
+
+	@Override
+	public void onInputDialogPositive(String inputText) {
+		VolumeProfile profile = ProfileStore.getInstance(this).newProfile();
+		profile.setName(inputText);
+		new AudioUtil(this).getVolumes(profile);
+		ProfileStore.getInstance(this).storeProfile(profile);
+	}
+
+	@Override
+	public void onInputDialogNegative() {
 	}
 }

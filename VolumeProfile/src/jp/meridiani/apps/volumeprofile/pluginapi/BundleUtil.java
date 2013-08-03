@@ -1,5 +1,7 @@
 package jp.meridiani.apps.volumeprofile.pluginapi;
 
+import java.util.UUID;
+
 import android.os.Bundle;
 
 public class BundleUtil {
@@ -28,16 +30,16 @@ public class BundleUtil {
 		}
 	}
 
-	public void setProfileId (int id) {
-		mBundle.putInt(BUNDLE_PROFILEID, id);
+	public void setProfileId (UUID uuid) {
+		mBundle.putString(BUNDLE_PROFILEID, uuid.toString());
 	}
 
 	public void setProfileName(String name) {
 		mBundle.putString(BUNDLE_PROFILENAME, name);
 	}
 
-	public int getProfileId () {
-		return mBundle.getInt(BUNDLE_PROFILEID);
+	public UUID getProfileId () {
+		return UUID.fromString(mBundle.getString(BUNDLE_PROFILEID));
 	}
 
 	public String getProfileName() {

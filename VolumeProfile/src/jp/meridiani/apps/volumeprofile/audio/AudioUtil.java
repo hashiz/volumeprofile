@@ -1,5 +1,6 @@
 package jp.meridiani.apps.volumeprofile.audio;
 
+import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.Context;
 import android.media.AudioManager;
@@ -11,18 +12,24 @@ public class AudioUtil {
 	public static enum RingerMode {
 		NORMAL,
 		VIBRATE,
-		SIRENT
+		SILENT
 	}
 
 	public static enum StreamType {
 		ALARM,
-		DTMF,
 		MUSIC,
-		NOTIFICATION,
 		RING,
 		SYSTEM,
 		VOICE_CALL,
 	}
+
+	public static int[] supportStreams = {
+		AudioManager.STREAM_ALARM,
+		AudioManager.STREAM_MUSIC,
+		AudioManager.STREAM_RING,
+		AudioManager.STREAM_SYSTEM,
+		AudioManager.STREAM_VOICE_CALL,
+	};
 
 	public AudioUtil(Context context) {
 		mContext = context;
@@ -37,29 +44,39 @@ public class AudioUtil {
 		case VIBRATE:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 			break;
-		case SIRENT:
+		case SILENT:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 		}
 
-		mAmgr.setStreamVolume(AudioManager.STREAM_ALARM, profile.getAlarmVolume(), 0);
-		mAmgr.setStreamVolume(AudioManager.STREAM_DTMF,  profile.getDTMFVolume(), 0);
-		mAmgr.setStreamVolume(AudioManager.STREAM_MUSIC, profile.getMusicVolume(), 0);
-		mAmgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, profile.getNotificationVolume(), 0);
-		mAmgr.setStreamVolume(AudioManager.STREAM_RING,  profile.getRingVolume(), 0);
-		mAmgr.setStreamVolume(AudioManager.STREAM_SYSTEM, profile.getSystemVolume(), 0);
-		mAmgr.setStreamVolume(AudioManager.STREAM_VOICE_CALL, profile.getVoiceCallVolume(), 0);
+		for (int streamType : supportStreams ) {
+			mAmgr.setStreamVolume(streamType, profile.getVolume(getStreamType(streamType)), 0);
+		}
+	}
+
+	public VolumeProfile getVolumes(VolumeProfile profile) {
+		switch (mAmgr.getRingerMode()) {
+		case AudioManager.RINGER_MODE_NORMAL:
+			profile.setRingerMode(RingerMode.NORMAL);
+			break;
+		case AudioManager.RINGER_MODE_VIBRATE:
+			profile.setRingerMode(RingerMode.VIBRATE);
+			break;
+		case AudioManager.RINGER_MODE_SILENT:
+			profile.setRingerMode(RingerMode.SILENT);
+		}
+
+		for (int streamType : supportStreams ) {
+			profile.setVolume(getStreamType(streamType), mAmgr.getStreamVolume(streamType));
+		}
+		return profile;
 	}
 
 	private int getStreamType(StreamType type) {
 		switch (type) {
 		case ALARM:
 			return AudioManager.STREAM_ALARM;
-		case DTMF:
-			return AudioManager.STREAM_DTMF;
 		case MUSIC:
 			return AudioManager.STREAM_MUSIC;
-		case NOTIFICATION:
-			return AudioManager.STREAM_NOTIFICATION;
 		case RING:
 			return AudioManager.STREAM_RING;
 		case SYSTEM:
@@ -74,12 +91,8 @@ public class AudioUtil {
 		switch (streamType) {
 		case AudioManager.STREAM_ALARM:
 			return StreamType.ALARM;
-		case AudioManager.STREAM_DTMF:
-			return StreamType.DTMF;
 		case AudioManager.STREAM_MUSIC:
 			return StreamType.MUSIC;
-		case AudioManager.STREAM_NOTIFICATION:
-			return StreamType.NOTIFICATION;
 		case AudioManager.STREAM_RING:
 			return StreamType.RING;
 		case AudioManager.STREAM_SYSTEM:
@@ -105,7 +118,7 @@ public class AudioUtil {
 		case AudioManager.RINGER_MODE_VIBRATE:
 			return RingerMode.VIBRATE;
 		case AudioManager.RINGER_MODE_SILENT:
-			return RingerMode.SIRENT;
+			return RingerMode.SILENT;
 		}
 		return RingerMode.NORMAL;
 	}
@@ -118,7 +131,7 @@ public class AudioUtil {
 		case VIBRATE:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 			break;
-		case SIRENT:
+		case SILENT:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 			break;
 		}
