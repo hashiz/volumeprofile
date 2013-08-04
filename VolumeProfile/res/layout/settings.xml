@@ -100,7 +100,7 @@
             android:layout_marginLeft="15dp"
             android:layout_weight="1"
             android:singleLine="true"
-            android:text="@string/sound_alert_hack"
+            android:text="@string/sound_level_alert_hack"
             android:textAppearance="?android:attr/textAppearance" />
 
         <CheckBox

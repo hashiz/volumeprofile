@@ -5,8 +5,8 @@ import java.util.UUID;
 import android.os.Bundle;
 
 public class BundleUtil {
-    public static final String BUNDLE_PROFILEID   = "jp.meridiani.apps.volumeprofile.extra.INTEGER_PROFILEID";
-    public static final String BUNDLE_PROFILENAME = "jp.meridiani.apps.volumeprofile.extra.INTEGER_PROFILENAME";
+    public static final String BUNDLE_PROFILEID   = "jp.meridiani.apps.volumeprofile.extra.STRING_PROFILEID";
+    public static final String BUNDLE_PROFILENAME = "jp.meridiani.apps.volumeprofile.extra.STRING_PROFILENAME";
 
 	private Bundle mBundle;
 

@@ -5,7 +5,7 @@ import java.util.UUID;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
-import jp.meridiani.apps.volumeprofile.settings.Settings;
+import jp.meridiani.apps.volumeprofile.settings.Prefs;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,8 @@ public class Reciever extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (!Settings.getInstance(context).isSoundAlertHack()) {
+		Prefs prefs = Prefs.getInstance(context);
+		if (!prefs.isSoundLevelAlertHack()) {
 			return;
 		}
 		if (!("com.sonyericsson.media.SOUND_LEVEL_ALERT".equals(intent.getAction()))) {

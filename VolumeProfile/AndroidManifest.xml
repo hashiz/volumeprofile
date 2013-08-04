@@ -23,7 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".pluginapi.PluginEditActivity" >
+        <activity
+            android:name=".pluginapi.PluginEditActivity"
+            android:label="@string/title_activity_plugin_edit" >
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING"/>
+            </intent-filter>
         </activity>
 
         <receiver

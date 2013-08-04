@@ -137,8 +137,12 @@ public class AudioUtil {
 		}
 	}
 
-	public void setVolume(StreamType type, int volume) {
-		mAmgr.setStreamVolume(getStreamType(type), volume, 0);
+	public void setVolume(StreamType type, int volume, boolean playsound) {
+		int flag = 0;
+		if (playsound) {
+			flag = AudioManager.FLAG_PLAY_SOUND;
+		}
+		mAmgr.setStreamVolume(getStreamType(type), volume, flag);
 	}
 
 }

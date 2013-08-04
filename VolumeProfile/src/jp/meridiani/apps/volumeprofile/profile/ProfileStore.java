@@ -40,6 +40,7 @@ public class ProfileStore {
 	public static final String KEY_VOICECALLVALUME     = "VoiceCallValume"    ;
 
 	private static final String[] KEYLIST = new String[] {
+		KEY_PROFILENAME         ,
 		KEY_RINGERMODE          ,
 		KEY_ALARMVOLUME         ,
 		KEY_DTMFVOLUME          ,
@@ -98,7 +99,6 @@ public class ProfileStore {
 			VolumeProfile profile = new VolumeProfile(uuid);
 			profile.setDisplayOrder(order);
 			loadProfileInternal(profile);
-			profile.setDisplayOrder(order);
 			list.add(profile);
 		}
 		return list;
@@ -131,9 +131,21 @@ public class ProfileStore {
 
 		try {
 			ContentValues values = new ContentValues();
-
+			// update/insert list
+			{
+				values.clear();
+				values.put(COL_DISPORDER, profile.getDisplayOrder());
+				int rows = mDB.update(LIST_TABLE_NAME, values,
+						String.format("%1$s=?", COL_UUID),
+						new String[]{profile.getUuid().toString()});
+				if (rows < 1) {
+					values.put(COL_UUID, profile.getUuid().toString());
+					mDB.insert(LIST_TABLE_NAME, null, values);
+				}
+			}
 			// update/insert data
 			for (String key : KEYLIST) {
+				values.clear();
 				values.put(COL_VALUE, profile.getValue(key));
 				int rows = mDB.update(DATA_TABLE_NAME, values,
 						String.format("%1$s=? and %2$s=?", COL_UUID, COL_KEY),
@@ -144,6 +156,7 @@ public class ProfileStore {
 					mDB.insert(DATA_TABLE_NAME, null, values);
 				}
 			}
+			mDB.setTransactionSuccessful();
 		}
 		finally {
 			mDB.endTransaction();
@@ -161,6 +174,8 @@ public class ProfileStore {
 
 			// delete list
 			mDB.delete(LIST_TABLE_NAME, COL_UUID+"=?", new String[]{profile.getUuid().toString()});
+
+			mDB.setTransactionSuccessful();
 		}
 		finally {
 			mDB.endTransaction();
@@ -207,6 +222,8 @@ public class ProfileStore {
 				values.put(COL_VALUE, uuid.toString());
 				mDB.insert(MISC_TABLE_NAME, null, values);
 			}
+
+			mDB.setTransactionSuccessful();
 		}
 		finally {
 			mDB.endTransaction();
