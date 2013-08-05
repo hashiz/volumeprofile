@@ -28,6 +28,7 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		android.os.Debug.waitForDebugger();
 		super.onCreate(savedInstanceState);
 
 		// receive intent and extra data
@@ -38,13 +39,14 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 		}
 
 		BundleUtil bundle;
+		mSelectedProfileId = null;
+
 		try {
 			bundle = new BundleUtil(getIntent().getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE));
+			mSelectedProfileId = bundle.getProfileId();
 		} catch (InvalidBundleException e) {
-			return;
+			mSelectedProfileId = null;
 		}
-
-		mSelectedProfileId = bundle.getProfileId();
 
 		mCanceled = false;
 
@@ -119,7 +121,7 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 		int selPos = 0;
 		for ( VolumeProfile profile : plist) {
 			adapter.add(profile);
-			if (mSelectedProfileId.equals(profile.getUuid())) {
+			if (mSelectedProfileId != null && mSelectedProfileId.equals(profile.getUuid())) {
 				selPos = adapter.getCount() - 1;
 			}
 		}

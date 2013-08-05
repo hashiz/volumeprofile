@@ -1,6 +1,7 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
@@ -21,12 +22,15 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -182,7 +186,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	 * Profile Edit
 	 *
 	 */
-	public static class ProfileEditFragment extends Fragment implements OnItemClickListener, OnItemLongClickListener {
+	public static class ProfileEditFragment extends Fragment implements OnItemClickListener {
 
 		public ProfileEditFragment() {
 		}
@@ -222,17 +226,37 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			profileListView.setItemChecked(selPos, true);
 			profileListView.setOnItemClickListener(this);
+			registerForContextMenu(profileListView);
 		}
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-			ListView listView = (ListView)view;
-			VolumeProfile profile = (VolumeProfile)listView.getAdapter().getItem(pos);
+			VolumeProfile profile = (VolumeProfile)parent.getAdapter().getItem(pos);
 			new AudioUtil(parent.getContext()).applyProfile(profile);
 		}
 
 		@Override
-		public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
+		public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
+			super.onCreateContextMenu(menu, view, menuInfo);
+			getActivity().getMenuInflater().inflate(R.menu.profile, menu);
+		}
+
+		@Override
+		public boolean onContextItemSelected(MenuItem item) {
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+			int pos = info.position;
+			ListView profileListView = (ListView)getView().findViewById(R.id.profile_edit);
+			VolumeProfile profile = (VolumeProfile)profileListView.getAdapter().getItem(pos);
+			switch (item.getItemId()) {
+			case R.id.action_rename_profile:
+				return true;
+			case R.id.action_edit_profile:
+				return true;
+			case R.id.action_delete_profile:
+				ProfileStore.getInstance(getActivity()).deleteProfile(profile.getUuid());
+				updateProfileList();
+				return true;
+			}
 			return false;
 		}
 	}

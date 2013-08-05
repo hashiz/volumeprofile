@@ -163,17 +163,17 @@ public class ProfileStore {
 		}
 	}
 
-	public void deleteProfile(Context context, VolumeProfile profile) {
+	public void deleteProfile(UUID profileId) {
 		mDB.beginTransaction();
 
 		try {
 			// delete existent profile
 
 			// delete data
-			mDB.delete(DATA_TABLE_NAME, COL_UUID+"=?", new String[]{profile.getUuid().toString()});
+			mDB.delete(DATA_TABLE_NAME, COL_UUID+"=?", new String[]{profileId.toString()});
 
 			// delete list
-			mDB.delete(LIST_TABLE_NAME, COL_UUID+"=?", new String[]{profile.getUuid().toString()});
+			mDB.delete(LIST_TABLE_NAME, COL_UUID+"=?", new String[]{profileId.toString()});
 
 			mDB.setTransactionSuccessful();
 		}
