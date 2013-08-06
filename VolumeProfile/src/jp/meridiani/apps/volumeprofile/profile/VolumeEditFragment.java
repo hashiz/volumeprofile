@@ -1,29 +1,38 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
+import android.os.Bundle;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.settings.Prefs;
 
 public class VolumeEditFragment extends VolumeEditFragmentBase {
+	
+	private AudioUtil mAudio = null;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		mAudio = new AudioUtil(getActivity());
+	}
 
 	protected RingerMode getRingerMode() {
-		return new AudioUtil(getActivity()).getRingerMode();
+		return mAudio.getRingerMode();
 	}
 
 	protected void setRingerMode(RingerMode mode) {
-		new AudioUtil(getActivity()).setRingerMode(mode);
+		mAudio.setRingerMode(mode);
 	}
 
 	protected int getVolume(StreamType type) {
-		return new AudioUtil(getActivity()).getVolume(type);
+		return mAudio.getVolume(type);
 	}
 
 	protected void setVolume(StreamType type, int volume) {
-		new AudioUtil(getActivity()).setVolume(type, volume, Prefs.getInstance(getActivity()).isPlaySoundOnVolumeChange());
+		mAudio.setVolume(type, volume, Prefs.getInstance(getActivity()).isPlaySoundOnVolumeChange());
 	}
 
 	protected int getMaxVolume(StreamType type) {
-		return new AudioUtil(getActivity()).getVolume(type);
+		return mAudio.getMaxVolume(type);
 	}
 }

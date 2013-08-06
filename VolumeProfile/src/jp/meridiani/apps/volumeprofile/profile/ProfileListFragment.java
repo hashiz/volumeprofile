@@ -6,6 +6,7 @@ import java.util.UUID;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
@@ -40,6 +41,7 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 
 		@Override
 		public void onResume() {
+			super.onResume();
 			updateProfileList();
 		}
 
@@ -91,7 +93,9 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 				dialog.show(getFragmentManager(), dialog.getClass().getCanonicalName());
 				return true;
 			case R.id.action_edit_profile:
-				
+				Intent intent = new Intent(getActivity(), ProfileEditActivity.class);
+				intent.putExtra(ProfileEditActivity.EXTRA_PROFILE, profile);
+				startActivity(intent);
 				return true;
 			case R.id.action_delete_profile:
 				ProfileStore.getInstance(getActivity()).deleteProfile(profile.getUuid());

@@ -36,6 +36,7 @@
     <string name="input_dialog_negative_button">Cancel</string>
     <string name="title_activity_plugin_edit">Volume Profile</string>
     <string name="title_activity_profile_edit">Profile Edit</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="action_save_profile">Save</string>
+    <string name="action_cancel_edit_profile">Cancel</string>
 
 </resources>
