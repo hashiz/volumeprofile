@@ -184,8 +184,8 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		case R.id.aloarm_volume_value:
 		case R.id.alarm_volume_seekBar:
 			return StreamType.ALARM;
-		case R.id.media_volume_value:
-		case R.id.media_volume_seekBar:
+		case R.id.music_volume_value:
+		case R.id.music_volume_seekBar:
 			return StreamType.MUSIC;
 		case R.id.ring_volume_value:
 		case R.id.ring_volume_seekBar:
@@ -208,7 +208,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			id = R.id.aloarm_volume_value;
 			break;
 		case MUSIC:
-			id = R.id.media_volume_value;
+			id = R.id.music_volume_value;
 			break;
 		case RING:
 			id = R.id.ring_volume_value;
@@ -232,7 +232,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			id = R.id.alarm_volume_seekBar;
 			break;
 		case MUSIC:
-			id = R.id.media_volume_seekBar;
+			id = R.id.music_volume_seekBar;
 			break;
 		case RING:
 			id = R.id.ring_volume_seekBar;

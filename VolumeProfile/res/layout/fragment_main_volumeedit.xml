@@ -79,7 +79,7 @@
 	        android:orientation="vertical" >
 	
 	        <TextView
-	            android:id="@+id/media_volume_text"
+	            android:id="@+id/music_volume_text"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/music_volume_title" />
@@ -89,15 +89,15 @@
 	            android:layout_height="wrap_content">
 	            
 		        <SeekBar
-		            android:id="@+id/media_volume_seekBar"
+		            android:id="@+id/music_volume_seekBar"
 		            android:layout_width="match_parent"
 		            android:layout_height="wrap_content"
 		            android:layout_alignParentLeft="true"
 		            android:layout_centerVertical="true"
-		            android:layout_toLeftOf="@+id/media_volume_value" />
+		            android:layout_toLeftOf="@+id/music_volume_value" />
 	
 		        <TextView
-		            android:id="@+id/media_volume_value"
+		            android:id="@+id/music_volume_value"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            android:layout_alignParentRight="true"

@@ -1,11 +1,9 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import jp.meridiani.apps.volumeprofile.R;
-import jp.meridiani.apps.volumeprofile.profile.VolumeProfileActivity.SectionsPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 
