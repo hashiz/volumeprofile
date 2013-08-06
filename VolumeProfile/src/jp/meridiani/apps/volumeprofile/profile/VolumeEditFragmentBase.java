@@ -70,10 +70,11 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		View rootView = getView();
 		Activity activity = getActivity();
 
 		// Ringer Mode Item
-		Spinner ringerModeView = (Spinner)activity.findViewById(R.id.ringer_mode_value);
+		Spinner ringerModeView = (Spinner)rootView.findViewById(R.id.ringer_mode_value);
 
 		RingerModeAdapter adapter = new RingerModeAdapter(activity,
 				android.R.layout.simple_list_item_single_choice);
@@ -223,7 +224,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		default:
 			return null;
 		}
-		return (TextView)getActivity().findViewById(id);
+		return (TextView)getView().findViewById(id);
 	}
 
 	private SeekBar findSeekBar(StreamType type) {
@@ -247,7 +248,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		default:
 			return null;
 		}
-		return (SeekBar)getActivity().findViewById(id);
+		return (SeekBar)getView().findViewById(id);
 	}
 
 	abstract protected RingerMode getRingerMode();
