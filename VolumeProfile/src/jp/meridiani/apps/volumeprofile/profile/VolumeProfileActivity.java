@@ -1,20 +1,11 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
-
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.profile.ProfileNameDialog.ProfileNameDialogListner;
 import jp.meridiani.apps.volumeprofile.settings.PreferencesActivity;
-import jp.meridiani.apps.volumeprofile.settings.Prefs;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,23 +13,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 public class VolumeProfileActivity extends FragmentActivity implements
 		ActionBar.TabListener, ProfileNameDialogListner{
@@ -79,8 +55,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		// When swiping between different sections, select the corresponding
 		// tab. We can also use ActionBar.Tab#select() to do this if we have
 		// a reference to the Tab.
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						actionBar.setSelectedNavigationItem(position);
@@ -177,288 +152,6 @@ public class VolumeProfileActivity extends FragmentActivity implements
 				return getString(R.string.page_title_profileedit);
 			}
 			return null;
-		}
-	}
-
-	/************
-	 * 
-	 * @author hashiz
-	 * Profile Edit
-	 *
-	 */
-	public static class ProfileEditFragment extends Fragment implements OnItemClickListener {
-
-		public ProfileEditFragment() {
-		}
-
-		@Override public void onActivityCreated(Bundle savedInstanceState) {
-			super.onActivityCreated(savedInstanceState);
-
-			updateProfileList();
-		};
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main_profileedit,
-					container, false);
-			
-			return rootView;
-		}
-
-		private void updateProfileList() {
-			Activity activity = getActivity();
-			ArrayList<VolumeProfile> plist = ProfileStore.getInstance(getActivity()).listProfiles();
-
-			ArrayAdapter<VolumeProfile> adapter = new ArrayAdapter<VolumeProfile>(getActivity(),
-								android.R.layout.simple_list_item_single_choice);
-			int selPos = 0;
-			for ( VolumeProfile profile : plist) {
-				adapter.add(profile);
-				UUID curId = ProfileStore.getInstance(activity).getCurrentProfile() ;
-				if (curId != null && curId.equals(profile.getUuid())) {
-					selPos = adapter.getCount() - 1;
-				}
-			}
-
-			ListView profileListView = (ListView)activity.findViewById(R.id.profile_edit);
-			profileListView.setAdapter(adapter);
-			profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-			profileListView.setItemChecked(selPos, true);
-			profileListView.setOnItemClickListener(this);
-			registerForContextMenu(profileListView);
-		}
-
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-			VolumeProfile profile = (VolumeProfile)parent.getAdapter().getItem(pos);
-			new AudioUtil(parent.getContext()).applyProfile(profile);
-		}
-
-		@Override
-		public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
-			super.onCreateContextMenu(menu, view, menuInfo);
-			getActivity().getMenuInflater().inflate(R.menu.profile, menu);
-		}
-
-		@Override
-		public boolean onContextItemSelected(MenuItem item) {
-			AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-			int pos = info.position;
-			ListView profileListView = (ListView)getView().findViewById(R.id.profile_edit);
-			VolumeProfile profile = (VolumeProfile)profileListView.getAdapter().getItem(pos);
-			switch (item.getItemId()) {
-			case R.id.action_rename_profile:
-				return true;
-			case R.id.action_edit_profile:
-				return true;
-			case R.id.action_delete_profile:
-				ProfileStore.getInstance(getActivity()).deleteProfile(profile.getUuid());
-				updateProfileList();
-				return true;
-			}
-			return false;
-		}
-	}
-
-	/************
-	 * 
-	 * @author hashiz
-	 * Profile Edit
-	 *
-	 */
-	public static class VolumeEditFragment extends Fragment {
-
-		private class VolumeBarListener implements SeekBar.OnSeekBarChangeListener {
-			private StreamType mStreamType ;
-			private AudioUtil  mAudio ;
-			private SeekBar    mSeekBar ;
-			private TextView   mValueTextView;
-
-			public VolumeBarListener(Context context, StreamType type) {
-				mStreamType = type;
-				mAudio = new AudioUtil(context);
-				mSeekBar = findSeekBar(type);
-				mValueTextView = findValueView(type);
-
-				int volume = mAudio.getVolume(mStreamType);
-				int maxVolume = mAudio.getMaxVolume(mStreamType);
-
-				mSeekBar.setMax(mAudio.getMaxVolume(type));
-				mSeekBar.setProgress(mAudio.getVolume(type));
-				mValueTextView.setText(String.format("%2d/%2d", volume, maxVolume));
-				mSeekBar.setOnSeekBarChangeListener(this);
-			}
-
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-				mAudio.setVolume(mStreamType, progress, Prefs.getInstance(getActivity()).isPlaySoundOnVolumeChange());
-				int volume = mAudio.getVolume(mStreamType);
-				seekBar.setProgress(volume);
-				mValueTextView.setText(String.format("%2d/%2d", volume, seekBar.getMax()));
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-				// TODO 自動生成されたメソッド・スタブ
-				
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-				// TODO 自動生成されたメソッド・スタブ
-				
-			}
-			
-		}
-
-		private class RingerModeItem {
-			private Context    mContext;
-			private RingerMode mRingerMode;
-
-			public RingerModeItem(Context context, RingerMode mode) {
-				mContext    = context;
-				mRingerMode = mode;
-			}
-			public String toString() {
-				switch (mRingerMode) {
-				case NORMAL:
-					return mContext.getString(R.string.ringer_mode_normal);
-				case VIBRATE:
-					return mContext.getString(R.string.ringer_mode_vibrate);
-				case SILENT:
-					return mContext.getString(R.string.ringer_mode_sirent);
-				}
-				return null;
-			}
-			public RingerMode getValue() {
-				return mRingerMode;
-			}
-		}
-
-		public VolumeEditFragment() {
-		}
-
-		private class RingerModeAdapter extends ArrayAdapter<RingerModeItem> {
-
-			public RingerModeAdapter(Context context, int textViewResourceId) {
-				super(context, textViewResourceId);
-			}
-
-			public int getPosition(RingerMode mode) {
-				for (int i = 0; i < this.getCount(); i++ ) {
-					if (this.getItem(i).getValue() == mode) {
-						return i;
-					}
-				}
-				return -1;
-			}
-			
-		}
-
-		@Override public void onActivityCreated(Bundle savedInstanceState) {
-			super.onActivityCreated(savedInstanceState);
-
-			Activity activity = getActivity();
-			final AudioUtil audio = new AudioUtil(getActivity());
-
-			// Ringer Mode
-			final Spinner ringerModeView = (Spinner)activity.findViewById(R.id.ringer_mode_value);
-
-			final RingerModeAdapter adapter = new RingerModeAdapter(activity,
-					android.R.layout.simple_list_item_single_choice);
-			final RingerModeItem[] itemList = new RingerModeItem[] {
-					new RingerModeItem(activity, RingerMode.NORMAL),
-					new RingerModeItem(activity, RingerMode.VIBRATE),
-					new RingerModeItem(activity, RingerMode.SILENT),
-			};
-
-			for (RingerModeItem item : itemList ) {
-				adapter.add(item);
-			}
-			ringerModeView.setAdapter(adapter);
-			ringerModeView.setSelection(adapter.getPosition(audio.getRingerMode()));
-			ringerModeView.setOnItemSelectedListener(new OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view,
-						int pos, long id) {
-					RingerModeItem item = adapter.getItem(pos);
-					audio.setRingerMode(item.getValue());
-					ringerModeView.setSelection(adapter.getPosition(audio.getRingerMode()));
-				}
-
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
-					// nop
-				}
-			});
-
-			// Volumes
-			for (StreamType streamType : new StreamType[] {
-					StreamType.ALARM,
-					StreamType.MUSIC,
-					StreamType.RING,
-					StreamType.SYSTEM,
-					StreamType.VOICE_CALL}) {
-				new VolumeBarListener(activity, streamType);
-			}
-		};
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main_volumeedit,
-					container, false);
-			return rootView;
-		}
-
-		private TextView findValueView(StreamType type) {
-			int id = -1;
-			switch (type) {
-			case ALARM:
-				id = R.id.aloarm_volume_value;
-				break;
-			case MUSIC:
-				id = R.id.media_volume_value;
-				break;
-			case RING:
-				id = R.id.ring_volume_value;
-				break;
-			case SYSTEM:
-				id = R.id.system_volume_value;
-				break;
-			case VOICE_CALL:
-				id = R.id.voicecall_volume_value;
-				break;
-			default:
-				return null;
-			}
-			return (TextView)getActivity().findViewById(id);
-		}
-
-		private SeekBar findSeekBar(StreamType type) {
-			int id = -1;
-			switch (type) {
-			case ALARM:
-				id = R.id.alarm_volume_seekBar;
-				break;
-			case MUSIC:
-				id = R.id.media_volume_seekBar;
-				break;
-			case RING:
-				id = R.id.ring_volume_seekBar;
-				break;
-			case SYSTEM:
-				id = R.id.system_volume_seekBar;
-				break;
-			case VOICE_CALL:
-				id = R.id.voicecall_volume_seekBar;
-				break;
-			default:
-				return null;
-			}
-			return (SeekBar)getActivity().findViewById(id);
 		}
 	}
 
