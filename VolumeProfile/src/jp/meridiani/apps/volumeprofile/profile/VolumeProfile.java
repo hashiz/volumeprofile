@@ -2,10 +2,13 @@ package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.UUID;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 
-public class VolumeProfile {
+public class VolumeProfile implements Parcelable {
 	private UUID mUuid;
 	private String mName;
 	private int mDisplayOrder;
@@ -18,7 +21,7 @@ public class VolumeProfile {
 	private int mVoiceCallVolume;
 
 	VolumeProfile() {
-		this(null);
+		this((UUID)null);
 	}
 
 	VolumeProfile(UUID uuid) {
@@ -194,4 +197,44 @@ public class VolumeProfile {
 	public String toString() {
 		return this.getName();
 	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+    @Override
+	public void writeToParcel(Parcel out, int flags) {
+    	out.writeString(mUuid.toString());
+    	out.writeString(mName);
+    	out.writeInt(mDisplayOrder);
+    	out.writeString(mRingerMode.name());
+    	out.writeInt(mAlarmVolume);
+    	out.writeInt(mMusicVolume);
+    	out.writeInt(mRingVolume);
+    	out.writeInt(mSystemVolume);
+    	out.writeInt(mVoiceCallVolume);
+	}
+
+	public VolumeProfile(Parcel in) {
+		mUuid            = UUID.fromString(in.readString());
+    	mName            = in.readString();
+    	mDisplayOrder    = in.readInt();
+    	mRingerMode      = RingerMode.valueOf(in.readString());
+    	mAlarmVolume     = in.readInt();
+    	mMusicVolume     = in.readInt();
+    	mRingVolume      = in.readInt();
+    	mSystemVolume    = in.readInt();
+    	mVoiceCallVolume = in.readInt();
+	}
+
+    public static final Parcelable.Creator<VolumeProfile> CREATOR = new Parcelable.Creator<VolumeProfile>() {
+		public VolumeProfile createFromParcel(Parcel in) {
+		    return new VolumeProfile(in);
+		}
+		
+		public VolumeProfile[] newArray(int size) {
+		    return new VolumeProfile[size];
+		}
+    };
 }

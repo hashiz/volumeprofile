@@ -16,23 +16,24 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".profile.VolumeProfileActivity"
+            android:name="jp.meridiani.apps.volumeprofile.profile.VolumeProfileActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".pluginapi.PluginEditActivity"
+            android:name="jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity"
             android:label="@string/title_activity_plugin_edit" >
             <intent-filter>
-                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING"/>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
             </intent-filter>
         </activity>
 
         <receiver
-            android:name=".plubinapi.PluginFireReceiver"
+            android:name="jp.meridiani.apps.volumeprofile.plubinapi.PluginFireReceiver"
             android:exported="true"
             android:process=":background"
             tools:ignore="ExportedReceiver" >
@@ -41,7 +42,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".soundlevelalerthack.Receiver"
+            android:name="jp.meridiani.apps.volumeprofile.soundlevelalerthack.Receiver"
             android:exported="true"
             android:process=":background"
             tools:ignore="ExportedReceiver" >
@@ -51,8 +52,16 @@
         </receiver>
 
         <activity
-            android:name=".settings.SettingsActivity"
+            android:name="jp.meridiani.apps.volumeprofile.settings.SettingsActivity"
             android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name="jp.meridiani.apps.volumeprofile.profile.ProfileEditActivity"
+            android:label="@string/title_activity_profile_edit"
+            android:parentActivityName="jp.meridiani.apps.volumeprofile.profile.VolumeProfileActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="jp.meridiani.apps.volumeprofile.profile.VolumeProfileActivity" />
         </activity>
     </application>
 

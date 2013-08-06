@@ -22,18 +22,20 @@
     <string name="zerozero">00/00</string>
     <string name="page_title_volumeedit">Volumes</string>
     <string name="page_title_profileedit">Profiles</string>
-    <string name="msg_profile_notfound">Profile "%1$s" not found.</string> 
+    <string name="msg_profile_notfound">Profile "%1$s" not found.</string>
     <string name="msg_profile_applied">Profile "%1$s" applied.</string>
-    <string name="vibrate_on_profile_change">Vibrate</string> 
-    <string name="display_toast_on_profile_change">Display Toast</string> 
-    <string name="play_sound_on_volume_change">Play Sound</string> 
-    <string name="sound_level_alert_hack">Sony/SEMC Sound Level Alert Hack</string> 
-    <string name="pref_category_on_profile_apply">On Profile Apply</string> 
-    <string name="pref_category_on_volume_change">On Volume Change</string> 
+    <string name="vibrate_on_profile_change">Vibrate</string>
+    <string name="display_toast_on_profile_change">Display Toast</string>
+    <string name="play_sound_on_volume_change">Play Sound</string>
+    <string name="sound_level_alert_hack">Sony/SEMC Sound Level Alert Hack</string>
+    <string name="pref_category_on_profile_apply">On Profile Apply</string>
+    <string name="pref_category_on_volume_change">On Volume Change</string>
     <string name="pref_category_misc">Misc</string>
     <string name="input_dialog_description">Input New Profile Name</string>
     <string name="input_dialog_positive_button">Save</string>
     <string name="input_dialog_negative_button">Cancel</string>
     <string name="title_activity_plugin_edit">Volume Profile</string>
-        
+    <string name="title_activity_profile_edit">Profile Edit</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

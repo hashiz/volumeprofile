@@ -1,9 +1,9 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import jp.meridiani.apps.volumeprofile.R;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,19 +14,16 @@ import android.widget.TextView;
 
 public class ProfileNameDialog extends DialogFragment {
 	private static final String BUNDLE_DESCRIPTION        = "description";
+	private static final String BUNDLE_PROFILE            = "profile";
 	private static final String BUNDLE_POSITIVEBUTTONTEXT = "positiveButtonText";
 	private static final String BUNDLE_NEGATIVEBUTTONTEXT = "negativeButtonText";
 
-	public interface ProfileNameDialogListner {
-		public void onInputDialogPositive(String inputText);
-		public void onInputDialogNegative();
-	}
-
-	public static ProfileNameDialog newInstance(String description, String positiveButtonText, String negativeButtonText) {
+	public static ProfileNameDialog newInstance(String description, VolumeProfile profile, String positiveButtonText, String negativeButtonText) {
 		ProfileNameDialog instance = new ProfileNameDialog();
 		Bundle args = new Bundle();
 
 		args.putString(BUNDLE_DESCRIPTION, description);
+		args.putParcelable(BUNDLE_PROFILE, profile);
 		args.putString(BUNDLE_POSITIVEBUTTONTEXT, positiveButtonText);
 		args.putString(BUNDLE_NEGATIVEBUTTONTEXT, negativeButtonText);
 		instance.setArguments(args);
@@ -80,18 +77,20 @@ public class ProfileNameDialog extends DialogFragment {
 	}
 
 	private void onPositiveClick() {
-		Activity parent = getActivity();
-		if (parent instanceof ProfileNameDialogListner) {
+		Fragment parent = getParentFragment();
+		if (parent instanceof ProfileEditCallback) {
+			VolumeProfile profile = getArguments().getParcelable(BUNDLE_PROFILE);
 			EditText edit = (EditText)getDialog().findViewById(R.id.input_dialog_edit);
-			((ProfileNameDialogListner)parent).onInputDialogPositive(edit.getText().toString());
+			profile.setName(edit.getText().toString());
+			((ProfileEditCallback)parent).onProfileEditPositive(profile);
 		}
 		dismiss();
 	}
 
 	private void onNegativeClick() {
-		Activity parent = getActivity();
-		if (parent instanceof ProfileNameDialogListner) {
-			((ProfileNameDialogListner)parent).onInputDialogNegative();
+		Fragment parent = getParentFragment();
+		if (parent instanceof ProfileEditCallback) {
+			((ProfileEditCallback)parent).onProfileEditNegative();
 		}
 		dismiss();
 	}

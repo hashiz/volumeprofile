@@ -2,7 +2,6 @@ package jp.meridiani.apps.volumeprofile.profile;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.profile.ProfileNameDialog.ProfileNameDialogListner;
 import jp.meridiani.apps.volumeprofile.settings.PreferencesActivity;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
@@ -17,7 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class VolumeProfileActivity extends FragmentActivity implements
-		ActionBar.TabListener, ProfileNameDialogListner{
+		ActionBar.TabListener, ProfileEditCallback {
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -88,7 +87,9 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			startActivity(new Intent(this, PreferencesActivity.class));
 			return true;
 		case R.id.action_save_as_new_profile:
-			ProfileNameDialog dialog = ProfileNameDialog.newInstance(null, null, null);
+			VolumeProfile profile = ProfileStore.getInstance(getApplicationContext()).newProfile();
+			new AudioUtil(getApplicationContext()).getVolumes(profile);
+			ProfileNameDialog dialog = ProfileNameDialog.newInstance(null, profile, null, null);
 			dialog.show(getSupportFragmentManager(), dialog.getClass().getCanonicalName());
 			return true;
 		}
@@ -131,7 +132,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 				fragment = new VolumeEditFragment();
 				break;
 			case 1:
-				fragment = new ProfileEditFragment();
+				fragment = new ProfileListFragment();
 				break;
 			}
 			return fragment;
@@ -156,16 +157,11 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onInputDialogPositive(String profileName) {
-		ProfileStore store = ProfileStore.getInstance(this);
-		VolumeProfile profile = store.newProfile();
-		profile.setName(profileName);
-		new AudioUtil(this).getVolumes(profile);
-		store.storeProfile(profile);
+	public void onProfileEditPositive(VolumeProfile newProfile) {
+		ProfileStore.getInstance(getApplicationContext()).storeProfile(newProfile);
 	}
 
 	@Override
-	public void onInputDialogNegative() {
-		// NOP
+	public void onProfileEditNegative() {
 	}
 }
