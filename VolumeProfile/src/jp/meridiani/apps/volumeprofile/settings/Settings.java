@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class Settings {
+class Settings {
 
 	private static Settings mInstance = null;
 	private SQLiteDatabase   mDB = null;

@@ -11,6 +11,7 @@
 	        android:id="@+id/vibrate_on_profile_change_checkbox"
 	        android:key="vibrate_on_profile_change"
 	        android:title="@string/vibrate_on_profile_change"
+	        android:defaultValue="true"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        />
@@ -19,6 +20,7 @@
 	        android:id="@+id/display_toast_on_profile_change_checkbox"
 	        android:key="display_toast_on_profile_change"
 	        android:title="@string/display_toast_on_profile_change"
+	        android:defaultValue="true"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        />
@@ -31,8 +33,9 @@
 
     	<CheckBoxPreference
 		    android:id="@+id/play_sound_on_volume_change_checkbox"
-	        android:key="play_sound_on_volume_change"
-	        android:title="@string/play_sound_on_volume_change"
+		    android:key="play_sound_on_volume_change"
+		    android:title="@string/play_sound_on_volume_change"
+		    android:defaultValue="true"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    />
@@ -44,11 +47,12 @@
         >
 
     	<CheckBoxPreference
-	        android:id="@+id/sound_alert_hack_checkbox"
-	        android:key="sound_alert_hack_checkbox"
-	        android:title="@string/sound_alert_hack"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
+			android:id="@+id/sound_level_alert_hack_checkbox"
+			android:key="sound_level_alert_hack"
+			android:title="@string/sound_level_alert_hack"
+			android:defaultValue="true"
+	       android:layout_width="wrap_content"
+	       android:layout_height="wrap_content"
 	        />
 
 	</PreferenceCategory>

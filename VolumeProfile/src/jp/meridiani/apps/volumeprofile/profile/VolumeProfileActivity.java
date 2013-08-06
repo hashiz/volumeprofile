@@ -1,32 +1,36 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
-import jp.meridiani.apps.volumeprofile.profile.InputDialog.InputDialogListener;
-import jp.meridiani.apps.volumeprofile.settings.Settings;
-import jp.meridiani.apps.volumeprofile.settings.SettingsActivity;
+import jp.meridiani.apps.volumeprofile.profile.ProfileNameDialog.ProfileNameDialogListner;
+import jp.meridiani.apps.volumeprofile.settings.PreferencesActivity;
+import jp.meridiani.apps.volumeprofile.settings.Prefs;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -37,7 +41,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 public class VolumeProfileActivity extends FragmentActivity implements
-		ActionBar.TabListener, InputDialogListener{
+		ActionBar.TabListener, ProfileNameDialogListner{
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -106,10 +110,10 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_settings:
-			startActivity(new Intent(this, SettingsActivity.class));
+			startActivity(new Intent(this, PreferencesActivity.class));
 			return true;
 		case R.id.action_save_as_new_profile:
-			InputDialog dialog = InputDialog.newInstance(null, null, null);
+			ProfileNameDialog dialog = ProfileNameDialog.newInstance(null, null, null);
 			dialog.show(getSupportFragmentManager(), dialog.getClass().getCanonicalName());
 			return true;
 		}
@@ -182,7 +186,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	 * Profile Edit
 	 *
 	 */
-	public static class ProfileEditFragment extends Fragment implements OnItemClickListener, OnItemLongClickListener {
+	public static class ProfileEditFragment extends Fragment implements OnItemClickListener {
 
 		public ProfileEditFragment() {
 		}
@@ -211,7 +215,8 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			int selPos = 0;
 			for ( VolumeProfile profile : plist) {
 				adapter.add(profile);
-				if (ProfileStore.getInstance(activity).getCurrentProfile().equals(profile.getUuid())) {
+				UUID curId = ProfileStore.getInstance(activity).getCurrentProfile() ;
+				if (curId != null && curId.equals(profile.getUuid())) {
 					selPos = adapter.getCount() - 1;
 				}
 			}
@@ -221,17 +226,37 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			profileListView.setItemChecked(selPos, true);
 			profileListView.setOnItemClickListener(this);
+			registerForContextMenu(profileListView);
 		}
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-			ListView listView = (ListView)view;
-			VolumeProfile profile = (VolumeProfile)listView.getAdapter().getItem(pos);
+			VolumeProfile profile = (VolumeProfile)parent.getAdapter().getItem(pos);
 			new AudioUtil(parent.getContext()).applyProfile(profile);
 		}
 
 		@Override
-		public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
+		public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
+			super.onCreateContextMenu(menu, view, menuInfo);
+			getActivity().getMenuInflater().inflate(R.menu.profile, menu);
+		}
+
+		@Override
+		public boolean onContextItemSelected(MenuItem item) {
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+			int pos = info.position;
+			ListView profileListView = (ListView)getView().findViewById(R.id.profile_edit);
+			VolumeProfile profile = (VolumeProfile)profileListView.getAdapter().getItem(pos);
+			switch (item.getItemId()) {
+			case R.id.action_rename_profile:
+				return true;
+			case R.id.action_edit_profile:
+				return true;
+			case R.id.action_delete_profile:
+				ProfileStore.getInstance(getActivity()).deleteProfile(profile.getUuid());
+				updateProfileList();
+				return true;
+			}
 			return false;
 		}
 	}
@@ -268,7 +293,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
-				mAudio.setVolume(mStreamType, progress);
+				mAudio.setVolume(mStreamType, progress, Prefs.getInstance(getActivity()).isPlaySoundOnVolumeChange());
 				int volume = mAudio.getVolume(mStreamType);
 				seekBar.setProgress(volume);
 				mValueTextView.setText(String.format("%2d/%2d", volume, seekBar.getMax()));
@@ -438,14 +463,16 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onInputDialogPositive(String inputText) {
-		VolumeProfile profile = ProfileStore.getInstance(this).newProfile();
-		profile.setName(inputText);
+	public void onInputDialogPositive(String profileName) {
+		ProfileStore store = ProfileStore.getInstance(this);
+		VolumeProfile profile = store.newProfile();
+		profile.setName(profileName);
 		new AudioUtil(this).getVolumes(profile);
-		ProfileStore.getInstance(this).storeProfile(profile);
+		store.storeProfile(profile);
 	}
 
 	@Override
 	public void onInputDialogNegative() {
+		// NOP
 	}
 }
