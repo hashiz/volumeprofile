@@ -1,6 +1,5 @@
 package jp.meridiani.apps.volumeprofile.audio;
 
-import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.Context;
 import android.media.AudioManager;

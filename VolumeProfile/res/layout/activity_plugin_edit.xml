@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,23 +10,25 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".pluginapi.PluginEditActivity" >
+    tools:context=".pluginapi.PluginEditActivity"
+    >
 
     <ListView
         android:id="@+id/ProfileList"
-        android:layout_above="@+id/select_profile_buttanbar"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/select_profile_buttonbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-    </ListView>
+        android:layout_height="wrap_content" 
+        />
 
     <LinearLayout
-        android:id="@+id/select_profile_buttanbar"
+        android:id="@+id/select_profile_buttonbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         style="?android:attr/buttonBarStyle"
-        android:orientation="horizontal" >
+        android:orientation="horizontal" 
+        >
         
 		<Button
 	 	    style="?android:attr/buttonBarButtonStyle"
@@ -33,7 +36,8 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:layout_weight="0.5"
-		    android:text="@string/button_cancel" />
+		    android:text="@string/button_cancel"
+		    />
 	
         <Button
 	 	    style="?android:attr/buttonBarButtonStyle"
@@ -41,7 +45,8 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:layout_weight="0.5"
-		    android:text="@string/button_select" />
+		    android:text="@string/button_select"
+		    />
 	    
     </LinearLayout>
 

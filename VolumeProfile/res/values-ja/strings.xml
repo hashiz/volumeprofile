@@ -20,5 +20,15 @@
     <string name="msg_profile_applied">プロファイル"%1$s"を適用しました</string>
     <string name="play_sound_on_volume_change">音量変更時に音を鳴らす</string>
     <string name="vibrate_on_profile_change">プロファイル変更時にバイブレーション</string>
+    <string name="action_delete_profile">削除</string>
+    <string name="action_edit_profile">編集</string>
+    <string name="action_rename_profile">名前変更</string>
+    <string name="action_save_as_new_profile">プロファイルとして保存</string>
+    <string name="input_dialog_description">新しいプロファイル名を入力</string>
+    <string name="input_dialog_negative_button">取消</string>
+    <string name="input_dialog_positive_button">保存</string>
+    <string name="pref_category_misc">その他</string>
+    <string name="pref_category_on_profile_apply">プロファイル適用時</string>
+    <string name="pref_category_on_volume_change">ボリューム変更時</string>
     
 </resources>
