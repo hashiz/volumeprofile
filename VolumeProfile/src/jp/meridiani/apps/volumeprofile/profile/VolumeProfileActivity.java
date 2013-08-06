@@ -319,7 +319,6 @@ public class VolumeProfileActivity extends FragmentActivity implements
 
 			public RingerModeAdapter(Context context, int textViewResourceId) {
 				super(context, textViewResourceId);
-				// TODO 自動生成されたコンストラクター・スタブ
 			}
 
 			public int getPosition(RingerMode mode) {
