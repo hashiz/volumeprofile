@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 public class ProfileEditActivity extends FragmentActivity {
 	public static final String EXTRA_PROFILE = "jp.meridiani.apps.volumeprofile.EXTRA_PROFILE";
+	public static final String TAG_PROFILEEDIT = "profile_edit_fragment";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class ProfileEditActivity extends FragmentActivity {
 			finish();
 		}
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		transaction.add(ProfileEditFragment.newInstance(profile), ProfileEditFragment.class.getCanonicalName());
+		transaction.add(R.id.activity_profile_edit, ProfileEditFragment.newInstance(profile), TAG_PROFILEEDIT);
 		transaction.commit();
 	}
 
@@ -51,7 +52,7 @@ public class ProfileEditActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_save_profile:
-			ProfileEditFragment fragment = (ProfileEditFragment)getSupportFragmentManager().findFragmentByTag(ProfileEditFragment.class.getCanonicalName());
+			ProfileEditFragment fragment = (ProfileEditFragment)getSupportFragmentManager().findFragmentByTag(TAG_PROFILEEDIT);
 			ProfileStore.getInstance(this).storeProfile(fragment.getVolumeProfile());
 		case R.id.action_cancel_edit_profile:
 			finish();

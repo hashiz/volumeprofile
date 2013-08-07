@@ -1,6 +1,7 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import jp.meridiani.apps.volumeprofile.R;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -76,21 +77,34 @@ public class ProfileNameDialog extends DialogFragment {
 		return dialogView;
 	}
 
+	private ProfileEditCallback findCallback(Fragment parent) {
+		if (parent == null) {
+			Activity activity = getActivity();
+			if (activity instanceof ProfileEditCallback) {
+				return (ProfileEditCallback)activity;
+			}
+			return null;
+		}
+		return findCallback(parent.getParentFragment());
+	}
+
 	private void onPositiveClick() {
-		Fragment parent = getParentFragment();
-		if (parent instanceof ProfileEditCallback) {
+		ProfileEditCallback callback = findCallback(getParentFragment());
+
+		if (callback != null) {
 			VolumeProfile profile = getArguments().getParcelable(BUNDLE_PROFILE);
 			EditText edit = (EditText)getDialog().findViewById(R.id.input_dialog_edit);
 			profile.setName(edit.getText().toString());
-			((ProfileEditCallback)parent).onProfileEditPositive(profile);
+			callback.onProfileEditPositive(profile);
 		}
 		dismiss();
 	}
 
 	private void onNegativeClick() {
-		Fragment parent = getParentFragment();
-		if (parent instanceof ProfileEditCallback) {
-			((ProfileEditCallback)parent).onProfileEditNegative();
+		ProfileEditCallback callback = findCallback(getParentFragment());
+
+		if (callback != null) {
+			callback.onProfileEditNegative();
 		}
 		dismiss();
 	}

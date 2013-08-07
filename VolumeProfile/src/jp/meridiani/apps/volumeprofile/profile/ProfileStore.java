@@ -32,22 +32,16 @@ public class ProfileStore {
 	public static final String KEY_PROFILENAME         = "ProfileName"        ;
 	public static final String KEY_RINGERMODE          = "RingerMode"         ;
 	public static final String KEY_ALARMVOLUME         = "AlarmVolume"        ;
-	public static final String KEY_DTMFVOLUME          = "DTMFVolume"         ;
 	public static final String KEY_MUSICVOLUME         = "MusicVolume"        ;
-	public static final String KEY_NOTIFICATIONVOLUME  = "NotificationVolume" ;
 	public static final String KEY_RINGVOLUME          = "RingVolume"         ;
-	public static final String KEY_SYSTEMVOLUME        = "SystemVolume"       ;
 	public static final String KEY_VOICECALLVALUME     = "VoiceCallValume"    ;
 
 	private static final String[] KEYLIST = new String[] {
 		KEY_PROFILENAME         ,
 		KEY_RINGERMODE          ,
 		KEY_ALARMVOLUME         ,
-		KEY_DTMFVOLUME          ,
 		KEY_MUSICVOLUME         ,
-		KEY_NOTIFICATIONVOLUME  ,
 		KEY_RINGVOLUME          ,
-		KEY_SYSTEMVOLUME        ,
 		KEY_VOICECALLVALUME     ,
 	};
 

@@ -67,6 +67,14 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 	}
 
 	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.fragment_main_volumeedit,
+				container, false);
+		return rootView;
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
@@ -93,44 +101,36 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 	};
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_main_volumeedit,
-				container, false);
-		return rootView;
-	}
-
-	@Override
 	public void onResume() {
 		super.onResume();
 
 		// update values
 
-		//  ringer mode
-		//    init value
-		Spinner ringerModeView = (Spinner)getView().findViewById(R.id.ringer_mode_value);
-		RingerModeAdapter adapter = (RingerModeAdapter)ringerModeView.getAdapter();
-		ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
-
-		//    set listener
-		ringerModeView.setOnItemSelectedListener(new OnItemSelectedListener() {
+		// ringer mode
+		OnItemSelectedListener ringerModeListener = new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int pos, long id) {
 				RingerModeItem item =(RingerModeItem)parent.getAdapter().getItem(pos);
 				setRingerMode(item.getValue());
+				if (item.getValue() == RingerMode.VIBRATE) {
+					findSeekBar(StreamType.RING).setProgress(0);
+				}
+				else if (item.getValue() == RingerMode.SILENT) {
+					findSeekBar(StreamType.RING).setProgress(-1);
+				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
 				// nop
 			}
-		});
+		};
+		updateRingerMode(ringerModeListener);
 
 		// Volumes
-
-		//    listener
-		OnSeekBarChangeListener listner = new OnSeekBarChangeListener() {
+		// set listener
+		OnSeekBarChangeListener seekBarListener = new OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
@@ -147,6 +147,11 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 						seekBar.setProgress(volume);
 						textView.setText(String.format("%2d/%2d", volume, seekBar.getMax()));
 					}
+					if (type == StreamType.RING && progress == 0) {
+						Spinner ringerModeView = (Spinner)getView().findViewById(R.id.ringer_mode_value);
+						RingerModeAdapter adapter = (RingerModeAdapter)ringerModeView.getAdapter();
+						ringerModeView.setSelection(adapter.getPosition(RingerMode.VIBRATE));
+					}
 				}
 			}
 
@@ -158,27 +163,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		};
-
-		for (StreamType streamType : new StreamType[] {
-				StreamType.ALARM,
-				StreamType.MUSIC,
-				StreamType.RING,
-				StreamType.SYSTEM,
-				StreamType.VOICE_CALL}) {
-
-			// init value
-			int volume = getVolume(streamType);
-			int maxVolume = getMaxVolume(streamType);
-
-			SeekBar volumeBar = findSeekBar(streamType);
-			volumeBar.setMax(maxVolume);
-			volumeBar.setProgress(volume);
-			TextView textView = findValueView(streamType);
-			textView.setText(String.format("%2d/%2d", volume, maxVolume));
-
-			// set listener
-			volumeBar.setOnSeekBarChangeListener(listner); 
-		}
+		updateVolumes(seekBarListener);
 	}
 
 	private StreamType findStreamType(int resid) {
@@ -192,9 +177,6 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		case R.id.ring_volume_value:
 		case R.id.ring_volume_seekBar:
 			return StreamType.RING;
-		case R.id.system_volume_value:
-		case R.id.system_volume_seekBar:
-			return StreamType.SYSTEM;
 		case R.id.voicecall_volume_value:
 		case R.id.voicecall_volume_seekBar:
 			return StreamType.VOICE_CALL;
@@ -214,9 +196,6 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			break;
 		case RING:
 			id = R.id.ring_volume_value;
-			break;
-		case SYSTEM:
-			id = R.id.system_volume_value;
 			break;
 		case VOICE_CALL:
 			id = R.id.voicecall_volume_value;
@@ -239,9 +218,6 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		case RING:
 			id = R.id.ring_volume_seekBar;
 			break;
-		case SYSTEM:
-			id = R.id.system_volume_seekBar;
-			break;
 		case VOICE_CALL:
 			id = R.id.voicecall_volume_seekBar;
 			break;
@@ -249,6 +225,49 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			return null;
 		}
 		return (SeekBar)getView().findViewById(id);
+	}
+
+	private void updateRingerMode(OnItemSelectedListener listener) {
+		Spinner ringerModeView = (Spinner)getView().findViewById(R.id.ringer_mode_value);
+
+		// init value
+		RingerModeAdapter adapter = (RingerModeAdapter)ringerModeView.getAdapter();
+		ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
+
+		// set listener
+		if (listener != null) {
+			ringerModeView.setOnItemSelectedListener(listener);
+		}
+	}
+
+	private void updateVolumes(OnSeekBarChangeListener listener) {
+
+		for (StreamType streamType : new StreamType[] {
+				StreamType.ALARM,
+				StreamType.MUSIC,
+				StreamType.RING,
+				StreamType.VOICE_CALL}) {
+
+			SeekBar volumeBar = findSeekBar(streamType);
+
+			// init value
+			int volume = getVolume(streamType);
+			int maxVolume = getMaxVolume(streamType);
+
+			volumeBar.setMax(maxVolume);
+			volumeBar.setProgress(volume);
+			TextView textView = findValueView(streamType);
+			textView.setText(String.format("%2d/%2d", volume, maxVolume));
+
+			if (listener != null) {
+				volumeBar.setOnSeekBarChangeListener(listener);
+			}
+		}
+	}
+
+	public void updateVolumeEdit() {
+		updateRingerMode(null);
+		updateVolumes(null);
 	}
 
 	abstract protected RingerMode getRingerMode();

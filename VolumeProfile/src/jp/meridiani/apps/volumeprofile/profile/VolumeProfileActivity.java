@@ -119,6 +119,9 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	 * one of the sections/tabs/pages.
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+		public static final int POS_VOLUME_EDIT  = 0;
+		public static final int POS_PROFILE_LIST = 1;
+		public static final int POS_NUMPAGES     = 2;
 
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -128,11 +131,11 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		public Fragment getItem(int position) {
 			Fragment fragment = null;
 			switch (position) {
-			case 0:
-				fragment = new VolumeEditFragment();
+			case POS_VOLUME_EDIT:
+				fragment = VolumeEditFragment.newInstance();
 				break;
-			case 1:
-				fragment = new ProfileListFragment();
+			case POS_PROFILE_LIST:
+				fragment = ProfileListFragment.newInstance();
 				break;
 			}
 			return fragment;
@@ -140,25 +143,39 @@ public class VolumeProfileActivity extends FragmentActivity implements
 
 		@Override
 		public int getCount() {
-			// Show 2 total pages.
-			return 2;
+			return POS_NUMPAGES;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
-			case 0:
+			case POS_VOLUME_EDIT:
 				return getString(R.string.page_title_volumeedit);
-			case 1:
+			case POS_PROFILE_LIST:
 				return getString(R.string.page_title_profileedit);
 			}
 			return null;
 		}
 	}
 
+	public void updateProfileList() {
+		ProfileListFragment fragment = (ProfileListFragment)mSectionsPagerAdapter.instantiateItem(mViewPager, SectionsPagerAdapter.POS_PROFILE_LIST);
+		if (fragment != null) {
+			fragment.updateProfileList();
+		}
+	}
+
+	public void updateVolumeEdit() {
+		VolumeEditFragment fragment = (VolumeEditFragment)mSectionsPagerAdapter.instantiateItem(mViewPager, SectionsPagerAdapter.POS_VOLUME_EDIT);
+		if (fragment != null) {
+			fragment.updateVolumeEdit();
+		}
+	}
+
 	@Override
 	public void onProfileEditPositive(VolumeProfile newProfile) {
 		ProfileStore.getInstance(getApplicationContext()).storeProfile(newProfile);
+		updateProfileList();
 	}
 
 	@Override

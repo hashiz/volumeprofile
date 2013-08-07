@@ -11,18 +11,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Vibrator;
-import android.util.Log;
 import android.widget.Toast;
 
 public class PluginFireReceiver extends BroadcastReceiver {
 
-	public PluginFireReceiver() {
-		Log.d(this.getClass().getName(), "PluginFireReceiver");
-    }
-
     @Override
 	public void onReceive(Context context, Intent intent) {
-		Log.d(this.getClass().getName(), "onReceive");
+		if (android.os.Debug.isDebuggerConnected()) android.os.Debug.waitForDebugger();
 		if (!com.twofortyfouram.locale.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
         	return;
         }

@@ -18,7 +18,6 @@ public class AudioUtil {
 		ALARM,
 		MUSIC,
 		RING,
-		SYSTEM,
 		VOICE_CALL,
 	}
 
@@ -26,7 +25,6 @@ public class AudioUtil {
 		AudioManager.STREAM_ALARM,
 		AudioManager.STREAM_MUSIC,
 		AudioManager.STREAM_RING,
-		AudioManager.STREAM_SYSTEM,
 		AudioManager.STREAM_VOICE_CALL,
 	};
 
@@ -36,6 +34,9 @@ public class AudioUtil {
 	}
 	
 	public void applyProfile(VolumeProfile profile) {
+		for (int streamType : supportStreams ) {
+			mAmgr.setStreamVolume(streamType, profile.getVolume(getStreamType(streamType)), 0);
+		}
 		switch (profile.getRingerMode()) {
 		case NORMAL:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
@@ -45,10 +46,6 @@ public class AudioUtil {
 			break;
 		case SILENT:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-		}
-
-		for (int streamType : supportStreams ) {
-			mAmgr.setStreamVolume(streamType, profile.getVolume(getStreamType(streamType)), 0);
 		}
 	}
 
@@ -78,8 +75,6 @@ public class AudioUtil {
 			return AudioManager.STREAM_MUSIC;
 		case RING:
 			return AudioManager.STREAM_RING;
-		case SYSTEM:
-			return AudioManager.STREAM_SYSTEM;
 		case VOICE_CALL:
 			return AudioManager.STREAM_VOICE_CALL;
 		}
@@ -94,8 +89,6 @@ public class AudioUtil {
 			return StreamType.MUSIC;
 		case AudioManager.STREAM_RING:
 			return StreamType.RING;
-		case AudioManager.STREAM_SYSTEM:
-			return StreamType.SYSTEM;
 		case AudioManager.STREAM_VOICE_CALL:
 			return StreamType.VOICE_CALL;
 		}

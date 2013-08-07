@@ -2,6 +2,7 @@ package jp.meridiani.apps.volumeprofile.soundlevelalerthack;
 
 import java.util.UUID;
 
+import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
@@ -9,23 +10,29 @@ import jp.meridiani.apps.volumeprofile.settings.Prefs;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Vibrator;
+import android.widget.Toast;
 
 public class Reciever extends BroadcastReceiver {
+	private static final String ACTION_SOUND_LEVEL_ALERT = "com.sonyericsson.media.SOUND_LEVEL_ALERT";
+	private static final String EXTRA_ALERT_SHOW         = "com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW";
+	private static final String EXTRA_CHALLENGE          = "com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW";
+	private static final String ACTION_ACKNOWLEDGE       = "com.sonyericsson.media.SOUND_LEVEL_ALERT";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Prefs prefs = Prefs.getInstance(context);
-		if (!prefs.isSoundLevelAlertHack()) {
+		if (android.os.Debug.isDebuggerConnected()) android.os.Debug.waitForDebugger();
+		if (!Prefs.getInstance(context).isSoundLevelAlertHack()) {
 			return;
 		}
-		if (!("com.sonyericsson.media.SOUND_LEVEL_ALERT".equals(intent.getAction()))) {
+		if (!(ACTION_SOUND_LEVEL_ALERT.equals(intent.getAction()))) {
 			return;
 		}
-		boolean show = intent.getBooleanExtra("com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW", false);
+		boolean show = intent.getBooleanExtra(EXTRA_ALERT_SHOW, false);
 		if ( !show ) {
 			return;
 		}
-		int challenge = intent.getIntExtra("com.sonyericsson.media.SOUND_LEVEL_ALERT_CHALLENGE", -1);
+		int challenge = intent.getIntExtra(EXTRA_CHALLENGE, -1);
 		if (challenge < 0) {
 			return;
 		}
@@ -35,14 +42,14 @@ public class Reciever extends BroadcastReceiver {
 	}
 
 	private void sendAcknowledge(Context context, int challenge) {
-		Intent intent = new Intent("com.sonyericsson.media.SOUND_LEVEL_ALERT_ACKNOWLEDGE");
-		intent.putExtra("com.sonyericsson.media.SOUND_LEVEL_ALERT_CHALLENGE", challenge);
+		Intent intent = new Intent(ACTION_ACKNOWLEDGE);
+		intent.putExtra(EXTRA_CHALLENGE, challenge);
 		context.sendBroadcast(intent);
 	}
 
 	private void sendDialogClose(Context context) {
-		Intent intent = new Intent("com.sonyericsson.media.SOUND_LEVEL_ALERT");
-		intent.putExtra("com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW", false);
+		Intent intent = new Intent(ACTION_SOUND_LEVEL_ALERT);
+		intent.putExtra(EXTRA_ALERT_SHOW, false);
 		context.sendBroadcast(intent);
 	}
 
@@ -56,5 +63,13 @@ public class Reciever extends BroadcastReceiver {
 			return;
 		}
 		new AudioUtil(context).applyProfile(profile);
+		Prefs prefs = Prefs.getInstance(context);
+		if (prefs.isDisplayToastOnProfileChange()) {
+			Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
+		}
+		if (prefs.isVibrateOnProfileChange()) {
+			Vibrator viblator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+			viblator.vibrate(100);
+		}
 	}
 }

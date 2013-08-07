@@ -17,7 +17,6 @@ public class VolumeProfile implements Parcelable {
 	private int mAlarmVolume;
 	private int mMusicVolume;
 	private int mRingVolume;
-	private int mSystemVolume;
 	private int mVoiceCallVolume;
 
 	VolumeProfile() {
@@ -36,7 +35,6 @@ public class VolumeProfile implements Parcelable {
 		mAlarmVolume = 0;
 		mMusicVolume = 0;
 		mRingVolume = 0;
-		mSystemVolume = 0;
 		mVoiceCallVolume = 0;
 	}
 
@@ -55,9 +53,6 @@ public class VolumeProfile implements Parcelable {
 		}
 		else if (key.equals(ProfileStore.KEY_RINGVOLUME)) {
 			return Integer.toString(this.getRingVolume());
-		}
-		else if (key.equals(ProfileStore.KEY_SYSTEMVOLUME)) {
-			return Integer.toString(this.getSystemVolume());
 		}
 		else if (key.equals(ProfileStore.KEY_VOICECALLVALUME)) {
 			return Integer.toString(this.getVoiceCallVolume());
@@ -81,9 +76,6 @@ public class VolumeProfile implements Parcelable {
 		else if (key.equals(ProfileStore.KEY_RINGVOLUME)) {
 			this.setRingVolume(Integer.parseInt(value));
 		}
-		else if (key.equals(ProfileStore.KEY_SYSTEMVOLUME)) {
-			this.setSystemVolume(Integer.parseInt(value));
-		}
 		else if (key.equals(ProfileStore.KEY_VOICECALLVALUME)) {
 			this.setVoiceCallVolume(Integer.parseInt(value));
 		}
@@ -97,8 +89,6 @@ public class VolumeProfile implements Parcelable {
 			return getMusicVolume();
 		case RING:
 			return getRingVolume();
-		case SYSTEM:
-			return getSystemVolume();
 		case VOICE_CALL:
 			return getVoiceCallVolume();
 		}
@@ -115,9 +105,6 @@ public class VolumeProfile implements Parcelable {
 			break;
 		case RING:
 			setRingVolume(volume);
-			break;
-		case SYSTEM:
-			setSystemVolume(volume);
 			break;
 		case VOICE_CALL:
 			setVoiceCallVolume(volume);
@@ -177,14 +164,6 @@ public class VolumeProfile implements Parcelable {
 		mRingVolume = volume;
 	}
 
-	public int getSystemVolume() {
-		return mSystemVolume;
-	}
-
-	public void setSystemVolume(int volume) {
-		mSystemVolume = volume;
-	}
-
 	public int getVoiceCallVolume() {
 		return mVoiceCallVolume;
 	}
@@ -212,7 +191,6 @@ public class VolumeProfile implements Parcelable {
     	out.writeInt(mAlarmVolume);
     	out.writeInt(mMusicVolume);
     	out.writeInt(mRingVolume);
-    	out.writeInt(mSystemVolume);
     	out.writeInt(mVoiceCallVolume);
 	}
 
@@ -224,7 +202,6 @@ public class VolumeProfile implements Parcelable {
     	mAlarmVolume     = in.readInt();
     	mMusicVolume     = in.readInt();
     	mRingVolume      = in.readInt();
-    	mSystemVolume    = in.readInt();
     	mVoiceCallVolume = in.readInt();
 	}
 

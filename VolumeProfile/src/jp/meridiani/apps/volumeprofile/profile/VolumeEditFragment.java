@@ -10,6 +10,10 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 	
 	private AudioUtil mAudio = null;
 
+	public static VolumeEditFragment newInstance() {
+		return new VolumeEditFragment();
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,4 +39,5 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 	protected int getMaxVolume(StreamType type) {
 		return mAudio.getMaxVolume(type);
 	}
+
 }
