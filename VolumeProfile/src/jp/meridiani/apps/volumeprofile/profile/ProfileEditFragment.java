@@ -49,6 +49,14 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 	@Override
 	protected void setRingerMode(RingerMode mode) {
 		mProfile.setRingerMode(mode);
+		switch (mode) {
+		case SILENT:
+		case VIBRATE:
+			mProfile.setVolume(StreamType.RING, 0);
+			break;
+		case NORMAL:
+			break;
+		}
 	}
 
 	@Override
@@ -59,6 +67,9 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 	@Override
 	protected void setVolume(StreamType type, int volume) {
 		mProfile.setVolume(type, volume);
+		if (type == StreamType.RING && volume == 0) {
+			mProfile.setRingerMode(RingerMode.VIBRATE);
+		}
 	}
 
 	@Override

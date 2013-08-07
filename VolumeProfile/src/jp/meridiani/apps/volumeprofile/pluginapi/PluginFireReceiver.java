@@ -15,10 +15,10 @@ import android.widget.Toast;
 
 public class PluginFireReceiver extends BroadcastReceiver {
 
-    @Override
+	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (android.os.Debug.isDebuggerConnected()) android.os.Debug.waitForDebugger();
-		if (!com.twofortyfouram.locale.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
+    	if (!com.twofortyfouram.locale.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
         	return;
         }
 		BundleUtil bundle;
@@ -40,7 +40,9 @@ public class PluginFireReceiver extends BroadcastReceiver {
         	return;
 		}
 
-       new AudioUtil(context).applyProfile(profile);
+		AudioUtil audio = new AudioUtil(context);
+       audio.applyProfile(profile);
+       ProfileStore.getInstance(context).setCurrentProfile(profile.getUuid());
 		if (displayToast) {
 			Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
 		}

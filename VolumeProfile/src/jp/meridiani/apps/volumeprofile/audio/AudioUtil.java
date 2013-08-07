@@ -35,16 +35,19 @@ public class AudioUtil {
 	
 	public void applyProfile(VolumeProfile profile) {
 		for (int streamType : supportStreams ) {
-			mAmgr.setStreamVolume(streamType, profile.getVolume(getStreamType(streamType)), 0);
+			int volume = profile.getVolume(getStreamType(streamType));
+			mAmgr.setStreamVolume(streamType, volume, 0);
 		}
 		switch (profile.getRingerMode()) {
 		case NORMAL:
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			break;
 		case VIBRATE:
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 			break;
 		case SILENT:
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 		}
 	}
@@ -121,9 +124,11 @@ public class AudioUtil {
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			break;
 		case VIBRATE:
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 			break;
 		case SILENT:
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 			break;
 		}

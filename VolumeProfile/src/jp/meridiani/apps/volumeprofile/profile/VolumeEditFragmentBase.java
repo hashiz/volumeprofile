@@ -96,7 +96,6 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			adapter.add(item);
 		}
 		ringerModeView.setAdapter(adapter);
-		ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
 
 	};
 
@@ -113,11 +112,13 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 					int pos, long id) {
 				RingerModeItem item =(RingerModeItem)parent.getAdapter().getItem(pos);
 				setRingerMode(item.getValue());
-				if (item.getValue() == RingerMode.VIBRATE) {
-					findSeekBar(StreamType.RING).setProgress(0);
-				}
-				else if (item.getValue() == RingerMode.SILENT) {
-					findSeekBar(StreamType.RING).setProgress(-1);
+				switch (item.getValue()) {
+				case VIBRATE:
+				case SILENT:
+					findSeekBar(StreamType.RING).setProgress(getVolume(StreamType.RING));
+					break;
+				case NORMAL:
+					break;
 				}
 			}
 
@@ -148,9 +149,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 						textView.setText(String.format("%2d/%2d", volume, seekBar.getMax()));
 					}
 					if (type == StreamType.RING && progress == 0) {
-						Spinner ringerModeView = (Spinner)getView().findViewById(R.id.ringer_mode_value);
-						RingerModeAdapter adapter = (RingerModeAdapter)ringerModeView.getAdapter();
-						ringerModeView.setSelection(adapter.getPosition(RingerMode.VIBRATE));
+						updateRingerMode(null);
 					}
 				}
 			}
@@ -227,20 +226,21 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		return (SeekBar)getView().findViewById(id);
 	}
 
-	private void updateRingerMode(OnItemSelectedListener listener) {
+	private void updateRingerMode(OnItemSelectedListener newListener) {
 		Spinner ringerModeView = (Spinner)getView().findViewById(R.id.ringer_mode_value);
 
 		// init value
 		RingerModeAdapter adapter = (RingerModeAdapter)ringerModeView.getAdapter();
+
 		ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
 
 		// set listener
-		if (listener != null) {
-			ringerModeView.setOnItemSelectedListener(listener);
+		if (newListener != null) {
+			ringerModeView.setOnItemSelectedListener(newListener);
 		}
 	}
 
-	private void updateVolumes(OnSeekBarChangeListener listener) {
+	private void updateVolumes(OnSeekBarChangeListener newListener) {
 
 		for (StreamType streamType : new StreamType[] {
 				StreamType.ALARM,
@@ -259,8 +259,8 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			TextView textView = findValueView(streamType);
 			textView.setText(String.format("%2d/%2d", volume, maxVolume));
 
-			if (listener != null) {
-				volumeBar.setOnSeekBarChangeListener(listener);
+			if (newListener != null) {
+				volumeBar.setOnSeekBarChangeListener(newListener);
 			}
 		}
 	}

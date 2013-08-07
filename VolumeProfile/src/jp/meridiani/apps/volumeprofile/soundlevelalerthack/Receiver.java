@@ -13,7 +13,7 @@ import android.content.Intent;
 import android.os.Vibrator;
 import android.widget.Toast;
 
-public class Reciever extends BroadcastReceiver {
+public class Receiver extends BroadcastReceiver {
 	private static final String ACTION_SOUND_LEVEL_ALERT = "com.sonyericsson.media.SOUND_LEVEL_ALERT";
 	private static final String EXTRA_ALERT_SHOW         = "com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW";
 	private static final String EXTRA_CHALLENGE          = "com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW";
