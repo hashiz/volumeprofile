@@ -28,7 +28,6 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		if (android.os.Debug.isDebuggerConnected()) android.os.Debug.waitForDebugger();
 		super.onCreate(savedInstanceState);
 
 		// receive intent and extra data

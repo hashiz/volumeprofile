@@ -16,12 +16,11 @@ import android.widget.Toast;
 public class Receiver extends BroadcastReceiver {
 	private static final String ACTION_SOUND_LEVEL_ALERT = "com.sonyericsson.media.SOUND_LEVEL_ALERT";
 	private static final String EXTRA_ALERT_SHOW         = "com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW";
-	private static final String EXTRA_CHALLENGE          = "com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW";
-	private static final String ACTION_ACKNOWLEDGE       = "com.sonyericsson.media.SOUND_LEVEL_ALERT";
+	private static final String EXTRA_CHALLENGE          = "com.sonyericsson.media.SOUND_LEVEL_ALERT_CHALLENGE";
+	private static final String ACTION_ACKNOWLEDGE       = "com.sonyericsson.media.SOUND_LEVEL_ALERT_ACKNOWLEDGE";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (android.os.Debug.isDebuggerConnected()) android.os.Debug.waitForDebugger();
 		if (!Prefs.getInstance(context).isSoundLevelAlertHack()) {
 			return;
 		}

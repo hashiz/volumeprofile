@@ -17,7 +17,6 @@ public class PluginFireReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (android.os.Debug.isDebuggerConnected()) android.os.Debug.waitForDebugger();
     	if (!com.twofortyfouram.locale.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
         	return;
         }
