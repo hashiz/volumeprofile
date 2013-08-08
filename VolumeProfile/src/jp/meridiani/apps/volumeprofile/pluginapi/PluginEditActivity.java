@@ -20,8 +20,12 @@ import android.widget.ListView;
 
 public class PluginEditActivity extends Activity implements OnItemSelectedListener, OnItemClickListener {
 
+	private static final String SAVE_SELECTEDPROFILEID = "SAVE_SELECTEDPROFILEID";
+
+	private UUID mInitialProfileId;
 	private UUID mSelectedProfileId;
 	private ListView mProfileListView;
+	private ArrayAdapter<VolumeProfile> mAdapter;
 	private Button mSelectButton;
 	private Button mCancelButton;
 	private boolean mCanceled;
@@ -29,6 +33,11 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		String uuid = savedInstanceState.getString(SAVE_SELECTEDPROFILEID);
+		if (uuid != null) {
+			mSelectedProfileId = UUID.fromString(uuid);
+		}
 
 		// receive intent and extra data
 		Intent intent = getIntent();
@@ -38,13 +47,16 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 		}
 
 		BundleUtil bundle;
-		mSelectedProfileId = null;
 
 		try {
 			bundle = new BundleUtil(getIntent().getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE));
-			mSelectedProfileId = bundle.getProfileId();
+			mInitialProfileId = bundle.getProfileId();
 		} catch (InvalidBundleException e) {
-			mSelectedProfileId = null;
+			mInitialProfileId = null;
+		}
+
+		if (mSelectedProfileId == null && mInitialProfileId != null) {
+			mSelectedProfileId = mInitialProfileId;
 		}
 
 		mCanceled = false;
@@ -52,6 +64,13 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 		// set view
 		setContentView(R.layout.activity_plugin_edit);
 		mProfileListView = (ListView)findViewById(R.id.ProfileList);
+		mProfileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		mAdapter = new ArrayAdapter<VolumeProfile>(this,
+				android.R.layout.simple_list_item_single_choice);
+		mProfileListView.setAdapter(mAdapter);
+		mProfileListView.setOnItemSelectedListener(this);
+		mProfileListView.setOnItemClickListener(this);
+
 		mSelectButton = (Button)findViewById(R.id.select_button);
 		mCancelButton = (Button)findViewById(R.id.cancel_button);
 
@@ -67,8 +86,36 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 				onCancelClick((Button)v);
 			}
 		});
+	}
 
+	@Override
+	public void onStart() {
 		updateProfileList();
+	}
+
+	private void updateProfileList() {
+		int selPos = -1;
+		mAdapter.clear();
+
+		ArrayList<VolumeProfile> plist = ProfileStore.getInstance(this).listProfiles();
+		for ( VolumeProfile profile : plist) {
+			mAdapter.add(profile);
+			if (mSelectedProfileId != null && mSelectedProfileId.equals(profile.getUuid())) {
+				selPos = mAdapter.getCount() - 1;
+			}
+		}
+		if (selPos >= 0) {
+			mProfileListView.setItemChecked(selPos, true);
+		}
+		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		if (mSelectedProfileId != null) {
+			outState.putString(SAVE_SELECTEDPROFILEID, mSelectedProfileId.toString());
+		}
 	}
 
 	@Override
@@ -102,35 +149,16 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+		mSelectedProfileId = ((VolumeProfile)parent.getAdapter().getItem(position)).getUuid();
 	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
+		mSelectedProfileId = null;
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-	}
-
-	private void updateProfileList() {
-		ArrayList<VolumeProfile> plist = ProfileStore.getInstance(this).listProfiles();
-
-		ArrayAdapter<VolumeProfile> adapter = new ArrayAdapter<VolumeProfile>(this,
-							android.R.layout.simple_list_item_single_choice);
-		int selPos = 0;
-		for ( VolumeProfile profile : plist) {
-			adapter.add(profile);
-			if (mSelectedProfileId != null && mSelectedProfileId.equals(profile.getUuid())) {
-				selPos = adapter.getCount() - 1;
-			}
-		}
-
-		ListView profileListView = (ListView)findViewById(R.id.ProfileList);
-		profileListView.setAdapter(adapter);
-		profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		profileListView.setItemChecked(selPos, true);
-		profileListView.setOnItemSelectedListener(this);
-		profileListView.setOnItemClickListener(this);
 	}
 
 	private void onSelectClick(Button b) {

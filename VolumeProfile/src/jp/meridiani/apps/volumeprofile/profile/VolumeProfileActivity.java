@@ -2,10 +2,16 @@ package jp.meridiani.apps.volumeprofile.profile;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.settings.PreferencesActivity;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +23,14 @@ import android.view.MenuItem;
 
 public class VolumeProfileActivity extends FragmentActivity implements
 		ActionBar.TabListener, ProfileEditCallback {
+
+	private static final String VOLUME_CHANGED_ACTION     = "android.media.VOLUME_CHANGED_ACTION";
+    private static final String EXTRA_VOLUME_STREAM_TYPE  = "android.media.EXTRA_VOLUME_STREAM_TYPE";
+    private static final String EXTRA_VOLUME_STREAM_VALUE = "android.media.EXTRA_VOLUME_STREAM_VALUE";
+    private static final String EXTRA_PREV_VOLUME_STREAM_VALUE = "android.media.EXTRA_PREV_VOLUME_STREAM_VALUE";
+
+	private BroadcastReceiver mReceiver = null;
+	private IntentFilter      mFilter   = null;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -71,7 +85,54 @@ public class VolumeProfileActivity extends FragmentActivity implements
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
+
+		// create Broadcast receiver
+		IntentFilter mFilter = new IntentFilter();
+		mFilter.addAction(VOLUME_CHANGED_ACTION);
+		mFilter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
+
+		mReceiver = new BroadcastReceiver() {
+			
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				String action = intent.getAction();
+				if (VOLUME_CHANGED_ACTION.equals(action)) {
+				    int type = intent.getIntExtra(EXTRA_VOLUME_STREAM_TYPE, -1);
+				    if (!AudioUtil.isSupportedType(type)) {
+				    	return;
+				    }
+				    int volume = intent.getIntExtra(EXTRA_VOLUME_STREAM_VALUE, -1);
+				    if (volume < 0) {
+				    	return;
+				    }
+				    int prevVolume = intent.getIntExtra(EXTRA_PREV_VOLUME_STREAM_VALUE, -1);
+				    onVolumeChanged(AudioUtil.getStreamType(type), volume, prevVolume);
+				}
+				else if (AudioManager.RINGER_MODE_CHANGED_ACTION.equals(action)) {
+				    int mode = intent.getIntExtra(AudioManager.EXTRA_RINGER_MODE, -1);
+				    if (!AudioUtil.isSupportedMode(mode)) {
+				    	return;
+				    }
+				    onRingerModeChanged(AudioUtil.getRingerMode(mode));
+				}
+			}
+
+		};
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		registerReceiver(mReceiver, mFilter);
+	}
+
+	@Override
+	protected void onPause(){
+		super.onPause();
+
+		unregisterReceiver(mReceiver);
+	};
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -159,14 +220,14 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	}
 
 	public void updateProfileList() {
-		ProfileListFragment fragment = (ProfileListFragment)mSectionsPagerAdapter.instantiateItem(mViewPager, SectionsPagerAdapter.POS_PROFILE_LIST);
+		ProfileListFragment fragment = (ProfileListFragment)mSectionsPagerAdapter.getItem(SectionsPagerAdapter.POS_PROFILE_LIST);
 		if (fragment != null) {
 			fragment.updateProfileList();
 		}
 	}
 
 	public void updateVolumeEdit() {
-		VolumeEditFragment fragment = (VolumeEditFragment)mSectionsPagerAdapter.instantiateItem(mViewPager, SectionsPagerAdapter.POS_VOLUME_EDIT);
+		VolumeEditFragment fragment = (VolumeEditFragment)mSectionsPagerAdapter.getItem(SectionsPagerAdapter.POS_VOLUME_EDIT);
 		if (fragment != null) {
 			fragment.updateVolumeEdit();
 		}
@@ -180,5 +241,19 @@ public class VolumeProfileActivity extends FragmentActivity implements
 
 	@Override
 	public void onProfileEditNegative() {
+	}
+	
+	private void onRingerModeChanged(RingerMode mode) {
+		VolumeEditFragment fragment = (VolumeEditFragment)mSectionsPagerAdapter.getItem(SectionsPagerAdapter.POS_VOLUME_EDIT);
+		if (fragment != null) {
+			fragment.updateRingerMode();
+		}
+	}
+
+	private void onVolumeChanged(StreamType type, int volume, int prevVolume) {
+		VolumeEditFragment fragment = (VolumeEditFragment)mSectionsPagerAdapter.getItem(SectionsPagerAdapter.POS_VOLUME_EDIT);
+		if (fragment != null) {
+			fragment.updateVolume(type);
+		}
 	}
 }

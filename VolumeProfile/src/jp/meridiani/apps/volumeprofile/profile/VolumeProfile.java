@@ -2,11 +2,10 @@ package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.UUID;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 public class VolumeProfile implements Parcelable {
 	private UUID mUuid;
@@ -14,10 +13,15 @@ public class VolumeProfile implements Parcelable {
 	private int mDisplayOrder;
 
 	private RingerMode mRingerMode;
+	private boolean mRingerModeLock;
 	private int mAlarmVolume;
+	private boolean mAlarmVolumeLock;
 	private int mMusicVolume;
+	private boolean mMusicVolumeLock;
 	private int mRingVolume;
+	private boolean mRingVolumeLock;
 	private int mVoiceCallVolume;
+	private boolean mVoiceCallVolumeLock;
 
 	VolumeProfile() {
 		this((UUID)null);
@@ -32,10 +36,15 @@ public class VolumeProfile implements Parcelable {
 		mName = "";
 
 		mRingerMode = RingerMode.NORMAL;
+		mRingerModeLock = false;
 		mAlarmVolume = 0;
+		mAlarmVolumeLock = false;
 		mMusicVolume = 0;
+		mMusicVolumeLock = false;
 		mRingVolume = 0;
+		mRingVolumeLock = false;
 		mVoiceCallVolume = 0;
+		mVoiceCallVolumeLock = false;
 	}
 
 	String getValue(String key) {
@@ -45,17 +54,32 @@ public class VolumeProfile implements Parcelable {
 		else if (key.equals(ProfileStore.KEY_RINGERMODE)) {
 			return this.getRingerMode().name();
 		}
+		else if (key.equals(ProfileStore.KEY_RINGERMODELOCK)) {
+			return Boolean.toString(this.getRingerModeLock());
+		}
 		else if (key.equals(ProfileStore.KEY_ALARMVOLUME)) {
 			return Integer.toString(this.getAlarmVolume());
+		}
+		else if (key.equals(ProfileStore.KEY_ALARMVOLUMELOCK)) {
+			return Boolean.toString(this.getAlarmVolumeLock());
 		}
 		else if (key.equals(ProfileStore.KEY_MUSICVOLUME)) {
 			return Integer.toString(this.getMusicVolume());
 		}
+		else if (key.equals(ProfileStore.KEY_MUSICVOLUMELOCK)) {
+			return Boolean.toString(this.getMusicVolumeLock());
+		}
 		else if (key.equals(ProfileStore.KEY_RINGVOLUME)) {
 			return Integer.toString(this.getRingVolume());
 		}
+		else if (key.equals(ProfileStore.KEY_RINGVOLUMELOCK)) {
+			return Boolean.toString(this.getRingVolumeLock());
+		}
 		else if (key.equals(ProfileStore.KEY_VOICECALLVALUME)) {
 			return Integer.toString(this.getVoiceCallVolume());
+		}
+		else if (key.equals(ProfileStore.KEY_VOICECALLVALUMELOCK)) {
+			return Boolean.toString(this.getVoiceCallVolumeLock());
 		}
 		return "";
 	}
@@ -67,17 +91,32 @@ public class VolumeProfile implements Parcelable {
 		else if (key.equals(ProfileStore.KEY_RINGERMODE)) {
 			this.setRingerMode(RingerMode.valueOf(value));
 		}
+		else if (key.equals(ProfileStore.KEY_RINGERMODELOCK)) {
+			this.setRingerModeLock(Boolean.parseBoolean(value));
+		}
 		else if (key.equals(ProfileStore.KEY_ALARMVOLUME)) {
 			this.setAlarmVolume(Integer.parseInt(value));
+		}
+		else if (key.equals(ProfileStore.KEY_ALARMVOLUMELOCK)) {
+			this.setAlarmVolumeLock(Boolean.parseBoolean(value));
 		}
 		else if (key.equals(ProfileStore.KEY_MUSICVOLUME)) {
 			this.setMusicVolume(Integer.parseInt(value));
 		}
+		else if (key.equals(ProfileStore.KEY_MUSICVOLUMELOCK)) {
+			this.setMusicVolumeLock(Boolean.parseBoolean(value));
+		}
 		else if (key.equals(ProfileStore.KEY_RINGVOLUME)) {
 			this.setRingVolume(Integer.parseInt(value));
 		}
+		else if (key.equals(ProfileStore.KEY_RINGVOLUMELOCK)) {
+			this.setRingVolumeLock(Boolean.parseBoolean(value));
+		}
 		else if (key.equals(ProfileStore.KEY_VOICECALLVALUME)) {
 			this.setVoiceCallVolume(Integer.parseInt(value));
+		}
+		else if (key.equals(ProfileStore.KEY_VOICECALLVALUMELOCK)) {
+			this.setVoiceCallVolumeLock(Boolean.parseBoolean(value));
 		}
 	}
 
@@ -140,12 +179,28 @@ public class VolumeProfile implements Parcelable {
 		mRingerMode = mode;
 	}
 
+	public boolean getRingerModeLock() {
+		return mRingerModeLock;
+	}
+
+	public void setRingerModeLock(boolean lock) {
+		mRingerModeLock = lock;
+	}
+
 	public int getAlarmVolume() {
 		return mAlarmVolume;
 	}
 
 	public void setAlarmVolume(int volume) {
 		mAlarmVolume = volume;
+	}
+
+	public boolean getAlarmVolumeLock() {
+		return mAlarmVolumeLock;
+	}
+
+	public void setAlarmVolumeLock(boolean lock) {
+		mAlarmVolumeLock = lock;
 	}
 
 	public int getMusicVolume() {
@@ -156,6 +211,14 @@ public class VolumeProfile implements Parcelable {
 		mMusicVolume = volume;
 	}
 
+	public boolean getMusicVolumeLock() {
+		return mMusicVolumeLock;
+	}
+
+	public void setMusicVolumeLock(boolean lock) {
+		mMusicVolumeLock = lock;
+	}
+
 	public int getRingVolume() {
 		return mRingVolume;
 	}
@@ -164,12 +227,28 @@ public class VolumeProfile implements Parcelable {
 		mRingVolume = volume;
 	}
 
+	public boolean getRingVolumeLock() {
+		return mRingVolumeLock;
+	}
+
+	public void setRingVolumeLock(boolean lock) {
+		mRingVolumeLock = lock;
+	}
+
 	public int getVoiceCallVolume() {
 		return mVoiceCallVolume;
 	}
 
 	public void setVoiceCallVolume(int volume) {
 		mVoiceCallVolume = volume;
+	}
+
+	public boolean getVoiceCallVolumeLock() {
+		return mVoiceCallVolumeLock;
+	}
+
+	public void setVoiceCallVolumeLock(boolean lock) {
+		mVoiceCallVolumeLock = lock;
 	}
 
 	@Override
@@ -188,21 +267,31 @@ public class VolumeProfile implements Parcelable {
     	out.writeString(mName);
     	out.writeInt(mDisplayOrder);
     	out.writeString(mRingerMode.name());
+    	out.writeInt(mRingerModeLock ? 1 : 0);
     	out.writeInt(mAlarmVolume);
+    	out.writeInt(mAlarmVolumeLock ? 1 : 0);
     	out.writeInt(mMusicVolume);
+    	out.writeInt(mMusicVolumeLock ? 1 : 0);
     	out.writeInt(mRingVolume);
+    	out.writeInt(mRingVolumeLock ? 1 : 0);
     	out.writeInt(mVoiceCallVolume);
+    	out.writeInt(mVoiceCallVolumeLock ? 1 : 0);
 	}
 
 	public VolumeProfile(Parcel in) {
-		mUuid            = UUID.fromString(in.readString());
-    	mName            = in.readString();
-    	mDisplayOrder    = in.readInt();
-    	mRingerMode      = RingerMode.valueOf(in.readString());
-    	mAlarmVolume     = in.readInt();
-    	mMusicVolume     = in.readInt();
-    	mRingVolume      = in.readInt();
-    	mVoiceCallVolume = in.readInt();
+		mUuid                = UUID.fromString(in.readString());
+    	mName                = in.readString();
+    	mDisplayOrder        = in.readInt();
+    	mRingerMode          = RingerMode.valueOf(in.readString());
+    	mRingerModeLock      = in.readInt() != 0;
+    	mAlarmVolume         = in.readInt();
+    	mAlarmVolumeLock     = in.readInt() != 0;
+    	mMusicVolume         = in.readInt();
+    	mMusicVolumeLock     = in.readInt() != 0;
+    	mRingVolume          = in.readInt();
+    	mRingVolumeLock      = in.readInt() != 0;
+    	mVoiceCallVolume     = in.readInt();
+    	mVoiceCallVolumeLock = in.readInt() != 0;
 	}
 
     public static final Parcelable.Creator<VolumeProfile> CREATOR = new Parcelable.Creator<VolumeProfile>() {

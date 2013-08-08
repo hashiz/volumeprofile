@@ -111,7 +111,9 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int pos, long id) {
 				RingerModeItem item =(RingerModeItem)parent.getAdapter().getItem(pos);
-				setRingerMode(item.getValue());
+				if (getRingerMode() != item.getValue()) {
+					setRingerMode(item.getValue());
+				}
 				switch (item.getValue()) {
 				case VIBRATE:
 				case SILENT:
@@ -232,12 +234,18 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		// init value
 		RingerModeAdapter adapter = (RingerModeAdapter)ringerModeView.getAdapter();
 
-		ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
+		if (((RingerModeItem)ringerModeView.getSelectedItem()).getValue() != getRingerMode()) {
+			ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
+		}
 
 		// set listener
 		if (newListener != null) {
 			ringerModeView.setOnItemSelectedListener(newListener);
 		}
+	}
+
+	public void updateRingerMode() {
+		updateRingerMode(null);
 	}
 
 	private void updateVolumes(OnSeekBarChangeListener newListener) {
@@ -248,26 +256,40 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 				StreamType.RING,
 				StreamType.VOICE_CALL}) {
 
-			SeekBar volumeBar = findSeekBar(streamType);
-
-			// init value
-			int volume = getVolume(streamType);
-			int maxVolume = getMaxVolume(streamType);
-
-			volumeBar.setMax(maxVolume);
-			volumeBar.setProgress(volume);
-			TextView textView = findValueView(streamType);
-			textView.setText(String.format("%2d/%2d", volume, maxVolume));
-
-			if (newListener != null) {
-				volumeBar.setOnSeekBarChangeListener(newListener);
-			}
+			updateVolume(streamType, newListener);
 		}
 	}
 
-	public void updateVolumeEdit() {
-		updateRingerMode(null);
+	public void updateVolumes() {
 		updateVolumes(null);
+	}
+
+	public void updateVolumeEdit() {
+		updateRingerMode();
+		updateVolumes();
+	}
+
+	private void updateVolume(StreamType streamType, OnSeekBarChangeListener newListener) {
+		SeekBar volumeBar = findSeekBar(streamType);
+
+		// init value
+		int volume = getVolume(streamType);
+		int maxVolume = getMaxVolume(streamType);
+
+		volumeBar.setMax(maxVolume);
+		if (volumeBar.getProgress() != volume) {
+			volumeBar.setProgress(volume);
+		}
+		TextView textView = findValueView(streamType);
+		textView.setText(String.format("%2d/%2d", volume, maxVolume));
+
+		if (newListener != null) {
+			volumeBar.setOnSeekBarChangeListener(newListener);
+		}
+	}
+	
+	public void updateVolume(StreamType streamType) {
+		updateVolume(streamType, null);
 	}
 
 	abstract protected RingerMode getRingerMode();

@@ -38,5 +38,10 @@
     <string name="title_activity_profile_edit">Profile Edit</string>
     <string name="action_save_profile">Save</string>
     <string name="action_cancel_edit_profile">Cancel</string>
+	<string name="ringer_mode_lock_title">Lock</string>
+	<string name="alarm_volume_lock_title">Lock</string>
+	<string name="music_volume_lock_title">Lock</string>
+	<string name="ring_volume_lock_title">Lock</string>
+	<string name="voicecall_volume_lock_title">Lock</string>
 
 </resources>

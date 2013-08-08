@@ -31,18 +31,28 @@ public class ProfileStore {
 	public static final String KEY_CURRENTPROFILE      = "CurrentProfile"     ;
 	public static final String KEY_PROFILENAME         = "ProfileName"        ;
 	public static final String KEY_RINGERMODE          = "RingerMode"         ;
+	public static final String KEY_RINGERMODELOCK      = "RingerModeLock"     ;
 	public static final String KEY_ALARMVOLUME         = "AlarmVolume"        ;
+	public static final String KEY_ALARMVOLUMELOCK     = "AlarmVolumeLock"    ;
 	public static final String KEY_MUSICVOLUME         = "MusicVolume"        ;
+	public static final String KEY_MUSICVOLUMELOCK     = "MusicVolumeLock"    ;
 	public static final String KEY_RINGVOLUME          = "RingVolume"         ;
+	public static final String KEY_RINGVOLUMELOCK      = "RingVolumeLock"     ;
 	public static final String KEY_VOICECALLVALUME     = "VoiceCallValume"    ;
+	public static final String KEY_VOICECALLVALUMELOCK = "VoiceCallValumeLock";
 
 	private static final String[] KEYLIST = new String[] {
 		KEY_PROFILENAME         ,
 		KEY_RINGERMODE          ,
+		KEY_RINGERMODELOCK      ,
 		KEY_ALARMVOLUME         ,
+		KEY_ALARMVOLUMELOCK     ,
 		KEY_MUSICVOLUME         ,
+		KEY_MUSICVOLUMELOCK     ,
 		KEY_RINGVOLUME          ,
+		KEY_RINGVOLUMELOCK      ,
 		KEY_VOICECALLVALUME     ,
+		KEY_VOICECALLVALUMELOCK ,
 	};
 
 	private static class DBHelper extends SQLiteOpenHelper {

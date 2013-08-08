@@ -70,7 +70,7 @@ public class AudioUtil {
 		return profile;
 	}
 
-	private int getStreamType(StreamType type) {
+	public static int getStreamType(StreamType type) {
 		switch (type) {
 		case ALARM:
 			return AudioManager.STREAM_ALARM;
@@ -84,7 +84,7 @@ public class AudioUtil {
 		return AudioManager.STREAM_RING;
 	}
 
-	private StreamType getStreamType(int streamType) {
+	public static StreamType getStreamType(int streamType) {
 		switch (streamType) {
 		case AudioManager.STREAM_ALARM:
 			return StreamType.ALARM;
@@ -142,4 +142,34 @@ public class AudioUtil {
 		mAmgr.setStreamVolume(getStreamType(type), volume, flag);
 	}
 
+	public static boolean isSupportedType(int streamType) {
+		for (int supported : supportStreams) {
+			if (streamType == supported) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isSupportedMode(int ringerMode) {
+		switch (ringerMode) {
+		case AudioManager.RINGER_MODE_NORMAL:
+		case AudioManager.RINGER_MODE_VIBRATE:
+		case AudioManager.RINGER_MODE_SILENT:
+			return true;
+		}
+		return false;
+	}
+
+	public static RingerMode getRingerMode(int ringerMode) {
+		switch (ringerMode) {
+		case AudioManager.RINGER_MODE_NORMAL:
+			return RingerMode.NORMAL;
+		case AudioManager.RINGER_MODE_VIBRATE:
+			return RingerMode.VIBRATE;
+		case AudioManager.RINGER_MODE_SILENT:
+			return RingerMode.SILENT;
+		}
+		return RingerMode.NORMAL;
+	}
 }
