@@ -3,259 +3,341 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
-
+    tools:context=".profile.VolumeEditFragment" >
+    
     <LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="vertical"
-	    android:paddingBottom="@dimen/activity_vertical_margin"
-	    android:paddingLeft="@dimen/activity_horizontal_margin"
-	    android:paddingRight="@dimen/activity_horizontal_margin"
-	    android:paddingTop="@dimen/activity_vertical_margin"
-	    tools:context=".profile.VolumeProfileActivity$VolumeEditFragment"
-	    >
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
 
-   	<!--
-   		Ringer Mode 
-   	 -->	
-	    <LinearLayout
-	        android:id="@+id/ringer_mode_layout"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical">
-	        
+<!-- 		Ringer Mode  -->
 
-	        <RelativeLayout
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content">
-	            
-	            
-		        <TextView
-		            android:id="@+id/ringer_mode_text"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentLeft="true"
-		            android:layout_centerVertical="true"
-		            android:layout_toLeftOf="@+id/riger_mode_lock"
-		            android:text="@string/ringer_mode_title"
-		        	/>
-		        
-				<LinearLayout
-		            android:id="@+id/riger_mode_lock"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:orientation="horizontal"
-		            android:layout_alignParentRight="true"
-		            android:layout_centerVertical="true"
-				    >
+        <LinearLayout
+            android:id="@+id/ringer_mode_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-			        <TextView
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:text="@string/ringer_mode_lock_title"
-			        	/>
-				    <CheckBox
-			            android:id="@+id/riger_mode_lock_checkbox"
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:text=""
-			            />
-				    
-				</LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-		    </RelativeLayout>
-	        
-	        <Spinner
-	            android:id="@+id/ringer_mode_value"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:scaleX="0.8"
-	            android:scaleY="0.8" />
-	
-	    </LinearLayout>
+                <TextView
+                    android:id="@+id/ringer_mode_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/ringer_mode_lock"
+                    android:text="@string/ringer_mode_title" />
 
-	<!--
-   		Alarm Volume 
-   	 -->	
-	    	
-	    <LinearLayout
-	        android:paddingTop="@dimen/activity_vertical_margin"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical" >
-	
-	        <RelativeLayout
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            >
-	        
-		        <TextView
-		            android:id="@+id/alarm_volume_text"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentLeft="true"
-		            android:layout_centerVertical="true"
-		            android:layout_toLeftOf="@+id/alarm_volume_lock"
-		            android:text="@string/alarm_volume_title"
-		            />
+                <LinearLayout
+                    android:id="@+id/ringer_mode_lock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible"
+                    android:orientation="horizontal" >
 
-				<LinearLayout
-		            android:id="@+id/alarm_volume_lock"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:orientation="horizontal"
-		            android:layout_alignParentRight="true"
-		            android:layout_centerVertical="true"
-				    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ringer_mode_lock_title" />
 
-			        <TextView
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:text="@string/alarm_volume_lock_title"
-			        	/>
-				    <CheckBox
-			            android:id="@+id/alarm_volume_lock_checkbox"
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:text=""
-			            />
-				    
-				</LinearLayout>
-		        		        
-		    </RelativeLayout>
+                    <CheckBox
+                        android:id="@+id/ringer_mode_lock_checkbox"
+                        android:tag="@string/lock_checkbox_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <Spinner
+                android:id="@+id/ringer_mode_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                />
+        </LinearLayout>
+
+<!--    		Alarm Volume  -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/alarm_volume_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/alarm_volume_lock"
+                    android:text="@string/alarm_volume_title" />
+
+                <LinearLayout
+                    android:id="@+id/alarm_volume_lock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/alarm_volume_lock_title" />
+
+                    <CheckBox
+                        android:id="@+id/alarm_volume_lock_checkbox"
+                        android:tag="@string/lock_checkbox_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <SeekBar
+                    android:id="@+id/alarm_volume_seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/aloarm_volume_value" />
+
+                <TextView
+                    android:id="@+id/aloarm_volume_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:typeface="monospace"
+                    android:text="@string/zerozero"
+                    />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+<!-- Music Volume 
+ -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+	            <TextView
+	                android:id="@+id/music_volume_text"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/music_volume_lock"
+	                android:text="@string/music_volume_title" />
+
+                <LinearLayout
+                    android:id="@+id/music_volume_lock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/music_volume_lock_title" />
+
+                    <CheckBox
+                        android:id="@+id/music_volume_lock_checkbox"
+                        android:tag="@string/lock_checkbox_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+                </LinearLayout>
+	        </RelativeLayout>
 	
-	        <RelativeLayout
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content">
-	            
-		        <SeekBar
-		            android:id="@+id/alarm_volume_seekBar"
-		            android:layout_width="match_parent"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentLeft="true"
-		            android:layout_centerVertical="true"
-		            android:layout_toLeftOf="@+id/aloarm_volume_value" />
-	
-		        <TextView
-		            android:id="@+id/aloarm_volume_value"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentRight="true"
-		            android:layout_centerVertical="true"
-		            android:text="@string/zerozero" />
-	
-		    </RelativeLayout>
-	
-	    </LinearLayout>
-	
-	    <LinearLayout
-	        android:paddingTop="@dimen/activity_vertical_margin"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical" >
-	
-	        <TextView
-	            android:id="@+id/music_volume_text"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="@string/music_volume_title" />
-	
-	        <RelativeLayout
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content">
-	            
-		        <SeekBar
-		            android:id="@+id/music_volume_seekBar"
-		            android:layout_width="match_parent"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentLeft="true"
-		            android:layout_centerVertical="true"
-		            android:layout_toLeftOf="@+id/music_volume_value" />
-	
-		        <TextView
-		            android:id="@+id/music_volume_value"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentRight="true"
-		            android:layout_centerVertical="true"
-		            android:text="@string/zerozero" />
-	
-		    </RelativeLayout>
-	
-	    </LinearLayout>
-	
-	    <LinearLayout
-	        android:paddingTop="@dimen/activity_vertical_margin"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical" >
-	
-	        <TextView
-	            android:id="@+id/ring_volume_text"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="@string/ring_volume_title" />
-	
-	        <RelativeLayout
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content">
-	            
-		        <SeekBar
-		            android:id="@+id/ring_volume_seekBar"
-		            android:layout_width="match_parent"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentLeft="true"
-		            android:layout_centerVertical="true"
-		            android:layout_toLeftOf="@+id/ring_volume_value" />
-	
-		        <TextView
-		            android:id="@+id/ring_volume_value"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentRight="true"
-		            android:layout_centerVertical="true"
-		            android:text="@string/zerozero" />
-	
-		    </RelativeLayout>
-	        
-	    </LinearLayout>
-	
-	    <LinearLayout
-	        android:paddingTop="@dimen/activity_vertical_margin"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical" >
-	
-	        <TextView
-	            android:id="@+id/voicecall_volume_text"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="@string/voicecall_volume_title" />
-	
-	        <RelativeLayout
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content">
-	            
-		        <SeekBar
-		            android:id="@+id/voicecall_volume_seekBar"
-		            android:layout_width="match_parent"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentLeft="true"
-		            android:layout_centerVertical="true"
-		            android:layout_toLeftOf="@+id/voicecall_volume_value" />
-	
-		        <TextView
-		            android:id="@+id/voicecall_volume_value"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentRight="true"
-		            android:layout_centerVertical="true"
-		            android:text="@string/zerozero" />
-	
-		    </RelativeLayout>
-	
-	    </LinearLayout>
-	
-	</LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <SeekBar
+                    android:id="@+id/music_volume_seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/music_volume_value" />
+
+                <TextView
+                    android:id="@+id/music_volume_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:typeface="monospace"
+                    android:text="@string/zerozero" />
+            </RelativeLayout>
+        </LinearLayout>
+
+<!-- Ring Volume 
+ -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+	            <TextView
+	                android:id="@+id/ring_volume_text"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/ring_volume_lock"
+	                android:text="@string/ring_volume_title" />
+		
+                <LinearLayout
+                    android:id="@+id/ring_volume_lock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ring_volume_lock_title" />
+
+                    <CheckBox
+                        android:id="@+id/ring_volume_lock_checkbox"
+                        android:tag="@string/lock_checkbox_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+                </LinearLayout>
+	        </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <SeekBar
+                    android:id="@+id/ring_volume_seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/ring_volume_value" />
+
+                <TextView
+                    android:id="@+id/ring_volume_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:typeface="monospace"
+                    android:text="@string/zerozero" />
+            </RelativeLayout>
+        </LinearLayout>
+
+<!-- Voice Call Volume 
+ -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin" >
+
+            <RelativeLayout
+				android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                
+	            <TextView
+	                android:id="@+id/voicecall_volume_text"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/voicecall_volume_lock"
+	                android:text="@string/voicecall_volume_title" />
+
+	            <LinearLayout
+                    android:id="@+id/voicecall_volume_lock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/voicecall_volume_lock_title" />
+
+                    <CheckBox
+                        android:id="@+id/voicecall_volume_lock_checkbox"
+                        android:tag="@string/lock_checkbox_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <SeekBar
+                    android:id="@+id/voicecall_volume_seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/voicecall_volume_value" />
+
+                <TextView
+                    android:id="@+id/voicecall_volume_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:typeface="monospace"
+                    android:text="@string/zerozero" />
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
 </ScrollView>

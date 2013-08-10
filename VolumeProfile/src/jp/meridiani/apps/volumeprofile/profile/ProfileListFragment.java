@@ -35,9 +35,9 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_main_profileedit,
+		View rootView = inflater.inflate(R.layout.fragment_main_profilelist,
 				container, false);
-		ListView profileListView = (ListView)rootView.findViewById(R.id.profile_edit);
+		ListView profileListView = (ListView)rootView.findViewById(R.id.profile_list);
 		profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		profileListView.setOnItemClickListener(this);
 		registerForContextMenu(profileListView);
@@ -50,12 +50,26 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 		updateProfileList();
 	}
 
+	private View getRootView() throws ViewNotAvailableException {
+		View rootView = getView();
+		if (rootView == null) {
+			throw new ViewNotAvailableException();
+		}
+		return rootView;
+	}
+
 	public void updateProfileList() {
+		View rootView;
+		try {
+			rootView = getRootView();
+		} catch (ViewNotAvailableException e) {
+			return;
+		}
 		Context context = getActivity();
 
 		ArrayAdapter<VolumeProfile> adapter = new ArrayAdapter<VolumeProfile>(getActivity(),
 				android.R.layout.simple_list_item_single_choice);
-		ListView profileListView = (ListView)getView().findViewById(R.id.profile_edit);
+		ListView profileListView = (ListView)rootView.findViewById(R.id.profile_list);
 		profileListView.setAdapter(adapter);
 		
 		ArrayList<VolumeProfile> plist = ProfileStore.getInstance(context).listProfiles();
@@ -79,7 +93,6 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 		VolumeProfile profile = (VolumeProfile)parent.getAdapter().getItem(pos);
 		new AudioUtil(parent.getContext()).applyProfile(profile);
 		ProfileStore.getInstance(getActivity()).setCurrentProfile(profile.getUuid());
-		((VolumeProfileActivity)getActivity()).updateVolumeEdit();
 	}
 
 	@Override
@@ -92,11 +105,11 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
 		int pos = info.position;
-		ListView profileListView = (ListView)getView().findViewById(R.id.profile_edit);
+		ListView profileListView = (ListView)getView().findViewById(R.id.profile_list);
 		VolumeProfile profile = (VolumeProfile)profileListView.getAdapter().getItem(pos);
 		switch (item.getItemId()) {
 		case R.id.action_rename_profile:
-			ProfileNameDialog dialog = ProfileNameDialog.newInstance(null, profile, null, null);
+			ProfileNameDialog dialog = ProfileNameDialog.newInstance(profile, this, null, getString(R.string.input_dialog_rename_button), null);
 			dialog.show(getFragmentManager(), dialog.getClass().getCanonicalName());
 			return true;
 		case R.id.action_edit_profile:

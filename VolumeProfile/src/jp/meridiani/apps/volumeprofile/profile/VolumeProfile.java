@@ -151,6 +151,37 @@ public class VolumeProfile implements Parcelable {
 		}
 	}
 
+	public boolean getVolumeLock(StreamType type) {
+		switch (type) {
+		case ALARM:
+			return getAlarmVolumeLock();
+		case MUSIC:
+			return getMusicVolumeLock();
+		case RING:
+			return getRingVolumeLock();
+		case VOICE_CALL:
+			return getVoiceCallVolumeLock();
+		}
+		return false;
+	}
+
+	public void setVolumeLock(StreamType type, boolean lock) {
+		switch (type) {
+		case ALARM:
+			setAlarmVolumeLock(lock);
+			break;
+		case MUSIC:
+			setMusicVolumeLock(lock);
+			break;
+		case RING:
+			setRingVolumeLock(lock);
+			break;
+		case VOICE_CALL:
+			setVoiceCallVolumeLock(lock);
+			break;
+		}
+	}
+
 	public UUID getUuid() {
 		return mUuid;
 	}

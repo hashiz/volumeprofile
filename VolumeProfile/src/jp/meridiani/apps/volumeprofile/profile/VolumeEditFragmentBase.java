@@ -85,16 +85,11 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		Spinner ringerModeView = (Spinner)rootView.findViewById(R.id.ringer_mode_value);
 
 		RingerModeAdapter adapter = new RingerModeAdapter(activity,
-				android.R.layout.simple_list_item_single_choice);
-		RingerModeItem[] itemList = new RingerModeItem[] {
-				new RingerModeItem(activity, RingerMode.NORMAL),
-				new RingerModeItem(activity, RingerMode.VIBRATE),
-				new RingerModeItem(activity, RingerMode.SILENT),
-		};
-
-		for (RingerModeItem item : itemList ) {
-			adapter.add(item);
-		}
+				android.R.layout.simple_spinner_item);
+		adapter.add(new RingerModeItem(activity, RingerMode.NORMAL));
+		adapter.add(new RingerModeItem(activity, RingerMode.VIBRATE));
+		adapter.add(new RingerModeItem(activity, RingerMode.SILENT));
+		adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		ringerModeView.setAdapter(adapter);
 
 	};
@@ -117,7 +112,11 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 				switch (item.getValue()) {
 				case VIBRATE:
 				case SILENT:
-					findSeekBar(StreamType.RING).setProgress(getVolume(StreamType.RING));
+					try {
+						findSeekBar(StreamType.RING).setProgress(getVolume(StreamType.RING));
+					} catch (ViewNotAvailableException e) {
+						return;
+					}
 					break;
 				case NORMAL:
 					break;
@@ -141,7 +140,12 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 				if (type == null) {
 					return;
 				}
-				TextView textView = findValueView(type);
+				TextView textView;
+				try {
+					textView = findValueView(type);
+				} catch (ViewNotAvailableException e) {
+					return;
+				}
 				textView.setText(String.format("%2d/%2d", progress, seekBar.getMax()));
 				if (fromUser) {
 					setVolume(type, progress);
@@ -167,6 +171,14 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		updateVolumes(seekBarListener);
 	}
 
+	protected View getRootView() throws ViewNotAvailableException {
+		View rootView = getView();
+		if (rootView == null) {
+			throw new ViewNotAvailableException();
+		}
+		return rootView;
+	};
+
 	private StreamType findStreamType(int resid) {
 		switch (resid) {
 		case R.id.aloarm_volume_value:
@@ -186,7 +198,8 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		}
 	}
 
-	private TextView findValueView(StreamType type) {
+	private TextView findValueView(StreamType type) throws ViewNotAvailableException {
+		View rootView = getRootView();
 		int id = -1;
 		switch (type) {
 		case ALARM:
@@ -204,10 +217,14 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		default:
 			return null;
 		}
-		return (TextView)getView().findViewById(id);
+		return (TextView)rootView.findViewById(id);
 	}
 
-	private SeekBar findSeekBar(StreamType type) {
+	private SeekBar findSeekBar(StreamType type) throws ViewNotAvailableException {
+		View rootView = getRootView();
+		if (rootView == null) {
+			return null;
+		}
 		int id = -1;
 		switch (type) {
 		case ALARM:
@@ -225,22 +242,28 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		default:
 			return null;
 		}
-		return (SeekBar)getView().findViewById(id);
+		return (SeekBar)rootView.findViewById(id);
 	}
 
 	private void updateRingerMode(OnItemSelectedListener newListener) {
-		Spinner ringerModeView = (Spinner)getView().findViewById(R.id.ringer_mode_value);
-
-		// init value
-		RingerModeAdapter adapter = (RingerModeAdapter)ringerModeView.getAdapter();
-
-		if (((RingerModeItem)ringerModeView.getSelectedItem()).getValue() != getRingerMode()) {
-			ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
-		}
-
-		// set listener
-		if (newListener != null) {
-			ringerModeView.setOnItemSelectedListener(newListener);
+		try {
+			View rootView;
+			rootView = getRootView();
+			Spinner ringerModeView = (Spinner)rootView.findViewById(R.id.ringer_mode_value);
+	
+			// init value
+			RingerModeAdapter adapter = (RingerModeAdapter)ringerModeView.getAdapter();
+	
+			if (((RingerModeItem)ringerModeView.getSelectedItem()).getValue() != getRingerMode()) {
+				ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
+			}
+	
+			// set listener
+			if (newListener != null) {
+				ringerModeView.setOnItemSelectedListener(newListener);
+			}
+		} catch (ViewNotAvailableException e) {
+			return;
 		}
 	}
 
@@ -270,24 +293,29 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 	}
 
 	private void updateVolume(StreamType streamType, OnSeekBarChangeListener newListener) {
-		SeekBar volumeBar = findSeekBar(streamType);
+		try {
+			SeekBar volumeBar;
+			volumeBar = findSeekBar(streamType);
 
-		// init value
-		int volume = getVolume(streamType);
-		int maxVolume = getMaxVolume(streamType);
-
-		volumeBar.setMax(maxVolume);
-		if (volumeBar.getProgress() != volume) {
-			volumeBar.setProgress(volume);
-		}
-		TextView textView = findValueView(streamType);
-		textView.setText(String.format("%2d/%2d", volume, maxVolume));
-
-		if (newListener != null) {
-			volumeBar.setOnSeekBarChangeListener(newListener);
+			// init value
+			int volume = getVolume(streamType);
+			int maxVolume = getMaxVolume(streamType);
+	
+			volumeBar.setMax(maxVolume);
+			if (volumeBar.getProgress() != volume) {
+				volumeBar.setProgress(volume);
+			}
+			TextView textView = findValueView(streamType);
+			textView.setText(String.format("%2d/%2d", volume, maxVolume));
+	
+			if (newListener != null) {
+				volumeBar.setOnSeekBarChangeListener(newListener);
+			}
+		} catch (ViewNotAvailableException e) {
+			return;
 		}
 	}
-	
+
 	public void updateVolume(StreamType streamType) {
 		updateVolume(streamType, null);
 	}
@@ -296,9 +324,23 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 
 	abstract protected void setRingerMode(RingerMode mode);
 
+	protected boolean getRingerModeLock() {
+		return false;
+	}
+
+	protected void setRingerModeLock(boolean lock) {
+	}
+
 	abstract protected int getVolume(StreamType type);
 
 	abstract protected void setVolume(StreamType type, int volume);
+
+	protected boolean getVolumeLock(StreamType type) {
+		return false;
+	}
+
+	protected void setVolumeLock(StreamType type, boolean lock) {
+	}
 
 	abstract protected int getMaxVolume(StreamType type);
 }

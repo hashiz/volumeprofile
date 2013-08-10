@@ -33,6 +33,7 @@
     <string name="pref_category_misc">Misc</string>
     <string name="input_dialog_description">Input New Profile Name</string>
     <string name="input_dialog_positive_button">Save</string>
+    <string name="input_dialog_rename_button">Rename</string>
     <string name="input_dialog_negative_button">Cancel</string>
     <string name="title_activity_plugin_edit">Volume Profile</string>
     <string name="title_activity_profile_edit">Profile Edit</string>
@@ -43,5 +44,8 @@
 	<string name="music_volume_lock_title">Lock</string>
 	<string name="ring_volume_lock_title">Lock</string>
 	<string name="voicecall_volume_lock_title">Lock</string>
+
+<!-- do not translate blow -->
+	<string name="lock_checkbox_tag">lockCheckBoxTag</string>
 
 </resources>
