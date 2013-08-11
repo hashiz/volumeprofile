@@ -2,7 +2,7 @@ package jp.meridiani.apps.volumeprofile.profile;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.settings.PreferencesActivity;
+import jp.meridiani.apps.volumeprofile.prefs.PreferencesActivity;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;

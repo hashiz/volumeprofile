@@ -9,7 +9,7 @@ import android.os.Bundle;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
-import jp.meridiani.apps.volumeprofile.settings.Prefs;
+import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 
 public class VolumeEditFragment extends VolumeEditFragmentBase {
 	

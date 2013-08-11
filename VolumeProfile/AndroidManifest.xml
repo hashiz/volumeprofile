@@ -53,7 +53,7 @@
         </receiver>
 
         <activity
-            android:name=".settings.PreferencesActivity"
+            android:name="jp.meridiani.apps.volumeprofile.prefs.PreferencesActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".profile.VolumeProfileActivity" >
             <meta-data
