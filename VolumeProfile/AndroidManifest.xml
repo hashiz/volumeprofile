@@ -54,7 +54,11 @@
 
         <activity
             android:name=".settings.PreferencesActivity"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".profile.VolumeProfileActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".profile.VolumeProfileActivity" />
         </activity>
         <activity
             android:name=".profile.ProfileEditActivity"

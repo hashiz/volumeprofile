@@ -16,29 +16,20 @@ public class ProfileEditActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_edit);
-		// Show the Up button in the action bar.
-		setupActionBar();
 
 		Intent intent = getIntent();
 		if (intent == null) {
 			finish();
+			return;
 		}
 		VolumeProfile profile = (VolumeProfile)intent.getParcelableExtra(EXTRA_PROFILE);
 		if (profile == null) {
 			finish();
+			return;
 		}
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.add(R.id.activity_profile_edit, ProfileEditFragment.newInstance(profile), TAG_PROFILEEDIT);
 		transaction.commit();
-	}
-
-	/**
-	 * Set up the {@link android.app.ActionBar}.
-	 */
-	private void setupActionBar() {
-
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-
 	}
 
 	@Override

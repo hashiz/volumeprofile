@@ -44,7 +44,9 @@
 	<string name="music_volume_lock_title">Lock</string>
 	<string name="ring_volume_lock_title">Lock</string>
 	<string name="voicecall_volume_lock_title">Lock</string>
-
+	<string name="drag_handle">Drag Handle</string>
+	<string name="profile_list_item">Dummy Profile Name</string>
+	
 <!-- do not translate blow -->
 	<string name="lock_checkbox_tag">lockCheckBoxTag</string>
 

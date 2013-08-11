@@ -14,8 +14,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ListView;
+import android.view.ViewGroup;
 
 public class VolumeProfileActivity extends FragmentActivity implements
 		ActionBar.TabListener, ProfileEditCallback {
@@ -126,9 +125,25 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		public static final int POS_PROFILE_LIST = 1;
 		public static final int POS_NUMPAGES     = 2;
 
+		private String mTags[] = new String[POS_NUMPAGES];
+
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
+
+		@Override
+		public Object instantiateItem(ViewGroup container, int position) {
+			Fragment fragment = (Fragment)super.instantiateItem(container, position);
+			
+			mTags[position] = fragment.getTag();
+			return fragment;
+		}
+
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			super.destroyItem(container, position, object);
+			mTags[position] = null;
+		};
 
 		@Override
 		public Fragment getItem(int position) {
@@ -159,10 +174,18 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			}
 			return null;
 		}
+		
+		public String getTag(int position) {
+			return mTags[position];
+		}
 	}
 
 	public void updateProfileList() {
-		ProfileListFragment fragment = (ProfileListFragment)getSupportFragmentManager().findFragmentById(view.getId());
+		String tag = (String)mSectionsPagerAdapter.getTag(SectionsPagerAdapter.POS_PROFILE_LIST);
+		if (tag == null) {
+			return;
+		}
+		ProfileListFragment fragment = (ProfileListFragment)getSupportFragmentManager().findFragmentByTag(tag);
 		if (fragment != null) {
 			fragment.updateProfileList();
 		}

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -32,12 +33,27 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 		super.onActivityCreated(savedInstanceState);
 	};
 
+	private static class ProfileListAdapter extends ArrayAdapter<VolumeProfile> {
+
+		public ProfileListAdapter(Context context, int resource, int textViewId) {
+			super(context, resource, textViewId);
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			return super.getView(position, convertView, parent);
+		}
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main_profilelist,
 				container, false);
+		ProfileListAdapter adapter = new ProfileListAdapter(getActivity(),
+				R.layout.profile_list_item, R.id.profile_list_item_chekedtext);
 		ListView profileListView = (ListView)rootView.findViewById(R.id.profile_list);
+		profileListView.setAdapter(adapter);
 		profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		profileListView.setOnItemClickListener(this);
 		registerForContextMenu(profileListView);
@@ -67,11 +83,10 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 		}
 		Context context = getActivity();
 
-		ArrayAdapter<VolumeProfile> adapter = new ArrayAdapter<VolumeProfile>(getActivity(),
-				android.R.layout.simple_list_item_single_choice);
 		ListView profileListView = (ListView)rootView.findViewById(R.id.profile_list);
-		profileListView.setAdapter(adapter);
-		
+		ProfileListAdapter adapter = (ProfileListAdapter)profileListView.getAdapter();
+		adapter.clear();
+
 		ArrayList<VolumeProfile> plist = ProfileStore.getInstance(context).listProfiles();
 		int selPos = -1;
 		UUID curId = ProfileStore.getInstance(context).getCurrentProfile() ;
@@ -90,7 +105,8 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-		VolumeProfile profile = (VolumeProfile)parent.getAdapter().getItem(pos);
+		ProfileListAdapter adapter = (ProfileListAdapter)parent.getAdapter();
+		VolumeProfile profile = adapter.getItem(pos);
 		new AudioUtil(parent.getContext()).applyProfile(profile);
 		ProfileStore.getInstance(getActivity()).setCurrentProfile(profile.getUuid());
 	}
