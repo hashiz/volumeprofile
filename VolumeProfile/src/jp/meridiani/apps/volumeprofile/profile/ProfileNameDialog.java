@@ -75,7 +75,7 @@ public class ProfileNameDialog extends DialogFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View dialogView = inflater.inflate(R.layout.name_input_dialog, container, false);
+		View dialogView = inflater.inflate(R.layout.profile_name_dialog, container, false);
 
 		EditText profileNameEdit = (EditText)dialogView.findViewById(R.id.input_dialog_edit);
 		profileNameEdit.setText(mProfile.getName());
