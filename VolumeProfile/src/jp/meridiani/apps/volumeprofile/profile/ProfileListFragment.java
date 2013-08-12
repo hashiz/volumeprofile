@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -24,6 +23,14 @@ import android.widget.ListView;
 
 public class ProfileListFragment extends Fragment implements OnItemClickListener, ProfileEditCallback {
 
+	private static class ProfileListAdapter extends ArrayAdapter<VolumeProfile> {
+
+		public ProfileListAdapter(Context context, int resource, int textViewId) {
+			super(context, resource, textViewId);
+		}
+
+	}
+
 	public static ProfileListFragment newInstance() {
     	return new ProfileListFragment();
     }
@@ -32,18 +39,6 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 	};
-
-	private static class ProfileListAdapter extends ArrayAdapter<VolumeProfile> {
-
-		public ProfileListAdapter(Context context, int resource, int textViewId) {
-			super(context, resource, textViewId);
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			return super.getView(position, convertView, parent);
-		}
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

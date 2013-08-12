@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<jp.meridiani.apps.volumeprofile.profile.CheckableLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:meridiani="http://schemas.meridiani.jp/apk/res/meridiani"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    meridiani:checkableItem="@+id/profile_list_item_chekedtext"
     >
 
     <ImageView
@@ -27,4 +29,4 @@
 	    android:text="@string/profile_list_item"
 		/>
 
-</LinearLayout>
+</jp.meridiani.apps.volumeprofile.profile.CheckableLinearLayout>
