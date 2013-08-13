@@ -1,7 +1,7 @@
 <resources>
 
     <string name="action_settings">設定</string>
-    <string name="title_activity_settings">設定</string>
+    <string name="title_activity_preference">設定</string>
     <string name="alarm_volume_title">アラーム</string>
     <string name="button_cancel">取消</string>
     <string name="button_select">選択</string>

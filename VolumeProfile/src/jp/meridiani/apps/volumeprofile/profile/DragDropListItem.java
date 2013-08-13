@@ -1,7 +1,5 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
-import jp.meridiani.apps.volumeprofile.profile.CheckableLinearLayout.OnItemDropListener.DropPos;
-import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.AttributeSet;
@@ -12,18 +10,26 @@ import android.view.View.OnTouchListener;
 import android.widget.Checkable;
 import android.widget.LinearLayout;
 
-public class CheckableLinearLayout extends LinearLayout implements Checkable, OnTouchListener {
+public class DragDropListItem extends LinearLayout implements Checkable, OnTouchListener {
 	
 	private static final String NAMESPACE = "http://schemas.meridiani.jp/apk/res/meridiani";
 	private static final String ATTR_CHECKABLEITEM = "checkableItem";
 	private static final String ATTR_DRAGHANDLEITEM = "dragHandleItem";
 
-	public interface OnItemDropListener {
-		public enum DropPos {
+	public interface DragDropListener {
+		public enum DropAt {
 			ABOVE,
 			BLOW,
 		}
-		public void onItemDrop(View view, DropPos pos);
+
+		// @return item's position
+		// @param dragItemView dragging item's View 
+		public int onItemDragStart(View dragItemView);
+
+		// @param dropItemView     dropped item's View
+		// @param dragItemPosition item's position
+		// @param pos              drop on above/blow
+		public void onItemDrop(View dropItemView, int dragItemPosition, DropAt pos);
 	}
 
 	private int mAttrCheckableItemId = -1;
@@ -31,19 +37,19 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable, On
 	private Checkable mCheckableChild = null;
 	private View mDragHandleChild = null;
 	private boolean mChecked = false;
-	private OnItemDropListener mOnItemDropListener = null;
+	private DragDropListener mOnItemDropListener = null;
 
-	public CheckableLinearLayout(Context context) {
+	public DragDropListItem(Context context) {
 		super(context);
 	}
 
-	public CheckableLinearLayout(Context context, AttributeSet attrs) {
+	public DragDropListItem(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mAttrCheckableItemId = attrs.getAttributeResourceValue(NAMESPACE, ATTR_CHECKABLEITEM, -1);
 		mAttrDragHandleItemId = attrs.getAttributeResourceValue(NAMESPACE, ATTR_DRAGHANDLEITEM, -1);
 	}
 
-	public CheckableLinearLayout(Context context, AttributeSet attrs, int defStyle) {
+	public DragDropListItem(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		mAttrCheckableItemId = attrs.getAttributeResourceValue(NAMESPACE, ATTR_CHECKABLEITEM, -1);
 		mAttrDragHandleItemId = attrs.getAttributeResourceValue(NAMESPACE, ATTR_DRAGHANDLEITEM, -1);
@@ -59,7 +65,7 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable, On
 		}
 	}
 
-	public void setOnItemDropListener(OnItemDropListener listener) {
+	public void setOnItemDropListener(DragDropListener listener) {
 		mOnItemDropListener = listener;
 	}
 
@@ -88,6 +94,52 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable, On
 		mChecked = ! mChecked;
 	}
 
+	// Drag and Drop
+	@Override
+	public boolean onDragEvent(DragEvent event) {
+		int action = event.getAction();
+		int vCenter = getHeight() / 2;
+		switch (action) {
+		case DragEvent.ACTION_DRAG_STARTED:
+			return true;
+		case DragEvent.ACTION_DRAG_ENTERED:
+			return true;
+		case DragEvent.ACTION_DRAG_LOCATION:
+			if (event.getY() < vCenter) {
+				// TODO: Highlight top borderline
+				setBackgroundResource(android.R.drawable.divider_horizontal_dark);
+			}
+			else {
+				// TODO: Highlight bottom borderline
+				setBackgroundResource(android.R.drawable.divider_horizontal_dark);
+			}
+			invalidate();
+			return true;
+		case DragEvent.ACTION_DRAG_EXITED:
+			// Clear borderline highlight
+			setBackgroundResource(0);
+			invalidate();
+			return true;
+		case DragEvent.ACTION_DROP:
+			setBackgroundResource(0);
+			invalidate();
+			int drapItemPosition = ((Integer)event.getLocalState());
+			if (mOnItemDropListener == null) {
+				return false;
+			}
+			if (event.getY() < vCenter) {
+				// Insert Item above
+				mOnItemDropListener.onItemDrop(this, drapItemPosition, DragDropListener.DropAt.ABOVE);
+			}
+			else {
+				// Insert Item blow
+				mOnItemDropListener.onItemDrop(this, drapItemPosition, DragDropListener.DropAt.BLOW);
+			}
+			return true;
+		}
+		return false;
+	}
+
 	private class Shadow extends DragShadowBuilder {
 
 		int mItemTouchX;
@@ -106,57 +158,22 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable, On
 		@Override
 		public void onProvideShadowMetrics(Point shadowSize, Point shadowTouchPoint) {
 			super.onProvideShadowMetrics(shadowSize, shadowTouchPoint);
+			// adjust to handle view position
 			shadowTouchPoint.x = mItemTouchX;
 			shadowTouchPoint.y = mItemTouchY;
 		}
 	}
 
-	@Override
-	public boolean onDragEvent(DragEvent event) {
-		int action = event.getAction();
-		int vCenter = getHeight() / 2;
-		switch (action) {
-		case DragEvent.ACTION_DRAG_ENTERED:
-			return true;
-		case DragEvent.ACTION_DRAG_LOCATION:
-			if (event.getY() < vCenter) {
-				// TODO: Highlight top borderline
-			}
-			else {
-				// TODO: Highlight bottom borderline
-			}
-			return true;
-		case DragEvent.ACTION_DRAG_EXITED:
-			// TODO: Clear borderline highlight
-			return true;
-		case DragEvent.ACTION_DROP:
-			if (mOnItemDropListener == null) {
-				return false;
-			}
-			if (event.getY() < vCenter) {
-				// Insert Item above
-				mOnItemDropListener.onItemDrop(this, DropPos.ABOVE);
-			}
-			else {
-				// Insert Item blow
-				mOnItemDropListener.onItemDrop(this, DropPos.BLOW);
-			}
-			return true;
-		}
-		return false;
-	}
-
 	// OnTouchListener interface
 	@Override
-	public boolean onTouch(View view, MotionEvent motionEvent) {
+	public boolean onTouch(View handleView, MotionEvent motionEvent) {
 		int action = motionEvent.getAction();
 		switch (action) {
 		case MotionEvent.ACTION_MOVE:
 			motionEvent.getX();
 			motionEvent.getY();
-			ClipData data = ClipData.newPlainText("profile", "profile");
-			DragShadowBuilder shadow = new Shadow(this, view, motionEvent.getX(), motionEvent.getY()) ;
-			startDrag(data, shadow, null, 0);
+			DragShadowBuilder shadow = new Shadow(this, handleView, motionEvent.getX(), motionEvent.getY()) ;
+			startDrag(null, shadow, this, 0);
 			return true;
 		}
 		return true;

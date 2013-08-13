@@ -18,18 +18,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class ProfileListFragment extends Fragment implements OnItemClickListener, ProfileEditCallback {
-
-	private static class ProfileListAdapter extends ArrayAdapter<VolumeProfile> {
-
-		public ProfileListAdapter(Context context, int resource, int textViewId) {
-			super(context, resource, textViewId);
-		}
-
-	}
 
 	public static ProfileListFragment newInstance() {
     	return new ProfileListFragment();

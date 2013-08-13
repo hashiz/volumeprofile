@@ -14,7 +14,7 @@
     >
 
     <ListView
-        android:id="@+id/ProfileList"
+        android:id="@+id/plugin_profile_list"
         android:layout_alignParentTop="true"
         android:layout_above="@+id/select_profile_buttonbar"
         android:layout_width="match_parent"

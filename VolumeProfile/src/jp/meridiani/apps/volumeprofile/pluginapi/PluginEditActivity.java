@@ -63,7 +63,7 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 
 		// set view
 		setContentView(R.layout.activity_plugin_edit);
-		mProfileListView = (ListView)findViewById(R.id.ProfileList);
+		mProfileListView = (ListView)findViewById(R.id.plugin_profile_list);
 		mProfileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		mAdapter = new ArrayAdapter<VolumeProfile>(this,
 				android.R.layout.simple_list_item_single_choice);

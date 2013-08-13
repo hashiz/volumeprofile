@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jp.meridiani.apps.volumeprofile.profile.CheckableLinearLayout
+<jp.meridiani.apps.volumeprofile.profile.DragDropListItem
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:meridiani="http://schemas.meridiani.jp/apk/res/meridiani"
     android:layout_width="match_parent"
@@ -30,4 +30,4 @@
 	    android:text="@string/profile_list_item"
 		/>
 
-</jp.meridiani.apps.volumeprofile.profile.CheckableLinearLayout>
+</jp.meridiani.apps.volumeprofile.profile.DragDropListItem>
