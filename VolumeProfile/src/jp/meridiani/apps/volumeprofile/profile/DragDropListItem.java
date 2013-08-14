@@ -24,12 +24,12 @@ public class DragDropListItem extends LinearLayout implements Checkable, OnTouch
 
 		// @return item's position
 		// @param dragItemView dragging item's View 
-		public int onItemDragStart(View dragItemView);
+		public int getItemPosition(View dragItemView);
 
-		// @param dropItemView     dropped item's View
-		// @param dragItemPosition item's position
-		// @param pos              drop on above/blow
-		public void onItemDrop(View dropItemView, int dragItemPosition, DropAt pos);
+		// @param dragItemPosition dragging item's position
+		// @param dropItemPosition dropped item's position
+		// @param dropPos          drop on above/blow
+		public void onItemDrop(int dragItemPosition, int dropItemPosition, DropAt dropPos);
 	}
 
 	private int mAttrCheckableItemId = -1;
@@ -37,7 +37,7 @@ public class DragDropListItem extends LinearLayout implements Checkable, OnTouch
 	private Checkable mCheckableChild = null;
 	private View mDragHandleChild = null;
 	private boolean mChecked = false;
-	private DragDropListener mOnItemDropListener = null;
+	private DragDropListener mDragDropListener = null;
 
 	public DragDropListItem(Context context) {
 		super(context);
@@ -65,8 +65,8 @@ public class DragDropListItem extends LinearLayout implements Checkable, OnTouch
 		}
 	}
 
-	public void setOnItemDropListener(DragDropListener listener) {
-		mOnItemDropListener = listener;
+	public void setDragDropListener(DragDropListener listener) {
+		mDragDropListener = listener;
 	}
 
 	// Checkable interface
@@ -123,18 +123,21 @@ public class DragDropListItem extends LinearLayout implements Checkable, OnTouch
 		case DragEvent.ACTION_DROP:
 			setBackgroundResource(0);
 			invalidate();
-			int drapItemPosition = ((Integer)event.getLocalState());
-			if (mOnItemDropListener == null) {
+			int dragItemPosition = ((Integer)event.getLocalState());
+			int dropItemPosition = mDragDropListener.getItemPosition(this);
+			if (mDragDropListener == null) {
 				return false;
 			}
+			DragDropListener.DropAt dropPos;
 			if (event.getY() < vCenter) {
 				// Insert Item above
-				mOnItemDropListener.onItemDrop(this, drapItemPosition, DragDropListener.DropAt.ABOVE);
+				dropPos = DragDropListener.DropAt.ABOVE;
 			}
 			else {
 				// Insert Item blow
-				mOnItemDropListener.onItemDrop(this, drapItemPosition, DragDropListener.DropAt.BLOW);
+				dropPos = DragDropListener.DropAt.BLOW;
 			}
+			mDragDropListener.onItemDrop(dragItemPosition, dropItemPosition, dropPos);
 			return true;
 		}
 		return false;
@@ -167,13 +170,14 @@ public class DragDropListItem extends LinearLayout implements Checkable, OnTouch
 	// OnTouchListener interface
 	@Override
 	public boolean onTouch(View handleView, MotionEvent motionEvent) {
+		if (mDragDropListener == null) {
+			return false;
+		}
 		int action = motionEvent.getAction();
 		switch (action) {
 		case MotionEvent.ACTION_MOVE:
-			motionEvent.getX();
-			motionEvent.getY();
 			DragShadowBuilder shadow = new Shadow(this, handleView, motionEvent.getX(), motionEvent.getY()) ;
-			startDrag(null, shadow, this, 0);
+			startDrag(null, shadow, mDragDropListener.getItemPosition(this), 0);
 			return true;
 		}
 		return true;

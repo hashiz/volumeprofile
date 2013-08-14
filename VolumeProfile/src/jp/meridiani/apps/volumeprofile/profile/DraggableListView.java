@@ -21,15 +21,16 @@ public class DraggableListView extends ListView implements DragDropListener {
 	}
 
 	@Override
-	public int onItemDragStart(View dragItemView) {
-		// TODO 自動生成されたメソッド・スタブ
-		return 0;
+	public int getItemPosition(View dragItemView) {
+		return getPositionForView(dragItemView);
 	}
 
 	@Override
-	public void onItemDrop(View dropItemView, int dragItemPosition, DropAt pos) {
+	public void onItemDrop(int dragItemPosition, int dropItemPosition, DropAt pos) {
 		ProfileListAdapter adapter = (ProfileListAdapter)getAdapter();
-		int dropItemPosition = getPositionForView(dropItemView);
-		adapter.getItem(dragItemPosition);
+		if (pos == DropAt.BLOW) {
+			dropItemPosition++;
+		}
+		adapter.moveItem(dragItemPosition, dropItemPosition);
 	}
 }

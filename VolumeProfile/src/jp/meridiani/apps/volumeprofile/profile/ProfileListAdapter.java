@@ -1,7 +1,10 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import jp.meridiani.apps.volumeprofile.profile.DragDropListItem.DragDropListener;
 
 public class ProfileListAdapter extends ArrayAdapter<VolumeProfile> implements DragDropListAdapter {
 
@@ -10,16 +13,27 @@ public class ProfileListAdapter extends ArrayAdapter<VolumeProfile> implements D
 	}
 
 	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		View itemView = super.getView(position, convertView, parent);
+		if (itemView instanceof DragDropListItem) {
+			if (parent instanceof DragDropListener) {
+				((DragDropListItem)itemView).setDragDropListener((DragDropListener)parent);
+			}
+		}
+		return itemView;
+	};
+
+	@Override
 	public boolean moveItem(int srcPos, int dstPos) {
 		if (srcPos == dstPos) {
 			return false;
 		}
 		int max = getCount();
-		if (0 < srcPos || srcPos < max) {
+		if (srcPos < 0 || max < srcPos) {
 			// index over
 			return false;
 		}
-		if (0 < dstPos || dstPos < max + 1) {
+		if (dstPos < 0 || max + 1 < dstPos) {
 			// index over
 			return false;
 		}
@@ -49,6 +63,8 @@ public class ProfileListAdapter extends ArrayAdapter<VolumeProfile> implements D
 			}
 			remove(tmpProfile);
 		}
+		// TODO: write database here?
+		// TODO: renumbering sort order
 		return true;
 	}
 }
