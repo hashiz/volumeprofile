@@ -55,16 +55,11 @@ public class ProfileListAdapter extends ArrayAdapter<VolumeProfile> implements D
 			// down to up
 			// remove first
 			VolumeProfile tmpProfile = getItem(srcPos);
-			if (dstPos < max) {
-				insert(tmpProfile, dstPos);
-			}
-			else {
-				add(tmpProfile);
-			}
 			remove(tmpProfile);
+			insert(tmpProfile, dstPos);
 		}
 		// TODO: write database here?
 		// TODO: renumbering sort order
 		return true;
 	}
-}
+ }
