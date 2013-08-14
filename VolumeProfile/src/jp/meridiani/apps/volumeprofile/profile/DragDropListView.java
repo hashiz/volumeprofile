@@ -6,17 +6,17 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ListView;
 
-public class DraggableListView extends ListView implements DragDropListener {
+public class DragDropListView extends ListView implements DragDropListener {
 
-	public DraggableListView(Context context) {
+	public DragDropListView(Context context) {
 		super(context);
 	}
 
-	public DraggableListView(Context context, AttributeSet attrs) {
+	public DragDropListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public DraggableListView(Context context, AttributeSet attrs, int defStyle) {
+	public DragDropListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 
