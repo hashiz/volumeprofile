@@ -1,10 +1,12 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.profile.DragDropListView.OnSortedListener;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,8 +22,11 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class ProfileListFragment extends Fragment implements OnItemClickListener, ProfileEditCallback {
+public class ProfileListFragment extends Fragment implements OnItemClickListener, ProfileEditCallback, OnSortedListener {
 
+	ProfileListAdapter mAdapter = null;
+	DragDropListView   mProfileListView = null;
+	
 	public static ProfileListFragment newInstance() {
     	return new ProfileListFragment();
     }
@@ -36,13 +41,14 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main_profilelist,
 				container, false);
-		ProfileListAdapter adapter = new ProfileListAdapter(getActivity(),
+		mAdapter = new ProfileListAdapter(getActivity(),
 				R.layout.profile_list_item, R.id.profile_list_item_chekedtext);
-		ListView profileListView = (ListView)rootView.findViewById(R.id.profile_list);
-		profileListView.setAdapter(adapter);
-		profileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		profileListView.setOnItemClickListener(this);
-		registerForContextMenu(profileListView);
+		mProfileListView = (DragDropListView)rootView.findViewById(R.id.profile_list);
+		mProfileListView.setAdapter(mAdapter);
+		mProfileListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		mProfileListView.setOnItemClickListener(this);
+		mProfileListView.setOnSortedListener(this);
+		registerForContextMenu(mProfileListView);
 		return rootView;
 	}
 
@@ -52,41 +58,25 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 		updateProfileList();
 	}
 
-	private View getRootView() throws ViewNotAvailableException {
-		View rootView = getView();
-		if (rootView == null) {
-			throw new ViewNotAvailableException();
-		}
-		return rootView;
-	}
-
 	public void updateProfileList() {
-		View rootView;
-		try {
-			rootView = getRootView();
-		} catch (ViewNotAvailableException e) {
-			return;
-		}
 		Context context = getActivity();
 
-		ListView profileListView = (ListView)rootView.findViewById(R.id.profile_list);
-		ProfileListAdapter adapter = (ProfileListAdapter)profileListView.getAdapter();
-		adapter.clear();
+		mAdapter.clear();
 
 		ArrayList<VolumeProfile> plist = ProfileStore.getInstance(context).listProfiles();
 		int selPos = -1;
 		UUID curId = ProfileStore.getInstance(context).getCurrentProfile() ;
 		for ( VolumeProfile profile : plist) {
-			adapter.add(profile);
+			mAdapter.add(profile);
 			if (curId != null && curId.equals(profile.getUuid())) {
-				selPos = adapter.getCount() - 1;
+				selPos = mAdapter.getCount() - 1;
 			}
 		}
 		if (selPos >= 0) {
-			profileListView.setItemChecked(selPos, true);
+			mProfileListView.setItemChecked(selPos, true);
 		}
 
-		adapter.notifyDataSetChanged();
+		mAdapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -135,5 +125,10 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 
 	@Override
 	public void onProfileEditNegative() {
+	}
+
+	@Override
+	public void onSorted(List<VolumeProfile> list) {
+		ProfileStore.getInstance(getActivity()).updateDisplayOrder(list);
 	}
 }

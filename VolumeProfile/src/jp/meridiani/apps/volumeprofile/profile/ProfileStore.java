@@ -1,6 +1,7 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import android.content.ContentValues;
@@ -106,6 +107,27 @@ public class ProfileStore {
 			list.add(profile);
 		}
 		return list;
+	}
+
+	public void updateDisplayOrder(List<VolumeProfile> list) {
+
+		mDB.beginTransaction();
+
+		try {
+			ContentValues values = new ContentValues();
+			for (VolumeProfile profile : list) {
+				// update/insert list
+				values.clear();
+				values.put(COL_DISPORDER, profile.getDisplayOrder());
+				mDB.update(LIST_TABLE_NAME, values,
+						String.format("%1$s=?", COL_UUID),
+						new String[]{profile.getUuid().toString()});
+			}
+			mDB.setTransactionSuccessful();
+		}
+		finally {
+			mDB.endTransaction();
+		}
 	}
 
 	private VolumeProfile loadProfileInternal(VolumeProfile profile) {
