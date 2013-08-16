@@ -30,6 +30,9 @@ public class DragDropListItem extends LinearLayout implements Checkable, OnTouch
 		// @param dropItemPosition dropped item's position
 		// @param dropPos          drop on above/blow
 		public void onItemDrop(int dragItemPosition, int dropItemPosition, DropAt dropPos);
+
+		public void onDragLocation(int position, int y, int vCenter);
+
 	}
 
 	private int mAttrCheckableItemId = -1;
@@ -114,6 +117,10 @@ public class DragDropListItem extends LinearLayout implements Checkable, OnTouch
 				setBackgroundResource(android.R.drawable.divider_horizontal_dark);
 			}
 			invalidate();
+			if (mDragDropListener != null) {
+				int pos = mDragDropListener.getItemPosition(this);
+				mDragDropListener.onDragLocation(pos, (int)event.getY(), vCenter);
+			}
 			return true;
 		case DragEvent.ACTION_DRAG_EXITED:
 			// Clear borderline highlight
@@ -123,21 +130,20 @@ public class DragDropListItem extends LinearLayout implements Checkable, OnTouch
 		case DragEvent.ACTION_DROP:
 			setBackgroundResource(0);
 			invalidate();
-			int dragItemPosition = ((Integer)event.getLocalState());
-			int dropItemPosition = mDragDropListener.getItemPosition(this);
-			if (mDragDropListener == null) {
-				return false;
+			if (mDragDropListener != null) {
+				int dragItemPosition = ((Integer)event.getLocalState());
+				int dropItemPosition = mDragDropListener.getItemPosition(this);
+				DragDropListener.DropAt dropPos;
+				if (event.getY() < vCenter) {
+					// Insert Item above
+					dropPos = DragDropListener.DropAt.ABOVE;
+				}
+				else {
+					// Insert Item blow
+					dropPos = DragDropListener.DropAt.BLOW;
+				}
+				mDragDropListener.onItemDrop(dragItemPosition, dropItemPosition, dropPos);
 			}
-			DragDropListener.DropAt dropPos;
-			if (event.getY() < vCenter) {
-				// Insert Item above
-				dropPos = DragDropListener.DropAt.ABOVE;
-			}
-			else {
-				// Insert Item blow
-				dropPos = DragDropListener.DropAt.BLOW;
-			}
-			mDragDropListener.onItemDrop(dragItemPosition, dropItemPosition, dropPos);
 			return true;
 		}
 		return false;

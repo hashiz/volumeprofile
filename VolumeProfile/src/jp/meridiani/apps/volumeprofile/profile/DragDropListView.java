@@ -38,34 +38,47 @@ public class DragDropListView extends ListView implements DragDropListener {
 	}
 
 	@Override
-	public void setSelection(int position) {
-	};
+	public void onDragLocation(int position, int y, int vCenter) {
+		if (position == getFirstVisiblePosition()) {
+			// top
+			if (y < vCenter) {
+				if (position > 0) {
+					position--;
+				}
+				smoothScrollToPosition(position);
+			}
+		}
+		else if (position == getLastVisiblePosition()) {
+			// bottom
+			if (y > vCenter) {
+				if (position < getCount()-1) {
+					position++;
+				}
+				smoothScrollToPosition(position);
+			}
+		}
+	}
 
 	@Override
 	public void onItemDrop(int dragItemPosition, int dropItemPosition, DropAt pos) {
 		ProfileListAdapter adapter = (ProfileListAdapter)getAdapter();
-		if (pos == DropAt.BLOW) {
-			dropItemPosition++;
+		if (dragItemPosition == dropItemPosition) {
+			return;
 		}
-		if (adapter.moveItem(dragItemPosition, dropItemPosition)) {
-			int selPos = getCheckedItemPosition();
-			if (selPos == dragItemPosition) {
-				setItemChecked(dropItemPosition, true);
+		else if (dragItemPosition < dropItemPosition) {
+			if (pos == DropAt.ABOVE) {
+				dropItemPosition--;
 			}
-			else {
-				int posMin = Math.min(dragItemPosition, dropItemPosition);
-				int posMax = Math.max(dragItemPosition, dropItemPosition);
-				if (posMin <= selPos && selPos <= posMax) {
-					if (dragItemPosition < dropItemPosition) {
-						// move up
-						setItemChecked(selPos - 1, true);
-					}
-					else {
-						// move down
-						setItemChecked(selPos + 1, true);
-					}
-				}
+		}
+		else {
+			if (pos == DropAt.BLOW) {
+				dropItemPosition++;
 			}
+		}
+		if (dragItemPosition == dropItemPosition) {
+			return;
+		}
+		if (adapter.moveItem(this, dragItemPosition, dropItemPosition)) {
 			if (mOnSortedListener != null) {
 				mOnSortedListener.onSorted(adapter.getProfileList());
 			}

@@ -109,7 +109,7 @@ public class ProfileListAdapter extends BaseAdapter implements DragDropListAdapt
 	}
 
 	@Override
-	public boolean moveItem(int srcPos, int dstPos) {
+	public boolean moveItem(DragDropListView listView, int srcPos, int dstPos) {
 		if (srcPos == dstPos) {
 			return false;
 		}
@@ -119,20 +119,18 @@ public class ProfileListAdapter extends BaseAdapter implements DragDropListAdapt
 				// index over
 				return false;
 			}
-			if (dstPos < 0 || max < dstPos) {
+			if (dstPos < 0 || max - 1 < dstPos) {
 				// index over
 				return false;
 			}
 	
-			
 			VolumeProfile tmpProfile = mList.get(srcPos);
+			boolean checked = listView.isItemChecked(srcPos);
 			if (srcPos < dstPos) {
-				if (dstPos - srcPos < 2) {
-					return false;
-				}
 				// up to down
 				for (int pos = srcPos; pos < dstPos; pos++) {
 					mList.set(pos, mList.get(pos+1));
+					listView.setItemChecked(pos, listView.isItemChecked(pos+1));
 					mList.get(pos).setDisplayOrder(pos);
 				}
 			}
@@ -140,10 +138,12 @@ public class ProfileListAdapter extends BaseAdapter implements DragDropListAdapt
 				// down to up
 				for (int pos = srcPos; pos > dstPos; pos--) {
 					mList.set(pos, mList.get(pos-1));
+					listView.setItemChecked(pos, listView.isItemChecked(pos-1));
 					mList.get(pos).setDisplayOrder(pos);
 				}
 			}
 			mList.set(dstPos, tmpProfile);
+			listView.setItemChecked(dstPos, checked);
 			mList.get(dstPos).setDisplayOrder(dstPos);
 		}
 
