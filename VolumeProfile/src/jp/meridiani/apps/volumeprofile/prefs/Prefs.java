@@ -1,20 +1,25 @@
 package jp.meridiani.apps.volumeprofile.prefs;
 
 import jp.meridiani.apps.volumeprofile.R;
+import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
-public class Prefs {
+public class Prefs implements OnSharedPreferenceChangeListener {
 	private static Prefs mInstance = null;
-	private SharedPreferences mPrefs;
 	private static final String KEY_VIBRATEONPROFILECHANGE      = "vibrate_on_profile_change";
 	private static final String KEY_DISPLAYTOASTONPROFILECHANGE = "display_toast_on_profile_change";
 	private static final String KEY_PLAYSOUNDONVOLUMECHANGE     = "play_sound_on_volume_change";
 	private static final String KEY_SOUNDLEVELALERTHACK         = "sound_level_alert_hack";
 
+	private Context mContext;
+	private SharedPreferences mPrefs;
+
 	private Prefs(Context context) {
+		mContext = context;
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		PreferenceManager.setDefaultValues(context, R.xml.prefs, false);
 	}
@@ -58,5 +63,10 @@ public class Prefs {
 	}
 	public void setSoundLevelAlertHack(boolean value) {
 		setValue(KEY_SOUNDLEVELALERTHACK, value);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		BackupManager.dataChanged(mContext.getPackageName());
 	}
 }

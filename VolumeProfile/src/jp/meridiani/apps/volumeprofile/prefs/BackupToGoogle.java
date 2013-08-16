@@ -15,7 +15,10 @@ public class BackupToGoogle extends BackupAgent {
 	public void onBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
 			ParcelFileDescriptor newState) throws IOException {
 
-		Prefs.getInstance(getApplicationContext());
+		Prefs prefs = Prefs.getInstance(getApplicationContext());
+
+		prefs.
+		data.writeEntityHeader(key, dataSize);
 	}
 
 	@Override

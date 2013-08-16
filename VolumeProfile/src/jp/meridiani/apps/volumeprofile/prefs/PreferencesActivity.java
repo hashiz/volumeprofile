@@ -12,11 +12,11 @@ public class PreferencesActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
         // Display the fragment as the main content.
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new Prefs()).commit();
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment()).commit();
 
     }
 
-	public static class Prefs extends PreferenceFragment {
+	public static class PrefsFragment extends PreferenceFragment {
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
