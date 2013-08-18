@@ -43,7 +43,6 @@
         <receiver
             android:name=".pluginapi.PluginFireReceiver"
             android:exported="true"
-            android:process=":background"
             tools:ignore="ExportedReceiver" >
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
@@ -52,7 +51,6 @@
         <receiver
             android:name=".soundlevelalerthack.Receiver"
             android:exported="true"
-            android:process=":background"
             tools:ignore="ExportedReceiver" >
             <intent-filter>
                 <action android:name="com.sonyericsson.media.SOUND_LEVEL_ALERT" />

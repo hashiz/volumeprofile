@@ -7,6 +7,7 @@
     <string name="action_rename_profile">Rename</string>
     <string name="action_edit_profile">Edit</string>
     <string name="action_delete_profile">Delete</string>
+    <string name="action_launch_application">Launch Application</string>
     <string name="title_activity_preference">Settings</string>
     <string name="button_select">Select</string>
     <string name="button_cancel">Cancel</string>

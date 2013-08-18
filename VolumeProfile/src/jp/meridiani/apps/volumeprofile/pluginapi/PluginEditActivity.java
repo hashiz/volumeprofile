@@ -9,6 +9,8 @@ import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -22,19 +24,22 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 
 	private static final String SAVE_SELECTEDPROFILEID = "SAVE_SELECTEDPROFILEID";
 
-	private UUID mInitialProfileId;
-	private UUID mSelectedProfileId;
-	private ListView mProfileListView;
-	private ArrayAdapter<VolumeProfile> mAdapter;
-	private Button mSelectButton;
-	private Button mCancelButton;
-	private boolean mCanceled;
+	private UUID mInitialProfileId = null;
+	private UUID mSelectedProfileId = null;
+	private ListView mProfileListView = null;
+	private ArrayAdapter<VolumeProfile> mAdapter = null;
+	private Button mSelectButton = null;
+	private Button mCancelButton = null;
+	private boolean mCanceled = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		String uuid = savedInstanceState.getString(SAVE_SELECTEDPROFILEID);
+		String uuid = null;
+		if (savedInstanceState != null) {
+			uuid = savedInstanceState.getString(SAVE_SELECTEDPROFILEID);
+		}
 		if (uuid != null) {
 			mSelectedProfileId = UUID.fromString(uuid);
 		}
@@ -89,7 +94,25 @@ public class PluginEditActivity extends Activity implements OnItemSelectedListen
 	}
 
 	@Override
-	public void onStart() {
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.plugin_edit, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_launch_application:
+			startActivity(new Intent(getPackageManager().getLaunchIntentForPackage(getPackageName())));
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 		updateProfileList();
 	}
 
