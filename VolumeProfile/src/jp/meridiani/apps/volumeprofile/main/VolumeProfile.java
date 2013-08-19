@@ -1,5 +1,10 @@
-package jp.meridiani.apps.volumeprofile.profile;
+package jp.meridiani.apps.volumeprofile.main;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
@@ -23,6 +28,24 @@ public class VolumeProfile implements Parcelable {
 	private int mVoiceCallVolume;
 	private boolean mVoiceCallVolumeLock;
 
+	private static final String[] BACKUP_KEYS = new String[] {
+		ProfileStore.KEY_UUID                ,
+		ProfileStore.KEY_DISPLAYORDER        ,
+		ProfileStore.KEY_PROFILENAME         ,
+		ProfileStore.KEY_RINGERMODE          ,
+		ProfileStore.KEY_RINGERMODELOCK      ,
+		ProfileStore.KEY_ALARMVOLUME         ,
+		ProfileStore.KEY_ALARMVOLUMELOCK     ,
+		ProfileStore.KEY_MUSICVOLUME         ,
+		ProfileStore.KEY_MUSICVOLUMELOCK     ,
+		ProfileStore.KEY_RINGVOLUME          ,
+		ProfileStore.KEY_RINGVOLUMELOCK      ,
+		ProfileStore.KEY_VOICECALLVALUME     ,
+		ProfileStore.KEY_VOICECALLVALUMELOCK ,
+	};
+	private static final String LS = System.getProperty("line.separator");
+	
+	
 	VolumeProfile() {
 		this((UUID)null);
 	}
@@ -48,7 +71,13 @@ public class VolumeProfile implements Parcelable {
 	}
 
 	String getValue(String key) {
-		if (key.equals(ProfileStore.KEY_PROFILENAME)) {
+		if (key.equals(ProfileStore.KEY_UUID)) {
+			return this.getUuid().toString();
+		}
+		else if (key.equals(ProfileStore.KEY_DISPLAYORDER)) {
+			return Integer.toString(this.getDisplayOrder());
+		}
+		else if (key.equals(ProfileStore.KEY_PROFILENAME)) {
 			return this.getName();
 		}
 		else if (key.equals(ProfileStore.KEY_RINGERMODE)) {
@@ -85,7 +114,13 @@ public class VolumeProfile implements Parcelable {
 	}
 
 	void setValue(String key, String value) {
-		if (key.equals(ProfileStore.KEY_PROFILENAME)) {
+		if (key.equals(ProfileStore.KEY_UUID)) {
+			this.setUuid(UUID.fromString(value)) ;
+		}
+		else if (key.equals(ProfileStore.KEY_DISPLAYORDER)) {
+			this.setDisplayOrder(Integer.parseInt(value));
+		}
+		else if (key.equals(ProfileStore.KEY_PROFILENAME)) {
 			this.setName(value);
 		}
 		else if (key.equals(ProfileStore.KEY_RINGERMODE)) {
@@ -184,6 +219,10 @@ public class VolumeProfile implements Parcelable {
 
 	public UUID getUuid() {
 		return mUuid;
+	}
+
+	public void setUuid(UUID uuid) {
+		mUuid = uuid;
 	}
 
 	public String getName() {
@@ -334,4 +373,20 @@ public class VolumeProfile implements Parcelable {
 		    return new VolumeProfile[size];
 		}
     };
+
+    // for backup
+    public void writeBytesToBuf(ByteBuffer buf) {
+    	CharBuffer cbuf = buf.asCharBuffer();
+    	for (String key : BACKUP_KEYS) {
+    		cbuf.append(key);
+    		cbuf.append('=');
+    		cbuf.append(getValue(key));
+    		cbuf.append(LS);
+    	}
+    }
+
+    public VolumeProfile createFromInputStream(InputStream stream) {
+    	BufferedReader rdr = new BufferedReader(new InputStreamReader(stream));
+    	return new VolumeProfile();
+    }
 }

@@ -1,4 +1,4 @@
-package jp.meridiani.apps.volumeprofile.profile;
+package jp.meridiani.apps.volumeprofile.main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,8 @@ public class ProfileStore {
 	private static final String DATA_TABLE_NAME = "profiledata";
 	
 	public static final String KEY_CURRENTPROFILE      = "CurrentProfile"     ;
+	public static final String KEY_UUID                = "Uuid"               ;
+	public static final String KEY_DISPLAYORDER        = "DisplayOrder"       ;
 	public static final String KEY_PROFILENAME         = "ProfileName"        ;
 	public static final String KEY_RINGERMODE          = "RingerMode"         ;
 	public static final String KEY_RINGERMODELOCK      = "RingerModeLock"     ;
@@ -42,7 +44,7 @@ public class ProfileStore {
 	public static final String KEY_VOICECALLVALUME     = "VoiceCallValume"    ;
 	public static final String KEY_VOICECALLVALUMELOCK = "VoiceCallValumeLock";
 
-	private static final String[] KEYLIST = new String[] {
+	private static final String[] PROFILE_DATA_KEYS = new String[] {
 		KEY_PROFILENAME         ,
 		KEY_RINGERMODE          ,
 		KEY_RINGERMODELOCK      ,
@@ -170,7 +172,7 @@ public class ProfileStore {
 				}
 			}
 			// update/insert data
-			for (String key : KEYLIST) {
+			for (String key : PROFILE_DATA_KEYS) {
 				values.clear();
 				values.put(COL_VALUE, profile.getValue(key));
 				int rows = mDB.update(DATA_TABLE_NAME, values,
@@ -255,5 +257,4 @@ public class ProfileStore {
 			mDB.endTransaction();
 		}
 	}
-
 }

@@ -1,4 +1,4 @@
-package jp.meridiani.apps.volumeprofile.profile;
+package jp.meridiani.apps.volumeprofile.main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.profile.DragDropListView.OnSortedListener;
+import jp.meridiani.apps.volumeprofile.main.DragDropListView.OnSortedListener;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
-import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
-import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
+import jp.meridiani.apps.volumeprofile.main.ProfileStore;
+import jp.meridiani.apps.volumeprofile.main.VolumeProfile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

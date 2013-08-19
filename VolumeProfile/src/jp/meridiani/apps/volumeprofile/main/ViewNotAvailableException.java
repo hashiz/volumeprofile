@@ -1,4 +1,4 @@
-package jp.meridiani.apps.volumeprofile.profile;
+package jp.meridiani.apps.volumeprofile.main;
 
 public class ViewNotAvailableException extends Exception {
 

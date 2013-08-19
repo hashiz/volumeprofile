@@ -1,4 +1,4 @@
-package jp.meridiani.apps.volumeprofile.profile;
+package jp.meridiani.apps.volumeprofile.main;
 
 import android.os.Bundle;
 import android.view.View;
