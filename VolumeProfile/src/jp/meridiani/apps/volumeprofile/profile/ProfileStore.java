@@ -1,4 +1,4 @@
-package jp.meridiani.apps.volumeprofile.main;
+package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.ArrayList;
 import java.util.List;

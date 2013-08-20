@@ -1,10 +1,8 @@
-package jp.meridiani.apps.volumeprofile.main;
+package jp.meridiani.apps.volumeprofile.profile;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
@@ -43,7 +41,6 @@ public class VolumeProfile implements Parcelable {
 		ProfileStore.KEY_VOICECALLVALUME     ,
 		ProfileStore.KEY_VOICECALLVALUMELOCK ,
 	};
-	private static final String LS = System.getProperty("line.separator");
 	
 	
 	VolumeProfile() {
@@ -110,7 +107,7 @@ public class VolumeProfile implements Parcelable {
 		else if (key.equals(ProfileStore.KEY_VOICECALLVALUMELOCK)) {
 			return Boolean.toString(this.getVoiceCallVolumeLock());
 		}
-		return "";
+		return null;
 	}
 
 	void setValue(String key, String value) {
@@ -375,18 +372,42 @@ public class VolumeProfile implements Parcelable {
     };
 
     // for backup
-    public void writeBytesToBuf(ByteBuffer buf) {
-    	CharBuffer cbuf = buf.asCharBuffer();
+    public void writeToText(BufferedWriter out) throws IOException {
+    	out.write("<profile>");
+    	out.newLine();
     	for (String key : BACKUP_KEYS) {
-    		cbuf.append(key);
-    		cbuf.append('=');
-    		cbuf.append(getValue(key));
-    		cbuf.append(LS);
+    		String value = getValue(key);
+    		if (value != null) {
+    			out.write(key + '=' + value );
+    			out.newLine();
+    		}
     	}
+    	out.write("</profile>");
+    	out.newLine();
     }
 
-    public VolumeProfile createFromInputStream(InputStream stream) {
-    	BufferedReader rdr = new BufferedReader(new InputStreamReader(stream));
-    	return new VolumeProfile();
+    public static VolumeProfile createFromText(BufferedReader in) throws IOException {
+    	VolumeProfile profile = null;
+    	boolean inProfile = false;
+    	String line;
+		while ((line = in.readLine()) != null) {
+			if (inProfile ) {
+				if (line.equals("</profile>")) {
+					break;
+				}
+				String[] tmp = line.split("=", 2);
+				if (tmp.length < 2) {
+					continue;
+				}
+				profile.setValue(tmp[0], tmp[1]);
+			}
+			else {
+				if (line.equals("<profile>")) {
+					inProfile = true;
+					profile = new VolumeProfile();
+				}
+			}
+		}
+    	return profile;
     }
 }

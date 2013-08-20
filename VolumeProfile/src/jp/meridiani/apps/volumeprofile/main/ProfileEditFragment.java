@@ -9,6 +9,7 @@ import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 
 public class ProfileEditFragment extends VolumeEditFragmentBase {
 

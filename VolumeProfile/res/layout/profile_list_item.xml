@@ -30,4 +30,4 @@
 	    android:text="@string/profile_list_item"
 		/>
 
-</jp.meridiani.apps.volumeprofile.profile.DragDropListItem>
+</jp.meridiani.apps.volumeprofile.main.DragDropListItem>

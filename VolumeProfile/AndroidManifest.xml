@@ -16,14 +16,14 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:backupAgent=".prefs.BackupToGoogle">
+        android:backupAgent=".backup.DataBackup">
 
         <meta-data
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAI_XRjj0L3E2815Ek3Rsm-SptAK0QPjeu5QkuNog" />
 
         <activity
-            android:name="jp.meridiani.apps.volumeprofile.main.VolumeProfileActivity"
+            android:name=".main.VolumeProfileActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -66,7 +66,7 @@
                 android:value=".profile.VolumeProfileActivity" />
         </activity>
         <activity
-            android:name="jp.meridiani.apps.volumeprofile.main.ProfileEditActivity"
+            android:name=".main.ProfileEditActivity"
             android:label="@string/title_activity_profile_edit"
             >
             <meta-data

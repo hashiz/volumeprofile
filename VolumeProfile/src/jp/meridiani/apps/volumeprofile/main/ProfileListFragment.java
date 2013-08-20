@@ -7,6 +7,8 @@ import java.util.UUID;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.main.DragDropListView.OnSortedListener;
+import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;

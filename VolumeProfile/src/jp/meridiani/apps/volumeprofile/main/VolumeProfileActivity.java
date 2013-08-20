@@ -3,6 +3,8 @@ package jp.meridiani.apps.volumeprofile.main;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.prefs.PreferencesActivity;
+import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;

@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.main.ProfileStore;
-import jp.meridiani.apps.volumeprofile.main.VolumeProfile;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
+import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

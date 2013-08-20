@@ -1,6 +1,7 @@
 package jp.meridiani.apps.volumeprofile.main;
 
 import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;

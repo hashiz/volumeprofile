@@ -3,6 +3,7 @@ package jp.meridiani.apps.volumeprofile.main;
 import java.util.ArrayList;
 
 import jp.meridiani.apps.volumeprofile.main.DragDropListItem.DragDropListener;
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 
 import android.content.Context;
 import android.view.LayoutInflater;
