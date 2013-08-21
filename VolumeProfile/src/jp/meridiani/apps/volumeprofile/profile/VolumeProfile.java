@@ -11,6 +11,47 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class VolumeProfile implements Parcelable {
+
+	public static enum Key {
+		UUID,
+		DISPLAYORDER,
+		PROFILENAME,
+		RINGERMODE,
+		RINGERMODELOCK,
+		ALARMVOLUME,
+		ALARMVOLUMELOCK,
+		MUSICVOLUME,
+		MUSICVOLUMELOCK,
+		RINGVOLUME,
+		RINGVOLUMELOCK,
+		VOICECALLVALUME,
+		VOICECALLVALUMELOCK;
+
+		private final static Key[] sKeys;
+		private final static Key[] sDataKeys;
+		private final static int sSkip = 2;
+		static {
+			Key[] values = values();
+			sKeys = new Key[values.length];
+			sDataKeys = new Key[values.length-sSkip];
+			for (int i = 0; i < values.length; i++) {
+				Key key = values[i];
+				sKeys[i] = key;
+				if (i >= sSkip) {
+					sDataKeys[i-sSkip] = key;
+				}
+			}
+		};
+
+		public static Key[] getKeys() {
+			return sKeys;
+		}
+
+		public static Key[] getDataKeys() {
+			return sDataKeys;
+		}
+	}
+
 	private UUID mUuid;
 	private String mName;
 	private int mDisplayOrder;
@@ -26,22 +67,6 @@ public class VolumeProfile implements Parcelable {
 	private int mVoiceCallVolume;
 	private boolean mVoiceCallVolumeLock;
 
-	private static final String[] BACKUP_KEYS = new String[] {
-		ProfileStore.KEY_UUID                ,
-		ProfileStore.KEY_DISPLAYORDER        ,
-		ProfileStore.KEY_PROFILENAME         ,
-		ProfileStore.KEY_RINGERMODE          ,
-		ProfileStore.KEY_RINGERMODELOCK      ,
-		ProfileStore.KEY_ALARMVOLUME         ,
-		ProfileStore.KEY_ALARMVOLUMELOCK     ,
-		ProfileStore.KEY_MUSICVOLUME         ,
-		ProfileStore.KEY_MUSICVOLUMELOCK     ,
-		ProfileStore.KEY_RINGVOLUME          ,
-		ProfileStore.KEY_RINGVOLUMELOCK      ,
-		ProfileStore.KEY_VOICECALLVALUME     ,
-		ProfileStore.KEY_VOICECALLVALUMELOCK ,
-	};
-	
 	
 	VolumeProfile() {
 		this((UUID)null);
@@ -67,89 +92,100 @@ public class VolumeProfile implements Parcelable {
 		mVoiceCallVolumeLock = false;
 	}
 
-	String getValue(String key) {
-		if (key.equals(ProfileStore.KEY_UUID)) {
-			return this.getUuid().toString();
-		}
-		else if (key.equals(ProfileStore.KEY_DISPLAYORDER)) {
-			return Integer.toString(this.getDisplayOrder());
-		}
-		else if (key.equals(ProfileStore.KEY_PROFILENAME)) {
-			return this.getName();
-		}
-		else if (key.equals(ProfileStore.KEY_RINGERMODE)) {
-			return this.getRingerMode().name();
-		}
-		else if (key.equals(ProfileStore.KEY_RINGERMODELOCK)) {
-			return Boolean.toString(this.getRingerModeLock());
-		}
-		else if (key.equals(ProfileStore.KEY_ALARMVOLUME)) {
-			return Integer.toString(this.getAlarmVolume());
-		}
-		else if (key.equals(ProfileStore.KEY_ALARMVOLUMELOCK)) {
-			return Boolean.toString(this.getAlarmVolumeLock());
-		}
-		else if (key.equals(ProfileStore.KEY_MUSICVOLUME)) {
-			return Integer.toString(this.getMusicVolume());
-		}
-		else if (key.equals(ProfileStore.KEY_MUSICVOLUMELOCK)) {
-			return Boolean.toString(this.getMusicVolumeLock());
-		}
-		else if (key.equals(ProfileStore.KEY_RINGVOLUME)) {
-			return Integer.toString(this.getRingVolume());
-		}
-		else if (key.equals(ProfileStore.KEY_RINGVOLUMELOCK)) {
-			return Boolean.toString(this.getRingVolumeLock());
-		}
-		else if (key.equals(ProfileStore.KEY_VOICECALLVALUME)) {
-			return Integer.toString(this.getVoiceCallVolume());
-		}
-		else if (key.equals(ProfileStore.KEY_VOICECALLVALUMELOCK)) {
-			return Boolean.toString(this.getVoiceCallVolumeLock());
+	String getValue(Key key) {
+		switch (key) {
+		case UUID:
+			return getUuid().toString();
+		case DISPLAYORDER:
+			return Integer.toString(getDisplayOrder());
+		case PROFILENAME:
+			return getName();
+		case RINGERMODE:
+			return getRingerMode().name();
+		case RINGERMODELOCK:
+			return Boolean.toString(getRingerModeLock());
+		case ALARMVOLUME:
+			return Integer.toString(getAlarmVolume());
+		case ALARMVOLUMELOCK:
+			return Boolean.toString(getAlarmVolumeLock());
+		case MUSICVOLUME:
+			return Integer.toString(getMusicVolume());
+		case MUSICVOLUMELOCK:
+			return Boolean.toString(getMusicVolumeLock());
+		case RINGVOLUME:
+			return Integer.toString(getRingVolume());
+		case RINGVOLUMELOCK:
+			return Boolean.toString(getRingVolumeLock());
+		case VOICECALLVALUME:
+			return Integer.toString(getVoiceCallVolume());
+		case VOICECALLVALUMELOCK:
+			return Boolean.toString(getVoiceCallVolumeLock());
 		}
 		return null;
 	}
 
 	void setValue(String key, String value) {
-		if (key.equals(ProfileStore.KEY_UUID)) {
-			this.setUuid(UUID.fromString(value)) ;
+		Key k;
+		try {
+			k = Key.valueOf(key);
 		}
-		else if (key.equals(ProfileStore.KEY_DISPLAYORDER)) {
-			this.setDisplayOrder(Integer.parseInt(value));
+		catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return;
 		}
-		else if (key.equals(ProfileStore.KEY_PROFILENAME)) {
-			this.setName(value);
+		catch (NullPointerException e) {
+			e.printStackTrace();
+			return;
 		}
-		else if (key.equals(ProfileStore.KEY_RINGERMODE)) {
-			this.setRingerMode(RingerMode.valueOf(value));
+		setValue(k, value);
+	}
+
+	void setValue(Key key, String value) {
+		switch (key) {
+		case UUID:
+			setUuid(UUID.fromString(value)) ;
+			break;
+		case DISPLAYORDER:
+			setDisplayOrder(Integer.parseInt(value));
+			break;
+		case PROFILENAME:
+			setName(value);
+			break;
+		case RINGERMODE:
+			setRingerMode(RingerMode.valueOf(value));
+			break;
+		case RINGERMODELOCK:
+			setRingerModeLock(Boolean.parseBoolean(value));
+			break;
+		case ALARMVOLUME:
+			setAlarmVolume(Integer.parseInt(value));
+			break;
+		case ALARMVOLUMELOCK:
+			setAlarmVolumeLock(Boolean.parseBoolean(value));
+			break;
+		case MUSICVOLUME:
+			setMusicVolume(Integer.parseInt(value));
+			break;
+		case MUSICVOLUMELOCK:
+			setMusicVolumeLock(Boolean.parseBoolean(value));
+			break;
+		case RINGVOLUME:
+			setRingVolume(Integer.parseInt(value));
+			break;
+		case RINGVOLUMELOCK:
+			setRingVolumeLock(Boolean.parseBoolean(value));
+			break;
+		case VOICECALLVALUME:
+			setVoiceCallVolume(Integer.parseInt(value));
+			break;
+		case VOICECALLVALUMELOCK:
+			setVoiceCallVolumeLock(Boolean.parseBoolean(value));
+			break;
 		}
-		else if (key.equals(ProfileStore.KEY_RINGERMODELOCK)) {
-			this.setRingerModeLock(Boolean.parseBoolean(value));
-		}
-		else if (key.equals(ProfileStore.KEY_ALARMVOLUME)) {
-			this.setAlarmVolume(Integer.parseInt(value));
-		}
-		else if (key.equals(ProfileStore.KEY_ALARMVOLUMELOCK)) {
-			this.setAlarmVolumeLock(Boolean.parseBoolean(value));
-		}
-		else if (key.equals(ProfileStore.KEY_MUSICVOLUME)) {
-			this.setMusicVolume(Integer.parseInt(value));
-		}
-		else if (key.equals(ProfileStore.KEY_MUSICVOLUMELOCK)) {
-			this.setMusicVolumeLock(Boolean.parseBoolean(value));
-		}
-		else if (key.equals(ProfileStore.KEY_RINGVOLUME)) {
-			this.setRingVolume(Integer.parseInt(value));
-		}
-		else if (key.equals(ProfileStore.KEY_RINGVOLUMELOCK)) {
-			this.setRingVolumeLock(Boolean.parseBoolean(value));
-		}
-		else if (key.equals(ProfileStore.KEY_VOICECALLVALUME)) {
-			this.setVoiceCallVolume(Integer.parseInt(value));
-		}
-		else if (key.equals(ProfileStore.KEY_VOICECALLVALUMELOCK)) {
-			this.setVoiceCallVolumeLock(Boolean.parseBoolean(value));
-		}
+	}
+
+	static Key[] listDataKeys() {
+		return Key.getDataKeys();
 	}
 
 	public int getVolume(StreamType type) {
@@ -375,10 +411,10 @@ public class VolumeProfile implements Parcelable {
     public void writeToText(BufferedWriter out) throws IOException {
     	out.write("<profile>");
     	out.newLine();
-    	for (String key : BACKUP_KEYS) {
+    	for (Key key : Key.getKeys()) {
     		String value = getValue(key);
     		if (value != null) {
-    			out.write(key + '=' + value );
+    			out.write(key.name() + '=' + value );
     			out.newLine();
     		}
     	}

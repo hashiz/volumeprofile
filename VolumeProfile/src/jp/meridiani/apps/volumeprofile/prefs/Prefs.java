@@ -67,6 +67,7 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		// request backup
 		BackupManager.dataChanged(mContext.getPackageName());
 	}
 }

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile.Key;
+
+import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -15,6 +18,7 @@ public class ProfileStore {
 	private static ProfileStore mInstance = null;
 
 	private SQLiteDatabase mDB;
+	private Context mContext;
 
 	private static final String DATABASE_NAME = "profilelist.db";
 	private static final int    DATABASE_VERSION = 1;
@@ -29,34 +33,7 @@ public class ProfileStore {
 	
 	private static final String DATA_TABLE_NAME = "profiledata";
 	
-	public static final String KEY_CURRENTPROFILE      = "CurrentProfile"     ;
-	public static final String KEY_UUID                = "Uuid"               ;
-	public static final String KEY_DISPLAYORDER        = "DisplayOrder"       ;
-	public static final String KEY_PROFILENAME         = "ProfileName"        ;
-	public static final String KEY_RINGERMODE          = "RingerMode"         ;
-	public static final String KEY_RINGERMODELOCK      = "RingerModeLock"     ;
-	public static final String KEY_ALARMVOLUME         = "AlarmVolume"        ;
-	public static final String KEY_ALARMVOLUMELOCK     = "AlarmVolumeLock"    ;
-	public static final String KEY_MUSICVOLUME         = "MusicVolume"        ;
-	public static final String KEY_MUSICVOLUMELOCK     = "MusicVolumeLock"    ;
-	public static final String KEY_RINGVOLUME          = "RingVolume"         ;
-	public static final String KEY_RINGVOLUMELOCK      = "RingVolumeLock"     ;
-	public static final String KEY_VOICECALLVALUME     = "VoiceCallValume"    ;
-	public static final String KEY_VOICECALLVALUMELOCK = "VoiceCallValumeLock";
-
-	private static final String[] PROFILE_DATA_KEYS = new String[] {
-		KEY_PROFILENAME         ,
-		KEY_RINGERMODE          ,
-		KEY_RINGERMODELOCK      ,
-		KEY_ALARMVOLUME         ,
-		KEY_ALARMVOLUMELOCK     ,
-		KEY_MUSICVOLUME         ,
-		KEY_MUSICVOLUMELOCK     ,
-		KEY_RINGVOLUME          ,
-		KEY_RINGVOLUMELOCK      ,
-		KEY_VOICECALLVALUME     ,
-		KEY_VOICECALLVALUMELOCK ,
-	};
+	private static final String KEY_CURRENTPROFILE      = "CurrentProfile"     ;
 
 	private static class DBHelper extends SQLiteOpenHelper {
 
@@ -87,6 +64,7 @@ public class ProfileStore {
 
 	private ProfileStore(Context context) {
 		mDB = new DBHelper(context).getWritableDatabase();
+		mContext = context;
 	}
 
 	public static synchronized ProfileStore getInstance(Context context) {
@@ -126,6 +104,7 @@ public class ProfileStore {
 						new String[]{profile.getUuid().toString()});
 			}
 			mDB.setTransactionSuccessful();
+			requestBackup();
 		}
 		finally {
 			mDB.endTransaction();
@@ -172,19 +151,20 @@ public class ProfileStore {
 				}
 			}
 			// update/insert data
-			for (String key : PROFILE_DATA_KEYS) {
+			for (Key key : VolumeProfile.listDataKeys()) {
 				values.clear();
 				values.put(COL_VALUE, profile.getValue(key));
 				int rows = mDB.update(DATA_TABLE_NAME, values,
 						String.format("%1$s=? and %2$s=?", COL_UUID, COL_KEY),
-						new String[]{profile.getUuid().toString(), key});
+						new String[]{profile.getUuid().toString(), key.name()});
 				if (rows < 1) {
 					values.put(COL_UUID, profile.getUuid().toString());
-					values.put(COL_KEY, key);
+					values.put(COL_KEY, key.name());
 					mDB.insert(DATA_TABLE_NAME, null, values);
 				}
 			}
 			mDB.setTransactionSuccessful();
+			requestBackup();
 		}
 		finally {
 			mDB.endTransaction();
@@ -204,6 +184,7 @@ public class ProfileStore {
 			mDB.delete(LIST_TABLE_NAME, COL_UUID+"=?", new String[]{profileId.toString()});
 
 			mDB.setTransactionSuccessful();
+			requestBackup();
 		}
 		finally {
 			mDB.endTransaction();
@@ -256,5 +237,9 @@ public class ProfileStore {
 		finally {
 			mDB.endTransaction();
 		}
+	}
+
+	private void requestBackup() {
+		BackupManager.dataChanged(mContext.getPackageName());
 	}
 }

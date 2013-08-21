@@ -1,6 +1,9 @@
 package jp.meridiani.apps.volumeprofile.prefs;
 
 import jp.meridiani.apps.volumeprofile.R;
+import android.app.backup.BackupManager;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.FragmentActivity;
@@ -16,14 +19,21 @@ public class PreferencesActivity extends FragmentActivity {
 
     }
 
-	public static class PrefsFragment extends PreferenceFragment {
+	public static class PrefsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 
 			addPreferencesFromResource(R.xml.prefs);
+			getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		}
 
+		@Override
+		public void onSharedPreferenceChanged(
+				SharedPreferences sharedPreferences, String key) {
+			// request backup
+			BackupManager.dataChanged(getActivity().getPackageName());
+		}
 	}
 }
