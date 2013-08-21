@@ -15,7 +15,6 @@
     <string name="alarm_volume_title">Alarm</string>
     <string name="music_volume_title">Music/Media</string>
     <string name="ring_volume_title">Ring/Notification</string>
-    <string name="system_volume_title">System</string>
     <string name="voicecall_volume_title">Voice Call</string>
     <string name="ringer_mode_normal">Normal</string>
     <string name="ringer_mode_vibrate">Vibrate</string>
@@ -23,8 +22,8 @@
     <string name="zerozero">00/00</string>
     <string name="page_title_volumeedit">Volumes</string>
     <string name="page_title_profileedit">Profiles</string>
-    <string name="msg_profile_notfound">Profile "%1$s" not found.</string>
-    <string name="msg_profile_applied">Profile "%1$s" applied.</string>
+    <string name="msg_profile_notfound">"%1$s" not found.</string>
+    <string name="msg_profile_applied">"%1$s" applied.</string>
     <string name="vibrate_on_profile_change">Vibrate</string>
     <string name="display_toast_on_profile_change">Display Toast</string>
     <string name="play_sound_on_volume_change">Play Sound</string>

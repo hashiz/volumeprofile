@@ -13,11 +13,10 @@
     <string name="ringer_mode_sirent">サイレント</string>
     <string name="ringer_mode_title">着信音モード</string>
     <string name="ringer_mode_vibrate">バイブレーション</string>
-    <string name="system_volume_title">システム</string>
     <string name="voicecall_volume_title">通話音</string>
     <string name="display_toast_on_profile_change">Toast表示</string>
-    <string name="msg_profile_notfound">プロファイル"%1$s"が見つかりません</string>
-    <string name="msg_profile_applied">プロファイル"%1$s"を適用しました</string>
+    <string name="msg_profile_notfound">%1$s が見つかりません</string>
+    <string name="msg_profile_applied">%1$s を適用しました</string>
     <string name="play_sound_on_volume_change">音を鳴らす</string>
     <string name="vibrate_on_profile_change">バイブレーション</string>
     <string name="action_delete_profile">削除</string>
