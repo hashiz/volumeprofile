@@ -43,7 +43,7 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 
 		View rootView = getView();
 
-		// lock checkbox listner
+		// lock checkbox listener
 		OnCheckedChangeListener listner = new OnCheckedChangeListener() {
 			
 			@Override
