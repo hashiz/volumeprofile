@@ -3,6 +3,7 @@ package jp.meridiani.apps.volumeprofile.backup;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -19,6 +20,7 @@ public class ProfileStoreBackupHelper implements BackupHelper {
 
 	private Context mContext = null;
 	private static final String ENTITYKEY = "profilelist";
+	private static final byte[] DUMMY = "dummy".getBytes();
 
 	public ProfileStoreBackupHelper(Context context) {
 		mContext = context;
@@ -27,23 +29,17 @@ public class ProfileStoreBackupHelper implements BackupHelper {
 	@Override
 	public void performBackup(ParcelFileDescriptor oldState,
 			BackupDataOutput data, ParcelFileDescriptor newState) {
-		ProfileStore store = ProfileStore.getInstance(mContext);
-		ByteArrayOutputStream buf = new ByteArrayOutputStream();
-		BufferedWriter wtr = new BufferedWriter(new OutputStreamWriter(buf));
-		try {
-			wtr.write("<profilelist>");
-			wtr.newLine();
-			for (VolumeProfile profile : store.listProfiles()) {
-				profile.writeToText(wtr);
+		byte[] savedata = getSaveData();
+		if (savedata != null) {
+			try {
+				data.writeEntityHeader(ENTITYKEY, savedata.length);
+				data.writeEntityData(savedata, savedata.length);
+				FileOutputStream newOut = new FileOutputStream(newState.getFileDescriptor());
+				newOut.write(DUMMY);
+				newOut.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			wtr.write("</profilelist>");
-			wtr.newLine();
-			wtr.flush();
-			byte [] bytes = buf.toByteArray();
-			data.writeEntityHeader(ENTITYKEY, bytes.length);
-			data.writeEntityData(buf.toByteArray(), bytes.length);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -64,7 +60,34 @@ public class ProfileStoreBackupHelper implements BackupHelper {
 		}
 	}
 
+	private byte[] getSaveData() {
+		ProfileStore store = ProfileStore.getInstance(mContext);
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
+		BufferedWriter wtr = new BufferedWriter(new OutputStreamWriter(buf));
+		try {
+			wtr.write("<profilelist>");
+			wtr.newLine();
+			for (VolumeProfile profile : store.listProfiles()) {
+				profile.writeToText(wtr);
+			}
+			wtr.write("</profilelist>");
+			wtr.newLine();
+			wtr.flush();
+			return buf.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	@Override
 	public void writeNewStateDescription(ParcelFileDescriptor newState) {
+		try {
+			FileOutputStream newOut = new FileOutputStream(newState.getFileDescriptor());
+			newOut.write(DUMMY);
+			newOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

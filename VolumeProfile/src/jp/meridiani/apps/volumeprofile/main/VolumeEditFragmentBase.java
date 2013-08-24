@@ -133,6 +133,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		// Volumes
 		// set listener
 		OnSeekBarChangeListener seekBarListener = new OnSeekBarChangeListener() {
+
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
