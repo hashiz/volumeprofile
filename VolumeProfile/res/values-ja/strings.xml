@@ -8,7 +8,9 @@
     <string name="music_volume_title">音楽/メディア</string>
     <string name="page_title_profileedit">プロファイル</string>
     <string name="page_title_volumeedit">ボリューム</string>
-    <string name="ring_volume_title">着信/通知</string>
+    <string name="ring_volume_title">着信</string>
+	<string name="notification_volume_title">通知</string>
+	<string name="ring_notification_volume_title">着信/通知</string>
     <string name="ringer_mode_normal">通常</string>
     <string name="ringer_mode_sirent">サイレント</string>
     <string name="ringer_mode_title">着信音モード</string>

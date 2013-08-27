@@ -6,6 +6,7 @@ import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 public abstract class VolumeEditFragmentBase extends Fragment {
+
+	private static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
 
 	private class RingerModeItem {
 		private RingerMode mRingerMode = null;
@@ -92,6 +95,27 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		ringerModeView.setAdapter(adapter);
 
+		// Check notification volume can change
+		boolean hasNotification = false;
+		boolean hasSystem = false;
+		for (String volset : Settings.System.VOLUME_SETTINGS) {
+			if (volset.equals(Settings.System.VOLUME_NOTIFICATION)) {
+				hasNotification = true;
+			}
+			else if (volset.equals(Settings.System.VOLUME_SYSTEM)) {
+				hasSystem = true;
+			}
+		}
+		View container = rootView.findViewById(R.id.notification_volume_container);
+		TextView ringTitle = (TextView)rootView.findViewById(R.id.ring_volume_text);
+		if (hasNotification) {
+			container.setVisibility(View.VISIBLE);
+			ringTitle.setText(R.string.ring_volume_title);
+		}
+		else {
+			container.setVisibility(View.INVISIBLE);
+			ringTitle.setText(R.string.ring_notification_volume_title);
+		}
 	};
 
 	@Override
@@ -191,6 +215,9 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		case R.id.ring_volume_value:
 		case R.id.ring_volume_seekBar:
 			return StreamType.RING;
+		case R.id.notification_volume_value:
+		case R.id.notification_volume_seekBar:
+			return StreamType.NOTIFICATION;
 		case R.id.voicecall_volume_value:
 		case R.id.voicecall_volume_seekBar:
 			return StreamType.VOICE_CALL;
@@ -212,11 +239,12 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		case RING:
 			id = R.id.ring_volume_value;
 			break;
+		case NOTIFICATION:
+			id = R.id.notification_volume_value;
+			break;
 		case VOICE_CALL:
 			id = R.id.voicecall_volume_value;
 			break;
-		default:
-			return null;
 		}
 		return (TextView)rootView.findViewById(id);
 	}
@@ -237,11 +265,12 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		case RING:
 			id = R.id.ring_volume_seekBar;
 			break;
+		case NOTIFICATION:
+			id = R.id.notification_volume_seekBar;
+			break;
 		case VOICE_CALL:
 			id = R.id.voicecall_volume_seekBar;
 			break;
-		default:
-			return null;
 		}
 		return (SeekBar)rootView.findViewById(id);
 	}
@@ -278,6 +307,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 				StreamType.ALARM,
 				StreamType.MUSIC,
 				StreamType.RING,
+				StreamType.NOTIFICATION,
 				StreamType.VOICE_CALL}) {
 
 			updateVolume(streamType, newListener);

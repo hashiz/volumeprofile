@@ -24,6 +24,8 @@ public class VolumeProfile implements Parcelable {
 		MUSICVOLUMELOCK,
 		RINGVOLUME,
 		RINGVOLUMELOCK,
+		NOTIFICATIONVOLUME,
+		NOTIFICATIONVOLUMELOCK,
 		VOICECALLVALUME,
 		VOICECALLVALUMELOCK;
 
@@ -64,6 +66,8 @@ public class VolumeProfile implements Parcelable {
 	private boolean mMusicVolumeLock;
 	private int mRingVolume;
 	private boolean mRingVolumeLock;
+	private int mNotificationVolume;
+	private boolean mNotificationVolumeLock;
 	private int mVoiceCallVolume;
 	private boolean mVoiceCallVolumeLock;
 
@@ -116,6 +120,10 @@ public class VolumeProfile implements Parcelable {
 			return Integer.toString(getRingVolume());
 		case RINGVOLUMELOCK:
 			return Boolean.toString(getRingVolumeLock());
+		case NOTIFICATIONVOLUME:
+			return Integer.toString(getNotificationVolume());
+		case NOTIFICATIONVOLUMELOCK:
+			return Boolean.toString(getNotificationVolumeLock());
 		case VOICECALLVALUME:
 			return Integer.toString(getVoiceCallVolume());
 		case VOICECALLVALUMELOCK:
@@ -175,6 +183,12 @@ public class VolumeProfile implements Parcelable {
 		case RINGVOLUMELOCK:
 			setRingVolumeLock(Boolean.parseBoolean(value));
 			break;
+		case NOTIFICATIONVOLUME:
+			setNotificationVolume(Integer.parseInt(value));
+			break;
+		case NOTIFICATIONVOLUMELOCK:
+			setNotificationVolumeLock(Boolean.parseBoolean(value));
+			break;
 		case VOICECALLVALUME:
 			setVoiceCallVolume(Integer.parseInt(value));
 			break;
@@ -196,6 +210,8 @@ public class VolumeProfile implements Parcelable {
 			return getMusicVolume();
 		case RING:
 			return getRingVolume();
+		case NOTIFICATION:
+			return getNotificationVolume();
 		case VOICE_CALL:
 			return getVoiceCallVolume();
 		}
@@ -213,6 +229,9 @@ public class VolumeProfile implements Parcelable {
 		case RING:
 			setRingVolume(volume);
 			break;
+		case NOTIFICATION:
+			setNotificationVolume(volume);
+			break;
 		case VOICE_CALL:
 			setVoiceCallVolume(volume);
 			break;
@@ -227,6 +246,8 @@ public class VolumeProfile implements Parcelable {
 			return getMusicVolumeLock();
 		case RING:
 			return getRingVolumeLock();
+		case NOTIFICATION:
+			return getNotificationVolumeLock();
 		case VOICE_CALL:
 			return getVoiceCallVolumeLock();
 		}
@@ -243,6 +264,9 @@ public class VolumeProfile implements Parcelable {
 			break;
 		case RING:
 			setRingVolumeLock(lock);
+			break;
+		case NOTIFICATION:
+			setNotificationVolumeLock(lock);
 			break;
 		case VOICE_CALL:
 			setVoiceCallVolumeLock(lock);
@@ -338,6 +362,22 @@ public class VolumeProfile implements Parcelable {
 		mRingVolumeLock = lock;
 	}
 
+	public int getNotificationVolume() {
+		return mNotificationVolume;
+	}
+
+	public void setNotificationVolume(int volume) {
+		mNotificationVolume = volume;
+	}
+
+	public boolean getNotificationVolumeLock() {
+		return mNotificationVolumeLock;
+	}
+
+	public void setNotificationVolumeLock(boolean lock) {
+		mNotificationVolumeLock = lock;
+	}
+
 	public int getVoiceCallVolume() {
 		return mVoiceCallVolume;
 	}
@@ -377,6 +417,8 @@ public class VolumeProfile implements Parcelable {
     	out.writeInt(mMusicVolumeLock ? 1 : 0);
     	out.writeInt(mRingVolume);
     	out.writeInt(mRingVolumeLock ? 1 : 0);
+    	out.writeInt(mNotificationVolume);
+    	out.writeInt(mNotificationVolumeLock ? 1 : 0);
     	out.writeInt(mVoiceCallVolume);
     	out.writeInt(mVoiceCallVolumeLock ? 1 : 0);
 	}
@@ -393,6 +435,8 @@ public class VolumeProfile implements Parcelable {
     	mMusicVolumeLock     = in.readInt() != 0;
     	mRingVolume          = in.readInt();
     	mRingVolumeLock      = in.readInt() != 0;
+    	mNotificationVolume  = in.readInt();
+    	mNotificationVolumeLock = in.readInt() != 0;
     	mVoiceCallVolume     = in.readInt();
     	mVoiceCallVolumeLock = in.readInt() != 0;
 	}

@@ -14,8 +14,10 @@
     <string name="ringer_mode_title">Ringer Mode</string>
     <string name="alarm_volume_title">Alarm</string>
     <string name="music_volume_title">Music/Media</string>
-    <string name="ring_volume_title">Ring/Notification</string>
-    <string name="voicecall_volume_title">Voice Call</string>
+    <string name="ring_volume_title">Ring</string>
+	<string name="notification_volume_title">Notification</string>
+	<string name="ring_notification_volume_title">Ring/Notification</string>
+	<string name="voicecall_volume_title">Voice Call</string>
     <string name="ringer_mode_normal">Normal</string>
     <string name="ringer_mode_vibrate">Vibrate</string>
     <string name="ringer_mode_sirent">Sirent</string>
@@ -43,6 +45,7 @@
 	<string name="alarm_volume_lock_title">Lock</string>
 	<string name="music_volume_lock_title">Lock</string>
 	<string name="ring_volume_lock_title">Lock</string>
+	<string name="notification_volume_lock_title">Lock</string>
 	<string name="voicecall_volume_lock_title">Lock</string>
 	<string name="drag_handle">Drag Handle</string>
 	<string name="profile_list_item">Dummy Profile Name</string>

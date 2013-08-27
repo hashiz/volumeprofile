@@ -18,6 +18,7 @@ public class AudioUtil {
 		ALARM,
 		MUSIC,
 		RING,
+		NOTIFICATION,
 		VOICE_CALL,
 	}
 
@@ -25,6 +26,7 @@ public class AudioUtil {
 		AudioManager.STREAM_ALARM,
 		AudioManager.STREAM_MUSIC,
 		AudioManager.STREAM_RING,
+		AudioManager.STREAM_NOTIFICATION,
 		AudioManager.STREAM_VOICE_CALL,
 	};
 
@@ -78,6 +80,8 @@ public class AudioUtil {
 			return AudioManager.STREAM_MUSIC;
 		case RING:
 			return AudioManager.STREAM_RING;
+		case NOTIFICATION:
+			return AudioManager.STREAM_NOTIFICATION;
 		case VOICE_CALL:
 			return AudioManager.STREAM_VOICE_CALL;
 		}
