@@ -29,7 +29,7 @@ public class PluginFireReceiver extends BroadcastReceiver {
 		UUID profileId = bundle.getProfileId();
 		Prefs prefs = Prefs.getInstance(context);
 		boolean displayToast = prefs.isDisplayToastOnProfileChange();
-		boolean viblate = prefs.isDisplayToastOnProfileChange();
+		boolean viblate = prefs.isVibrateOnProfileChange();
 		VolumeProfile profile = ProfileStore.getInstance(context).loadProfile(profileId);
 		if ( profile == null ) {
 			if (displayToast) {
@@ -40,8 +40,8 @@ public class PluginFireReceiver extends BroadcastReceiver {
 		}
 
 		AudioUtil audio = new AudioUtil(context);
-       audio.applyProfile(profile);
-       ProfileStore.getInstance(context).setCurrentProfile(profile.getUuid());
+		audio.applyProfile(profile);
+		ProfileStore.getInstance(context).setCurrentProfile(profile.getUuid());
 		if (displayToast) {
 			Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
 		}

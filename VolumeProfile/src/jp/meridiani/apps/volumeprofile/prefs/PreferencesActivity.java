@@ -26,8 +26,19 @@ public class PreferencesActivity extends FragmentActivity {
 			super.onCreate(savedInstanceState);
 
 			addPreferencesFromResource(R.xml.prefs);
-			getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		}
+
+		@Override
+		public void onResume() {
+			super.onResume();
+			getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+		};
+
+		@Override
+	    public void onPause() {
+			super.onPause();
+			getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+		};
 
 		@Override
 		public void onSharedPreferenceChanged(
