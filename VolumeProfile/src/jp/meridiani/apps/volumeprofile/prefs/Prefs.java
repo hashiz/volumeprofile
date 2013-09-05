@@ -1,5 +1,10 @@
 package jp.meridiani.apps.volumeprofile.prefs;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Map;
+
 import jp.meridiani.apps.volumeprofile.R;
 import android.app.backup.BackupManager;
 import android.content.Context;
@@ -16,12 +21,17 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	private static final String KEY_SOUNDLEVELALERTHACK         = "sound_level_alert_hack";
 
 	private Context mContext;
-	private SharedPreferences mPrefs;
+	private SharedPreferences mSharedPrefs;
+
+	public int getPrefsResId() {
+		return R.xml.prefs;
+	}
 
 	private Prefs(Context context) {
 		mContext = context;
-		mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-		PreferenceManager.setDefaultValues(context, R.xml.prefs, false);
+		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+		PreferenceManager.setDefaultValues(context, getPrefsResId(), false);
+		mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
 	}
 
 	public static synchronized Prefs getInstance(Context context) {
@@ -31,38 +41,85 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 		return mInstance;
 	}
 
+	public void finalize() throws Throwable {
+		try {
+			if (mSharedPrefs != null) {
+				mSharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
+			}
+		}
+		finally {
+			super.finalize();
+		}
+	}
+
+	private void setValue(String key, String value) {
+		Editor editor = mSharedPrefs.edit();
+		editor.putString(key, value);
+		editor.apply();
+	}
+
 	private void setValue(String key, boolean value) {
-		Editor editor = mPrefs.edit();
+		Editor editor = mSharedPrefs.edit();
 		editor.putBoolean(key, value);
 		editor.apply();
 	}
 
 	public boolean isDisplayToastOnProfileChange() {
-		return mPrefs.getBoolean(KEY_DISPLAYTOASTONPROFILECHANGE, true);
+		return mSharedPrefs.getBoolean(KEY_DISPLAYTOASTONPROFILECHANGE, true);
 	}
 	public void setDisplayToastOnProfileChange(boolean value) {
 		setValue(KEY_DISPLAYTOASTONPROFILECHANGE, value);
 	}
 
 	public boolean isVibrateOnProfileChange() {
-		return mPrefs.getBoolean(KEY_VIBRATEONPROFILECHANGE, true);
+		return mSharedPrefs.getBoolean(KEY_VIBRATEONPROFILECHANGE, true);
 	}
 	public void setVibrateOnProfileChange(boolean value) {
 		setValue(KEY_VIBRATEONPROFILECHANGE, value);
 	}
 
 	public boolean isPlaySoundOnVolumeChange() {
-		return mPrefs.getBoolean(KEY_PLAYSOUNDONVOLUMECHANGE, true);
+		return mSharedPrefs.getBoolean(KEY_PLAYSOUNDONVOLUMECHANGE, true);
 	}
 	public void setPlaySoundOnVolumeChange(boolean value) {
 		setValue(KEY_PLAYSOUNDONVOLUMECHANGE, value);
 	}
 
 	public boolean isSoundLevelAlertHack() {
-		return mPrefs.getBoolean(KEY_SOUNDLEVELALERTHACK, true);
+		return mSharedPrefs.getBoolean(KEY_SOUNDLEVELALERTHACK, true);
 	}
 	public void setSoundLevelAlertHack(boolean value) {
 		setValue(KEY_SOUNDLEVELALERTHACK, value);
+	}
+
+	public void writeToText(BufferedWriter wtr) throws IOException {
+		Map <String, ?> map = mSharedPrefs.getAll();
+		for (String key : map.keySet()) {
+			wtr.write(key + "=" + map.get(key));
+			wtr.newLine();
+		}
+	}
+
+	public void setFromText(BufferedReader rdr, String start, String end) throws IOException {
+    	String line;
+    	boolean started = false;
+		while ((line = rdr.readLine()) != null) {
+			if (started) {
+				if (line.equals(end)) {
+					break;
+				}
+				String[] tmp = line.split("=", 2);
+				if (tmp.length < 2) {
+					continue;
+				}
+				setValue(tmp[0], tmp[1]);
+			}
+			else {
+				if (line.equals(start)) {
+					started = true;
+				}
+			}
+		}
 	}
 
 	@Override

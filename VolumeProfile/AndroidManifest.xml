@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="jp.meridiani.apps.volumeprofile"
     android:installLocation="auto"
-    android:versionCode="1001"
-    android:versionName="1.1" >
+    android:versionCode="1002"
+    android:versionName="1.2" >
 
     <uses-sdk
         android:minSdkVersion="14"
