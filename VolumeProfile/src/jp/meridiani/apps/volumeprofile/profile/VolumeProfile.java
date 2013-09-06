@@ -12,6 +12,9 @@ import android.os.Parcelable;
 
 public class VolumeProfile implements Parcelable {
 
+	private static final String PROFILE_START = "<profile>";
+	private static final String PROFILE_END   = "</profile>";
+
 	public static enum Key {
 		UUID,
 		DISPLAYORDER,
@@ -453,7 +456,7 @@ public class VolumeProfile implements Parcelable {
 
     // for backup
     public void writeToText(BufferedWriter out) throws IOException {
-    	out.write("<profile>");
+    	out.write(PROFILE_START);
     	out.newLine();
     	for (Key key : Key.getKeys()) {
     		String value = getValue(key);
@@ -462,17 +465,17 @@ public class VolumeProfile implements Parcelable {
     			out.newLine();
     		}
     	}
-    	out.write("</profile>");
+    	out.write(PROFILE_END);
     	out.newLine();
     }
 
-    public static VolumeProfile createFromText(BufferedReader rdr, String start, String end) throws IOException {
+    public static VolumeProfile createFromText(BufferedReader rdr) throws IOException {
     	VolumeProfile profile = null;
     	boolean started = false;
     	String line;
 		while ((line = rdr.readLine()) != null) {
-			if (started ) {
-				if (line.equals(end)) {
+			if (started) {
+				if (PROFILE_END.equals(line)) {
 					break;
 				}
 				String[] tmp = line.split("=", 2);
@@ -482,7 +485,7 @@ public class VolumeProfile implements Parcelable {
 				profile.setValue(tmp[0], tmp[1]);
 			}
 			else {
-				if (line.equals(start)) {
+				if (PROFILE_START.equals(line)) {
 					started = true;
 					profile = new VolumeProfile();
 				}

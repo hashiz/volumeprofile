@@ -10,19 +10,14 @@ import java.io.OutputStreamWriter;
 
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
-import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.app.backup.BackupAgent;
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.os.ParcelFileDescriptor;
 
 public class DataBackup extends BackupAgent {
-	private static final String KEY_PREFS = "prefs";
-	private static final String KEY_PROFS = "profiles";
-	private static final String PREFS_START = "<preferences>";
-	private static final String PREFS_END   = "</preferences>";
-	private static final String PROFS_START = "<profilelist>";
-	private static final String PROFS_END   = "</profilelist>";
+	private static final String KEY_PREFERENCES = "preferences";
+	private static final String KEY_PROFILES    = "profiles";
 
 	
 	@Override
@@ -32,7 +27,7 @@ public class DataBackup extends BackupAgent {
 		byte[] prefsData = getPrefsData();
 		if (prefsData != null) {
 			try {
-				data.writeEntityHeader(KEY_PROFS, prefsData.length);
+				data.writeEntityHeader(KEY_PREFERENCES, prefsData.length);
 				data.writeEntityData(prefsData, prefsData.length);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -43,7 +38,7 @@ public class DataBackup extends BackupAgent {
 		byte[] profilesData = getProfilesData();
 		if (profilesData != null) {
 			try {
-				data.writeEntityHeader(KEY_PROFS, profilesData.length);
+				data.writeEntityHeader(KEY_PROFILES, profilesData.length);
 				data.writeEntityData(profilesData, profilesData.length);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -56,12 +51,7 @@ public class DataBackup extends BackupAgent {
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		BufferedWriter wtr = new BufferedWriter(new OutputStreamWriter(buf));
 		try {
-			
-			wtr.write(PREFS_START);
-			wtr.newLine();
 			prefs.writeToText(wtr);
-			wtr.write(PREFS_END);
-			wtr.newLine();
 			wtr.flush();
 			return buf.toByteArray();
 		} catch (IOException e) {
@@ -75,13 +65,7 @@ public class DataBackup extends BackupAgent {
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		BufferedWriter wtr = new BufferedWriter(new OutputStreamWriter(buf));
 		try {
-			for (VolumeProfile profile : store.listProfiles()) {
-				wtr.write(PROFS_START);
-				wtr.newLine();
-				profile.writeToText(wtr);
-				wtr.write(PROFS_END);
-				wtr.newLine();
-			}
+			store.writeToText(wtr);
 			wtr.flush();
 			return buf.toByteArray();
 		} catch (IOException e) {
@@ -92,27 +76,31 @@ public class DataBackup extends BackupAgent {
 
 	@Override
 	public void onRestore(BackupDataInput data, int appVersionCode, ParcelFileDescriptor newState) throws IOException {
-	     while (data.readNextHeader()) {
+		byte [] buffer = null;
+
+		while (data.readNextHeader()) {
 	         String key = data.getKey();
 	         int dataSize = data.getDataSize();
 
-	         if (key.equals(KEY_PREFS)) {
+	         if (KEY_PREFERENCES.equals(key)) {
 	             // process this kind of record here
-	             byte[] buffer = new byte[dataSize];
+	        	 if (buffer == null || buffer.length < dataSize) {
+		             buffer = new byte[dataSize];
+	        	 }
 	             data.readEntityData(buffer, 0, dataSize); // reads the entire entity at once
 		         ByteArrayInputStream in = new ByteArrayInputStream(buffer);
 	             BufferedReader rdr = new BufferedReader(new InputStreamReader(in));
 		         Prefs prefs = Prefs.getInstance(getApplicationContext());
-		         prefs.setFromText(rdr, PREFS_START, PREFS_END);
-	         } else if (key.equals(KEY_PROFS)) {
-	             byte[] buffer = new byte[dataSize];
+		         prefs.setFromText(rdr);
+	         } else if (KEY_PROFILES.equals(key)) {
+	        	 if (buffer == null || buffer.length < dataSize) {
+		             buffer = new byte[dataSize];
+	        	 }
 	             data.readEntityData(buffer, 0, dataSize); // reads the entire entity at once
 		         ByteArrayInputStream in = new ByteArrayInputStream(buffer);
 	             BufferedReader rdr = new BufferedReader(new InputStreamReader(in));
-	             VolumeProfile profile;
-	             while ((profile = VolumeProfile.createFromText(rdr, PROFS_START, PROFS_END)) != null) {
-	            	 ProfileStore.getInstance(getApplicationContext()).storeProfile(profile);
-	             }
+	             ProfileStore store = ProfileStore.getInstance(getApplicationContext());
+            	 store.readFromText(rdr);
 	         }
 	         else {
 	             data.skipEntityData();
