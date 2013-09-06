@@ -1,5 +1,6 @@
 package jp.meridiani.apps.volumeprofile.audio;
 
+import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.Context;
 import android.media.AudioManager;
@@ -38,6 +39,10 @@ public class AudioUtil {
 	public void applyProfile(VolumeProfile profile) {
 		for (int streamType : supportStreams ) {
 			int volume = profile.getVolume(getStreamType(streamType));
+			if (streamType == AudioManager.STREAM_NOTIFICATION &&
+					Prefs.getInstance(mContext).isVolumeLinkNotification()) {
+				volume = profile.getRingVolume();
+			}
 			mAmgr.setStreamVolume(streamType, volume, 0);
 		}
 		switch (profile.getRingerMode()) {

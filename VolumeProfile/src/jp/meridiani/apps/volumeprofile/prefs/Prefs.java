@@ -23,6 +23,9 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	private static final String PREFS_START = "<preferences>";
 	private static final String PREFS_END   = "</preferences>";
 
+	// for cyanogenmod
+	private static final String SYSTEM_VOLUME_LINK_NOTIFICATION = "volume_link_notification";
+
 	private Context mContext;
 	private SharedPreferences mSharedPrefs;
 
@@ -100,6 +103,11 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 			wtr.write(key + "=" + map.get(key)); wtr.newLine();
 		}
 		wtr.write(PREFS_END); wtr.newLine();
+	}
+
+	public boolean isVolumeLinkNotification() {
+		int linkNotification = 	android.provider.Settings.System.getInt(mContext.getContentResolver(), SYSTEM_VOLUME_LINK_NOTIFICATION, 1);
+		return linkNotification == 1;
 	}
 
 	public void setFromText(BufferedReader rdr) throws IOException {
