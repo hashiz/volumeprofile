@@ -1,5 +1,8 @@
 package jp.meridiani.apps.volumeprofile.profile;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +19,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class ProfileStore {
 
 	private static ProfileStore mInstance = null;
-
+	
 	private SQLiteDatabase mDB;
 	private Context mContext;
 
@@ -35,6 +38,9 @@ public class ProfileStore {
 	
 	private static final String KEY_CURRENTPROFILE      = "CurrentProfile"     ;
 
+	private static final String PROFILES_START = "<profiles>";
+	private static final String PROFILES_END   = "</profiles>";
+	
 	private static class DBHelper extends SQLiteOpenHelper {
 
 		public DBHelper(Context context) {
@@ -236,6 +242,26 @@ public class ProfileStore {
 		}
 		finally {
 			mDB.endTransaction();
+		}
+	}
+
+	public void writeToText(BufferedWriter wtr) throws IOException {
+		wtr.write(PROFILES_START); wtr.newLine();
+		for (VolumeProfile profile : listProfiles()) {
+			profile.writeToText(wtr);
+		}
+		wtr.write(PROFILES_END); wtr.newLine();
+	}
+
+	public void readFromText(BufferedReader rdr) throws IOException {
+    	String line;
+		while ((line = rdr.readLine()) != null) {
+			if (PROFILES_START.equals(line)) {
+	            VolumeProfile profile;
+	            while ((profile = VolumeProfile.createFromText(rdr)) != null) {
+	            	storeProfile(profile);
+	            }
+			}
 		}
 	}
 

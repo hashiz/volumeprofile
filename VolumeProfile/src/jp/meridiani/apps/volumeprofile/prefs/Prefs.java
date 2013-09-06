@@ -20,6 +20,9 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	private static final String KEY_PLAYSOUNDONVOLUMECHANGE     = "play_sound_on_volume_change";
 	private static final String KEY_SOUNDLEVELALERTHACK         = "sound_level_alert_hack";
 
+	private static final String PREFS_START = "<preferences>";
+	private static final String PREFS_END   = "</preferences>";
+
 	private Context mContext;
 	private SharedPreferences mSharedPrefs;
 
@@ -53,9 +56,7 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	}
 
 	private void setValue(String key, String value) {
-		Editor editor = mSharedPrefs.edit();
-		editor.putString(key, value);
-		editor.apply();
+		setValue(key, Boolean.parseBoolean(value));
 	}
 
 	private void setValue(String key, boolean value) {
@@ -94,18 +95,19 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 
 	public void writeToText(BufferedWriter wtr) throws IOException {
 		Map <String, ?> map = mSharedPrefs.getAll();
+		wtr.write(PREFS_START); wtr.newLine();
 		for (String key : map.keySet()) {
-			wtr.write(key + "=" + map.get(key));
-			wtr.newLine();
+			wtr.write(key + "=" + map.get(key)); wtr.newLine();
 		}
+		wtr.write(PREFS_END); wtr.newLine();
 	}
 
-	public void setFromText(BufferedReader rdr, String start, String end) throws IOException {
+	public void setFromText(BufferedReader rdr) throws IOException {
     	String line;
     	boolean started = false;
 		while ((line = rdr.readLine()) != null) {
 			if (started) {
-				if (line.equals(end)) {
+				if (PREFS_END.equals(line)) {
 					break;
 				}
 				String[] tmp = line.split("=", 2);
@@ -115,7 +117,7 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 				setValue(tmp[0], tmp[1]);
 			}
 			else {
-				if (line.equals(start)) {
+				if (PREFS_START.equals(line)) {
 					started = true;
 				}
 			}
