@@ -49,7 +49,7 @@ public class ProfileStoreBackupHelper implements BackupHelper {
 		try {
 			String key = data.getKey();
 			if (ENTITYKEY.equals(key)) {
-				VolumeProfile profile = VolumeProfile.createFromText(rdr);
+				VolumeProfile profile = VolumeProfile.createFromText(rdr, "<profilelist>", "</profilelist>");
 				if (profile != null) {
 					ProfileStore.getInstance(mContext).storeProfile(profile);
 				}

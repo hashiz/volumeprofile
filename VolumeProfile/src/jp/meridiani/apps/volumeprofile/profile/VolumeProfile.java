@@ -466,13 +466,13 @@ public class VolumeProfile implements Parcelable {
     	out.newLine();
     }
 
-    public static VolumeProfile createFromText(BufferedReader in) throws IOException {
+    public static VolumeProfile createFromText(BufferedReader rdr, String start, String end) throws IOException {
     	VolumeProfile profile = null;
-    	boolean inProfile = false;
+    	boolean started = false;
     	String line;
-		while ((line = in.readLine()) != null) {
-			if (inProfile ) {
-				if (line.equals("</profile>")) {
+		while ((line = rdr.readLine()) != null) {
+			if (started ) {
+				if (line.equals(end)) {
 					break;
 				}
 				String[] tmp = line.split("=", 2);
@@ -482,8 +482,8 @@ public class VolumeProfile implements Parcelable {
 				profile.setValue(tmp[0], tmp[1]);
 			}
 			else {
-				if (line.equals("<profile>")) {
-					inProfile = true;
+				if (line.equals(start)) {
+					started = true;
 					profile = new VolumeProfile();
 				}
 			}
