@@ -13,6 +13,9 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.SeekBar;
 
 public class VolumeEditFragment extends VolumeEditFragmentBase {
 	
@@ -47,10 +50,6 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 				    if (volume < 0) {
 				    	return;
 				    }
-				    int prevVolume = intent.getIntExtra(EXTRA_PREV_VOLUME_STREAM_VALUE, -1);
-				    if (volume == prevVolume) {
-				    	return;
-				    }
 				    updateVolume(AudioUtil.getStreamType(type));
 				}
 				else if (AudioManager.RINGER_MODE_CHANGED_ACTION.equals(action)) {
@@ -73,13 +72,14 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 		super.onResume();
 
 		View rootView = getView();
-		View notificationContainer = rootView.findViewById(R.id.notification_volume_container);
-		Prefs prefs = Prefs.getInstance(getActivity());
+		final SeekBar notificationSeekBar = (SeekBar)rootView.findViewById(R.id.notification_volume_seekBar);
+		final SeekBar ringSeekBar = (SeekBar)rootView.findViewById(R.id.ring_volume_seekBar);
+		final Prefs prefs = Prefs.getInstance(getActivity());
 		if (prefs.isVolumeLinkNotification()) {
-			notificationContainer.setEnabled(false);
+			notificationSeekBar.setEnabled(false);
 		}
 		else {
-			notificationContainer.setEnabled(true);
+			notificationSeekBar.setEnabled(true);
 		}
 
 		View linkContainer = rootView.findViewById(R.id.link_notification_volume_container);
@@ -87,6 +87,21 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 		linkCheckbox.setChecked(prefs.isVolumeLinkNotification());
 		linkCheckbox.setEnabled(prefs.hasVolumeLinkNotification());
 
+		linkCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
+				if (isChecked) {
+					notificationSeekBar.setProgress(ringSeekBar.getProgress());
+					setVolume(StreamType.NOTIFICATION, getVolume(StreamType.RING));
+					notificationSeekBar.setEnabled(false);
+					prefs.setVolumeLinkNotification(true);
+				}
+				else {
+					notificationSeekBar.setEnabled(true);
+					prefs.setVolumeLinkNotification(false);
+				}
+			}
+		});
 		getActivity().registerReceiver(mReceiver, mFilter);
 	}
 
@@ -110,7 +125,11 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 	}
 
 	protected void setVolume(StreamType type, int volume) {
-		mAudio.setVolume(type, volume, Prefs.getInstance(getActivity()).isPlaySoundOnVolumeChange());
+		Prefs prefs = Prefs.getInstance(getActivity());
+		mAudio.setVolume(type, volume, prefs.isPlaySoundOnVolumeChange());
+		if (type == StreamType.RING && prefs.isVolumeLinkNotification()) {
+			mAudio.setVolume(StreamType.NOTIFICATION, volume, false);
+		}
 	}
 
 	protected int getMaxVolume(StreamType type) {

@@ -101,6 +101,8 @@ public class AudioUtil {
 			return StreamType.MUSIC;
 		case AudioManager.STREAM_RING:
 			return StreamType.RING;
+		case AudioManager.STREAM_NOTIFICATION:
+			return StreamType.NOTIFICATION;
 		case AudioManager.STREAM_VOICE_CALL:
 			return StreamType.VOICE_CALL;
 		}

@@ -137,7 +137,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
-				StreamType type = findStreamType(seekBar.getId());
+ 				StreamType type = findStreamType(seekBar.getId());
 				if (type == null) {
 					return;
 				}

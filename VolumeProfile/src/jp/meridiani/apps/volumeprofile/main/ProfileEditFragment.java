@@ -191,6 +191,9 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 		case RING:
 			id = R.id.ring_volume_lock;
 			break;
+		case NOTIFICATION:
+			id = R.id.notification_volume_lock;
+			break;
 		case VOICE_CALL:
 			id = R.id.voicecall_volume_lock;
 			break;
@@ -207,6 +210,7 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 				StreamType.ALARM,
 				StreamType.MUSIC,
 				StreamType.RING,
+				StreamType.NOTIFICATION,
 				StreamType.VOICE_CALL}) {
 
 			updateVolumeLock(streamType);
