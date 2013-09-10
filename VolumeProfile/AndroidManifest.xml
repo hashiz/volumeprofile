@@ -10,6 +10,7 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="18" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <application
         android:allowBackup="true"
@@ -63,7 +64,7 @@
             >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".profile.VolumeProfileActivity" />
+                android:value=".main.VolumeProfileActivity" />
         </activity>
         <activity
             android:name=".main.ProfileEditActivity"
@@ -71,7 +72,7 @@
             >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".profile.VolumeProfileActivity" />
+                android:value=".main.VolumeProfileActivity" />
         </activity>
     </application>
 

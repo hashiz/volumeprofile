@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".profile.VolumeEditFragment" >
+    tools:context=".main.VolumeEditFragment" >
     
     <LinearLayout
         android:layout_width="match_parent"
@@ -273,6 +273,27 @@
                     android:text="@string/zerozero" />
             </RelativeLayout>
         </LinearLayout>
+
+<!-- Link Notification and Ringer Volume 
+ -->
+
+        <LinearLayout
+            android:id="@+id/link_notification_volume_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin" >
+
+	        <CheckBox
+	            android:id="@+id/link_notification_volume_checkbox"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/link_notification_and_ringer_volume" />
+
+	    </LinearLayout>
+
+<!-- Voice Call Volume 
+ -->
 
 <!-- Notification Volume 
  -->
