@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.provider.Settings.SettingNotFoundException;
 
 public class Prefs implements OnSharedPreferenceChangeListener {
 	private static Prefs mInstance = null;
@@ -103,6 +104,26 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 			wtr.write(key + "=" + map.get(key)); wtr.newLine();
 		}
 		wtr.write(PREFS_END); wtr.newLine();
+	}
+
+	public boolean hasVolumeLinkNotification() {
+		try {
+			android.provider.Settings.System.getInt(mContext.getContentResolver(), SYSTEM_VOLUME_LINK_NOTIFICATION);
+			return true;
+		} catch (SettingNotFoundException e) {
+			return false;
+		}
+	}
+
+	public void setVolumeLinkNotification(boolean link) {
+		if (! hasVolumeLinkNotification()) {
+			return;
+		}
+		int value = 0;
+		if (link) {
+			value = 1;
+		}
+		android.provider.Settings.System.putInt(mContext.getContentResolver(), SYSTEM_VOLUME_LINK_NOTIFICATION, value);
 	}
 
 	public boolean isVolumeLinkNotification() {

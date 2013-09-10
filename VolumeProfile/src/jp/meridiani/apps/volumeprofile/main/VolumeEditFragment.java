@@ -1,15 +1,18 @@
 package jp.meridiani.apps.volumeprofile.main;
 
+import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
+import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
-import jp.meridiani.apps.volumeprofile.prefs.Prefs;
+import android.view.View;
+import android.widget.CheckBox;
 
 public class VolumeEditFragment extends VolumeEditFragmentBase {
 	
@@ -68,6 +71,21 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		View rootView = getView();
+		View notificationContainer = rootView.findViewById(R.id.notification_volume_container);
+		Prefs prefs = Prefs.getInstance(getActivity());
+		if (prefs.isVolumeLinkNotification()) {
+			notificationContainer.setEnabled(false);
+		}
+		else {
+			notificationContainer.setEnabled(true);
+		}
+
+		View linkContainer = rootView.findViewById(R.id.link_notification_volume_container);
+		CheckBox linkCheckbox = (CheckBox)linkContainer.findViewById(R.id.link_notification_volume_checkbox);
+		linkCheckbox.setChecked(prefs.isVolumeLinkNotification());
+		linkCheckbox.setEnabled(prefs.hasVolumeLinkNotification());
 
 		getActivity().registerReceiver(mReceiver, mFilter);
 	}

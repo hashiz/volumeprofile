@@ -73,7 +73,6 @@ public class VolumeProfile implements Parcelable {
 	private boolean mNotificationVolumeLock;
 	private int mVoiceCallVolume;
 	private boolean mVoiceCallVolumeLock;
-
 	
 	VolumeProfile() {
 		this((UUID)null);

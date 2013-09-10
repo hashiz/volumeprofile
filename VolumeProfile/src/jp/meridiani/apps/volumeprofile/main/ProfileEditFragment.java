@@ -1,15 +1,15 @@
 package jp.meridiani.apps.volumeprofile.main;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class ProfileEditFragment extends VolumeEditFragmentBase {
 
@@ -92,6 +92,11 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		View rootView = getView();
+
+		View linkContainer = rootView.findViewById(R.id.link_notification_volume_container);
+		linkContainer.setVisibility(View.GONE);
 
 		updateLocks();
 	}

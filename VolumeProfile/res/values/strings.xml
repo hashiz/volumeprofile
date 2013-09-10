@@ -49,6 +49,7 @@
 	<string name="voicecall_volume_lock_title">Lock</string>
 	<string name="drag_handle">Drag Handle</string>
 	<string name="profile_list_item">Dummy Profile Name</string>
+	<string name="link_notification_and_ringer_volume">Link Notification and Ringer Volume</string>
 	
 <!-- do not translate blow -->
 	<string name="lock_checkbox_tag">lockCheckBoxTag</string>

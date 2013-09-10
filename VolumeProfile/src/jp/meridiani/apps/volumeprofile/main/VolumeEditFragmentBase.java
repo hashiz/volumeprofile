@@ -3,7 +3,6 @@ package jp.meridiani.apps.volumeprofile.main;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
-import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -98,18 +97,6 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		View rootView = getView();
-		View container = rootView.findViewById(R.id.notification_volume_container);
-		TextView ringTitle = (TextView)rootView.findViewById(R.id.ring_volume_text);
-		if (Prefs.getInstance(getActivity()).isVolumeLinkNotification()) {
-			container.setVisibility(View.INVISIBLE);
-			ringTitle.setText(R.string.ring_notification_volume_title);
-		}
-		else {
-			container.setVisibility(View.VISIBLE);
-			ringTitle.setText(R.string.ring_volume_title);
-		}
 
 		// update values
 
