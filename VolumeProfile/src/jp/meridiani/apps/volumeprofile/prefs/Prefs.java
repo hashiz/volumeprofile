@@ -16,10 +16,10 @@ import android.provider.Settings.SettingNotFoundException;
 
 public class Prefs implements OnSharedPreferenceChangeListener {
 	private static Prefs mInstance = null;
-	private static final String KEY_DISPLAYTOASTONPROFILECHANGE = "display_toast_on_profile_change";
-	private static final String KEY_VIBRATEONPROFILECHANGE      = "vibrate_on_profile_change";
-	private static final String KEY_PLAYSOUNDONVOLUMECHANGE     = "play_sound_on_volume_change";
-	private static final String KEY_SOUNDLEVELALERTHACK         = "sound_level_alert_hack";
+	static final String KEY_DISPLAYTOASTONPROFILECHANGE = "display_toast_on_profile_change";
+	static final String KEY_VIBRATEONPROFILECHANGE      = "vibrate_on_profile_change";
+	static final String KEY_PLAYSOUNDONVOLUMECHANGE     = "play_sound_on_volume_change";
+	static final String KEY_SOUNDLEVELALERTHACK         = "sound_level_alert_hack";
 
 	private static final String PREFS_START = "<preferences>";
 	private static final String PREFS_END   = "</preferences>";
@@ -60,10 +60,10 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	}
 
 	private void setValue(String key, String value) {
-		setValue(key, Boolean.parseBoolean(value));
+		setBooleanValue(key, Boolean.parseBoolean(value));
 	}
 
-	private void setValue(String key, boolean value) {
+	private void setBooleanValue(String key, boolean value) {
 		Editor editor = mSharedPrefs.edit();
 		editor.putBoolean(key, value);
 		editor.apply();
@@ -73,28 +73,28 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 		return mSharedPrefs.getBoolean(KEY_DISPLAYTOASTONPROFILECHANGE, true);
 	}
 	public void setDisplayToastOnProfileChange(boolean value) {
-		setValue(KEY_DISPLAYTOASTONPROFILECHANGE, value);
+		setBooleanValue(KEY_DISPLAYTOASTONPROFILECHANGE, value);
 	}
 
 	public boolean isVibrateOnProfileChange() {
 		return mSharedPrefs.getBoolean(KEY_VIBRATEONPROFILECHANGE, true);
 	}
 	public void setVibrateOnProfileChange(boolean value) {
-		setValue(KEY_VIBRATEONPROFILECHANGE, value);
+		setBooleanValue(KEY_VIBRATEONPROFILECHANGE, value);
 	}
 
 	public boolean isPlaySoundOnVolumeChange() {
 		return mSharedPrefs.getBoolean(KEY_PLAYSOUNDONVOLUMECHANGE, true);
 	}
 	public void setPlaySoundOnVolumeChange(boolean value) {
-		setValue(KEY_PLAYSOUNDONVOLUMECHANGE, value);
+		setBooleanValue(KEY_PLAYSOUNDONVOLUMECHANGE, value);
 	}
 
 	public boolean isSoundLevelAlertHack() {
 		return mSharedPrefs.getBoolean(KEY_SOUNDLEVELALERTHACK, true);
 	}
 	public void setSoundLevelAlertHack(boolean value) {
-		setValue(KEY_SOUNDLEVELALERTHACK, value);
+		setBooleanValue(KEY_SOUNDLEVELALERTHACK, value);
 	}
 
 	public void writeToText(BufferedWriter wtr) throws IOException {

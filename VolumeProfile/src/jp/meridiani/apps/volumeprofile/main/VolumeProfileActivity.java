@@ -21,6 +21,10 @@ import android.view.ViewGroup;
 public class VolumeProfileActivity extends FragmentActivity implements
 		ActionBar.TabListener, ProfileEditCallback {
 
+	private static final String LASTVIEWEDPAGE = "last_viewed_page";
+	private static final int STARTUPPAGE = 1;
+	private int mLastViewedPage = -1;
+
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -61,6 +65,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 					@Override
 					public void onPageSelected(int position) {
 						actionBar.setSelectedNavigationItem(position);
+						mLastViewedPage = position;
 					}
 				});
 
@@ -75,7 +80,28 @@ public class VolumeProfileActivity extends FragmentActivity implements
 					.setTabListener(this));
 		}
 
+		if (savedInstanceState != null) {
+			mLastViewedPage = savedInstanceState.getInt(LASTVIEWEDPAGE);
+		}
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		if (mLastViewedPage < 0) {
+			mViewPager.setCurrentItem(STARTUPPAGE);
+		}
+		else {
+			mViewPager.setCurrentItem(mLastViewedPage);
+		}
+	};
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(LASTVIEWEDPAGE, mLastViewedPage);
+	};
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

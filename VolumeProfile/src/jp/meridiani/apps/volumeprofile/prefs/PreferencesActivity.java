@@ -24,6 +24,7 @@ public class PreferencesActivity extends FragmentActivity {
 
 			mPrefs = Prefs.getInstance(getActivity());
 			addPreferencesFromResource(mPrefs.getPrefsResId());
+
 		}
 	}
 }
