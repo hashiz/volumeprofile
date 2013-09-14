@@ -14,6 +14,25 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 public class ProfileEditFragment extends VolumeEditFragmentBase {
 
 	private static final String BUNDLE_PROFILE = "profile";
+
+	private static final int[] LOCK_IDS = new int [] {
+		R.id.ringer_mode_lock,
+		R.id.alarm_volume_lock,
+		R.id.music_volume_lock,
+		R.id.ring_volume_lock,
+		R.id.notification_volume_lock,
+		R.id.voicecall_volume_lock,
+	};
+
+	private static final StreamType[] STREAM_TYPES = new StreamType[] {
+		StreamType.ALARM,
+		StreamType.MUSIC,
+		StreamType.RING,
+		StreamType.NOTIFICATION,
+		StreamType.VOICE_CALL,
+	};
+
+
 	private VolumeProfile mProfile = null;
 	private AudioUtil mAudio = null;
 
@@ -61,6 +80,9 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 				case R.id.ring_volume_lock_checkbox:
 					onVolumeLockChanged(StreamType.RING, checked);
 					break;
+				case R.id.notification_volume_lock_checkbox:
+					onVolumeLockChanged(StreamType.NOTIFICATION, checked);
+					break;
 				case R.id.voicecall_volume_lock_checkbox:
 					onVolumeLockChanged(StreamType.VOICE_CALL, checked);
 					break;
@@ -68,14 +90,11 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 			}
 		};
 
+		View linkContainer = rootView.findViewById(R.id.link_notification_volume_container);
+		linkContainer.setVisibility(View.GONE);
+
 		// Enable Lock View
-		for (int id : new int[] {
-				R.id.ringer_mode_lock,
-				R.id.alarm_volume_lock,
-				R.id.music_volume_lock,
-				R.id.ring_volume_lock,
-				R.id.voicecall_volume_lock,
-		}) {
+		for (int id : LOCK_IDS) {
 			View lockView = rootView.findViewById(id);
 			if (lockView != null) {
 				lockView.setVisibility(View.VISIBLE);
@@ -92,11 +111,6 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		View rootView = getView();
-
-		View linkContainer = rootView.findViewById(R.id.link_notification_volume_container);
-		linkContainer.setVisibility(View.GONE);
 
 		updateLocks();
 	}
@@ -206,13 +220,7 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 	private void updateLocks() {
 		updateRingerModeLock();
 
-		for (StreamType streamType : new StreamType[] {
-				StreamType.ALARM,
-				StreamType.MUSIC,
-				StreamType.RING,
-				StreamType.NOTIFICATION,
-				StreamType.VOICE_CALL}) {
-
+		for (StreamType streamType : STREAM_TYPES) {
 			updateVolumeLock(streamType);
 		}
 	}

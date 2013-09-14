@@ -83,25 +83,26 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 		}
 
 		View linkContainer = rootView.findViewById(R.id.link_notification_volume_container);
-		CheckBox linkCheckbox = (CheckBox)linkContainer.findViewById(R.id.link_notification_volume_checkbox);
-		linkCheckbox.setChecked(prefs.isVolumeLinkNotification());
-		linkCheckbox.setEnabled(prefs.hasVolumeLinkNotification());
+		if (prefs.hasVolumeLinkNotification()) {
+			CheckBox linkCheckbox = (CheckBox)linkContainer.findViewById(R.id.link_notification_volume_checkbox);
+			linkCheckbox.setChecked(prefs.isVolumeLinkNotification());
+			linkCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
+					if (isChecked) {
+						notificationSeekBar.setProgress(ringSeekBar.getProgress());
+						setVolume(StreamType.NOTIFICATION, getVolume(StreamType.RING));
+						notificationSeekBar.setEnabled(false);
+						prefs.setVolumeLinkNotification(true);
+					}
+					else {
+						notificationSeekBar.setEnabled(true);
+						prefs.setVolumeLinkNotification(false);
+					}
+				}
+			});
+		}
 
-		linkCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
-				if (isChecked) {
-					notificationSeekBar.setProgress(ringSeekBar.getProgress());
-					setVolume(StreamType.NOTIFICATION, getVolume(StreamType.RING));
-					notificationSeekBar.setEnabled(false);
-					prefs.setVolumeLinkNotification(true);
-				}
-				else {
-					notificationSeekBar.setEnabled(true);
-					prefs.setVolumeLinkNotification(false);
-				}
-			}
-		});
 		getActivity().registerReceiver(mReceiver, mFilter);
 	}
 

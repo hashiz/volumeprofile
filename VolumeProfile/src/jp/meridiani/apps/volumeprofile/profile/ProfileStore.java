@@ -24,7 +24,7 @@ public class ProfileStore {
 	private Context mContext;
 
 	private static final String DATABASE_NAME = "profilelist.db";
-	private static final int    DATABASE_VERSION = 1;
+	private static final int    DATABASE_VERSION = 2;
 	  
 	private static final String MISC_TABLE_NAME = "misc";
 	private static final String COL_KEY         = "key";
@@ -64,6 +64,13 @@ public class ProfileStore {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			if (oldVersion == 1 && newVersion == 2) {
+				// add notification volume
+				Cursor listCur = db.query(LIST_TABLE_NAME, new String[] {COL_UUID}, null, null, null, null, null);
+				while (listCur.moveToNext()) {
+					String uuid = listCur.getString(listCur.getColumnIndex(COL_UUID));
+				}
+			}
 		}
 		
 	}
