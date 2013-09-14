@@ -3,6 +3,7 @@ package jp.meridiani.apps.volumeprofile.main;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
+import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -325,6 +326,9 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 
 	public void updateVolume(StreamType streamType) {
 		updateVolume(streamType, null);
+		if (Prefs.getInstance(getActivity()).isVolumeLinkNotification() && streamType == StreamType.RING) {
+			updateVolume(StreamType.NOTIFICATION, null);
+		}
 	}
 
 	abstract protected RingerMode getRingerMode();
