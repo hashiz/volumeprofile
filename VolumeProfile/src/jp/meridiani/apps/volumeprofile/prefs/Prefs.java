@@ -3,6 +3,7 @@ package jp.meridiani.apps.volumeprofile.prefs;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import jp.meridiani.apps.volumeprofile.R;
@@ -12,7 +13,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
-import android.provider.Settings.SettingNotFoundException;
+import android.provider.Settings.System;
 
 public class Prefs implements OnSharedPreferenceChangeListener {
 	private static Prefs mInstance = null;
@@ -25,7 +26,9 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	private static final String PREFS_END   = "</preferences>";
 
 	// for cyanogenmod
-	private static final String SYSTEM_VOLUME_LINK_NOTIFICATION = "volume_link_notification";
+	private static final String VOLUME_LINK_NOTIFICATION = "VOLUME_LINK_NOTIFICATION";
+	private boolean mHasVolumeLinkNotification = false;
+	private String  mKeyVolumeLinkNotification = null;
 
 	private Context mContext;
 	private SharedPreferences mSharedPrefs;
@@ -39,6 +42,20 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		PreferenceManager.setDefaultValues(context, getPrefsResId(), false);
 		mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
+		Class<System> c = android.provider.Settings.System.class;
+		try {
+			Field f = c.getField(VOLUME_LINK_NOTIFICATION);
+			mKeyVolumeLinkNotification = (String)f.get(null);
+			mHasVolumeLinkNotification = true;
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static synchronized Prefs getInstance(Context context) {
@@ -107,12 +124,7 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	}
 
 	public boolean hasVolumeLinkNotification() {
-		try {
-			android.provider.Settings.System.getInt(mContext.getContentResolver(), SYSTEM_VOLUME_LINK_NOTIFICATION);
-			return true;
-		} catch (SettingNotFoundException e) {
-			return false;
-		}
+		return mHasVolumeLinkNotification;
 	}
 
 	public void setVolumeLinkNotification(boolean link) {
@@ -123,11 +135,14 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 		if (link) {
 			value = 1;
 		}
-		android.provider.Settings.System.putInt(mContext.getContentResolver(), SYSTEM_VOLUME_LINK_NOTIFICATION, value);
+		android.provider.Settings.System.putInt(mContext.getContentResolver(), mKeyVolumeLinkNotification, value);
 	}
 
 	public boolean isVolumeLinkNotification() {
-		int linkNotification = 	android.provider.Settings.System.getInt(mContext.getContentResolver(), SYSTEM_VOLUME_LINK_NOTIFICATION, 1);
+		if (! hasVolumeLinkNotification()) {
+			return true;
+		}
+		int linkNotification = 	android.provider.Settings.System.getInt(mContext.getContentResolver(), mKeyVolumeLinkNotification, 1);
 		return linkNotification == 1;
 	}
 
