@@ -65,12 +65,19 @@ public class ProfileStore {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			if (oldVersion == 1 && newVersion == 2) {
-				// add notification volume
-				Cursor listCur = db.query(LIST_TABLE_NAME, new String[] {COL_UUID}, null, null, null, null, null);
-				while (listCur.moveToNext()) {
-					String uuid = listCur.getString(listCur.getColumnIndex(COL_UUID));
+				db.beginTransaction();
+				try {
+					db.execSQL(
+							String.format("INSERT INTO %1$s (%2$s, %3s, %4$s) SELECT %2$s, '%5s', %4s FROM %1$s WHERE %2$s=%6$s;",
+							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.NOTIFICATIONVOLUME, VolumeProfile.Key.RINGVOLUME)
+							);
+					db.setTransactionSuccessful();
+				}
+				finally {
+					db.endTransaction();
 				}
 			}
+			return;
 		}
 		
 	}
