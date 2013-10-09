@@ -24,6 +24,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 	private static final String LASTVIEWEDPAGE = "last_viewed_page";
 	private static final int STARTUPPAGE = 1;
 	private int mLastViewedPage = -1;
+	private ProfileStore mProfileStore = null;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -83,12 +84,14 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		if (savedInstanceState != null) {
 			mLastViewedPage = savedInstanceState.getInt(LASTVIEWEDPAGE);
 		}
+
+		mProfileStore = ProfileStore.getInstance(this);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		if (mLastViewedPage < 0) {
 			mViewPager.setCurrentItem(STARTUPPAGE);
 		}
@@ -110,14 +113,39 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		return true;
 	}
 
+	private void setVolumeLockMenuItem(MenuItem item, boolean locked) {
+		if (locked) {
+			item.setIcon(android.R.drawable.ic_secure);
+			item.setTitle(R.string.action_unlock_volume);
+		}
+		else {
+			item.setIcon(android.R.drawable.ic_partial_secure);
+			item.setTitle(R.string.action_lock_volume);
+		}
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		MenuItem item = menu.findItem(R.id.action_lock_volume);
+		setVolumeLockMenuItem(item, mProfileStore.isVolumeLocked());
+		return true;
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			startActivity(new Intent(this, PreferencesActivity.class));
 			return true;
+		case R.id.action_lock_volume:
+			// toggle lock
+			mProfileStore.setVolumeLocked(!mProfileStore.isVolumeLocked());
+			// set icon/title
+			setVolumeLockMenuItem(item, mProfileStore.isVolumeLocked());
+			return true;
 		case R.id.action_save_as_new_profile:
-			VolumeProfile profile = ProfileStore.getInstance(getApplicationContext()).newProfile();
+			VolumeProfile profile = mProfileStore.newProfile();
 			new AudioUtil(getApplicationContext()).getVolumes(profile);
 			ProfileNameDialog dialog = ProfileNameDialog.newInstance(profile, this);
 			dialog.show(getSupportFragmentManager(), dialog.getClass().getCanonicalName());
@@ -221,7 +249,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 
 	@Override
 	public void onProfileEditPositive(VolumeProfile newProfile) {
-		ProfileStore.getInstance(getApplicationContext()).storeProfile(newProfile);
+		mProfileStore.storeProfile(newProfile);
 		updateProfileList();
 	}
 

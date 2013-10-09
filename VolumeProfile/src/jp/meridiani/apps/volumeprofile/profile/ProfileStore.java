@@ -37,6 +37,7 @@ public class ProfileStore {
 	private static final String DATA_TABLE_NAME = "profiledata";
 	
 	private static final String KEY_CURRENTPROFILE      = "CurrentProfile"     ;
+	private static final String KEY_VOLUMELOCKED        = "VolumeLocked"     ;
 
 	private static final String PROFILES_START = "<profiles>";
 	private static final String PROFILES_END   = "</profiles>";
@@ -224,6 +225,39 @@ public class ProfileStore {
 		VolumeProfile profile = new VolumeProfile();
 		profile.setDisplayOrder(getMaxOrder()+1);
 		return profile;
+	}
+
+	public boolean isVolumeLocked() {
+		Cursor cur = mDB.query(MISC_TABLE_NAME, null, COL_KEY + "=?", new String[] {KEY_VOLUMELOCKED}, null, null, null);
+		if (cur.moveToFirst()) {
+			return Boolean.parseBoolean(cur.getString(cur.getColumnIndex(COL_VALUE)));
+		}
+		return false;
+	}
+
+	public void setVolumeLocked(boolean locked) {
+		mDB.beginTransaction();
+
+		try {
+			ContentValues values = new ContentValues();
+
+			// update/insert data
+			values.put(COL_KEY,   KEY_VOLUMELOCKED);
+			values.put(COL_VALUE, Boolean.toString(locked));
+			int rows = mDB.update(MISC_TABLE_NAME, values,
+					String.format("%1$s=?", COL_KEY),
+					new String[]{KEY_VOLUMELOCKED});
+			if (rows < 1) {
+				values.put(COL_KEY,   KEY_VOLUMELOCKED);
+				values.put(COL_VALUE, Boolean.toString(locked));
+				mDB.insert(MISC_TABLE_NAME, null, values);
+			}
+
+			mDB.setTransactionSuccessful();
+		}
+		finally {
+			mDB.endTransaction();
+		}
 	}
 
 	public UUID getCurrentProfile() {

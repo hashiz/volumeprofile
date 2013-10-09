@@ -34,5 +34,6 @@
     <string name="pref_category_on_volume_change">ボリューム変更時</string>
     <string name="action_launch_application">アプリケーション起動</string>
 	<string name="link_notification_and_ringer_volume">通知音と着信音をリンク</string>
-	
+    <string name="title_activity_about">Volume Profileについて</string>
+
 </resources>

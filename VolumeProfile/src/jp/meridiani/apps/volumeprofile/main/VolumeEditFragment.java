@@ -1,11 +1,11 @@
 package jp.meridiani.apps.volumeprofile.main;
 
 import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.VolumeChangedReceiver;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,13 +19,8 @@ import android.widget.SeekBar;
 
 public class VolumeEditFragment extends VolumeEditFragmentBase {
 	
-	private static final String VOLUME_CHANGED_ACTION     = "android.media.VOLUME_CHANGED_ACTION";
-    private static final String EXTRA_VOLUME_STREAM_TYPE  = "android.media.EXTRA_VOLUME_STREAM_TYPE";
-    private static final String EXTRA_VOLUME_STREAM_VALUE = "android.media.EXTRA_VOLUME_STREAM_VALUE";
-//    private static final String EXTRA_PREV_VOLUME_STREAM_VALUE = "android.media.EXTRA_PREV_VOLUME_STREAM_VALUE";
-
 	private AudioUtil mAudio = null;
-	private BroadcastReceiver mReceiver = null;
+	private VolumeChangedReceiver mReceiver = null;
 	private IntentFilter      mFilter   = null;
 
 	public static VolumeEditFragment newInstance() {
@@ -36,7 +31,7 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mAudio = new AudioUtil(getActivity());
-		mReceiver = new BroadcastReceiver() {
+		mReceiver = new VolumeChangedReceiver() {
 			
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -62,7 +57,7 @@ public class VolumeEditFragment extends VolumeEditFragmentBase {
 			}
 		};
 		mFilter = new IntentFilter();
-		mFilter.addAction(VOLUME_CHANGED_ACTION);
+		mFilter.addAction(VolumeChangedReceiver.VOLUME_CHANGED_ACTION);
 		mFilter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
 
 	}
