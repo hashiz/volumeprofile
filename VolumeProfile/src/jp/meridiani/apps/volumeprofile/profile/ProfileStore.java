@@ -69,7 +69,7 @@ public class ProfileStore {
 				db.beginTransaction();
 				try {
 					db.execSQL(
-							String.format("INSERT INTO %1$s (%2$s, %3s, %4$s) SELECT %2$s, '%5s', %4s FROM %1$s WHERE %2$s=%6$s;",
+							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %2$s, '%5$s', %4$s FROM %1$s WHERE %3$s='%6$s';",
 							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.NOTIFICATIONVOLUME, VolumeProfile.Key.RINGVOLUME)
 							);
 					db.setTransactionSuccessful();
@@ -99,13 +99,18 @@ public class ProfileStore {
 		ArrayList<VolumeProfile> list = new ArrayList<VolumeProfile>();
 
 		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, null, null, null, null, COL_DISPORDER);
-		while (listCur.moveToNext()) {
-			UUID uuid = UUID.fromString(listCur.getString(listCur.getColumnIndex(COL_UUID)));
-			int order = listCur.getInt(listCur.getColumnIndex(COL_DISPORDER));
-			VolumeProfile profile = new VolumeProfile(uuid);
-			profile.setDisplayOrder(order);
-			loadProfileInternal(profile);
-			list.add(profile);
+		try {
+			while (listCur.moveToNext()) {
+				UUID uuid = UUID.fromString(listCur.getString(listCur.getColumnIndex(COL_UUID)));
+				int order = listCur.getInt(listCur.getColumnIndex(COL_DISPORDER));
+				VolumeProfile profile = new VolumeProfile(uuid);
+				profile.setDisplayOrder(order);
+				loadProfileInternal(profile);
+				list.add(profile);
+			}
+		}
+		finally {
+			listCur.close();
 		}
 		return list;
 	}
@@ -135,21 +140,31 @@ public class ProfileStore {
 	private VolumeProfile loadProfileInternal(VolumeProfile profile) {
 		String uuid = profile.getUuid().toString();
 		Cursor dataCur = mDB.query(DATA_TABLE_NAME, null, COL_UUID + "=?", new String[]{uuid}, null, null, null);
-		while (dataCur.moveToNext()) {
-			String key = dataCur.getString(dataCur.getColumnIndex(COL_KEY));
-			String value = dataCur.getString(dataCur.getColumnIndex(COL_VALUE));
-			profile.setValue(key, value);
+		try {
+			while (dataCur.moveToNext()) {
+				String key = dataCur.getString(dataCur.getColumnIndex(COL_KEY));
+				String value = dataCur.getString(dataCur.getColumnIndex(COL_VALUE));
+				profile.setValue(key, value);
+			}
+		}
+		finally {
+			dataCur.close();
 		}
 		return profile;
 	}
 
 	public VolumeProfile loadProfile(UUID uuid) {
 		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, COL_UUID + "=?", new String[] {uuid.toString()}, null, null, null);
-		if (listCur.moveToFirst()) {
-			int order = listCur.getInt(listCur.getColumnIndex(COL_DISPORDER));
-			VolumeProfile profile = new VolumeProfile(uuid);
-			profile.setDisplayOrder(order);
-			return loadProfileInternal(profile);
+		try {
+			if (listCur.moveToFirst()) {
+				int order = listCur.getInt(listCur.getColumnIndex(COL_DISPORDER));
+				VolumeProfile profile = new VolumeProfile(uuid);
+				profile.setDisplayOrder(order);
+				return loadProfileInternal(profile);
+			}
+		}
+		finally {
+			listCur.close();
 		}
 		return null;
 	}
@@ -215,8 +230,13 @@ public class ProfileStore {
 	private int getMaxOrder() {
 		Cursor listCur = mDB.rawQuery(String.format(
 				"select max(%2$s) from %1$s;", LIST_TABLE_NAME, COL_DISPORDER),null);
-		if (listCur.moveToFirst()) {
-			return listCur.getInt(0);
+		try {
+			if (listCur.moveToFirst()) {
+				return listCur.getInt(0);
+			}
+		}
+		finally {
+			listCur.close();
 		}
 		return 0;
 	}
@@ -229,8 +249,13 @@ public class ProfileStore {
 
 	public boolean isVolumeLocked() {
 		Cursor cur = mDB.query(MISC_TABLE_NAME, null, COL_KEY + "=?", new String[] {KEY_VOLUMELOCKED}, null, null, null);
-		if (cur.moveToFirst()) {
-			return Boolean.parseBoolean(cur.getString(cur.getColumnIndex(COL_VALUE)));
+		try {
+			if (cur.moveToFirst()) {
+				return Boolean.parseBoolean(cur.getString(cur.getColumnIndex(COL_VALUE)));
+			}
+		}
+		finally {
+			cur.close();
 		}
 		return false;
 	}
@@ -262,8 +287,13 @@ public class ProfileStore {
 
 	public UUID getCurrentProfile() {
 		Cursor cur = mDB.query(MISC_TABLE_NAME, null, COL_KEY + "=?", new String[] {KEY_CURRENTPROFILE}, null, null, null);
-		if (cur.moveToFirst()) {
-			return UUID.fromString(cur.getString(cur.getColumnIndex(COL_VALUE)));
+		try {
+			if (cur.moveToFirst()) {
+				return UUID.fromString(cur.getString(cur.getColumnIndex(COL_VALUE)));
+			}
+		}
+		finally {
+			cur.close();
 		}
 		return null;
 	}

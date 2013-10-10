@@ -57,6 +57,8 @@
     <string name="about_version_title">Version:</string>
     <string name="about_changelog_title">Changes:</string>
     <string name="about_copyright">Copyright(R) 2013 reczcgo All rights reserved.</string>
+    <string name="action_lock_all">Lock All</string>
+    <string name="action_unlock_all">Unlock All</string>
     
     <!-- do not translate blow -->
     <string name="lock_checkbox_tag">lockCheckBoxTag</string>

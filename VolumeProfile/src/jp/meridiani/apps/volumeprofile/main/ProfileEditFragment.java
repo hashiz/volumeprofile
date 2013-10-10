@@ -4,8 +4,12 @@ import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
+import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -54,6 +58,7 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 			mProfile = getArguments().getParcelable(BUNDLE_PROFILE);
 		}
 		mAudio = new AudioUtil(getActivity());
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -107,6 +112,44 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 			}
 		}
 	};
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		inflater.inflate(R.menu.profile_edit, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_save_profile:
+			ProfileStore.getInstance(getActivity()).storeProfile(getVolumeProfile());
+		case R.id.action_cancel_edit_profile:
+			getActivity().finish();
+			return true;
+		case R.id.action_lock_all:
+			setLockAll(true);
+			return true;
+		case R.id.action_unlock_all:
+			setLockAll(false);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	private void setLockAll(boolean lock) {
+		// check/uncheck Lock View
+		for (int id : LOCK_IDS) {
+			View lockView = getView().findViewById(id);
+			if (lockView != null) {
+				// Set Listener for Lock Checkbox
+				CheckBox cbox = (CheckBox)lockView.findViewWithTag(getString(R.string.lock_checkbox_tag));
+				if (cbox != null) {
+					cbox.setChecked(lock);
+				}
+			}
+		}
+	}
 
 	@Override
 	public void onResume() {

@@ -35,5 +35,7 @@
     <string name="action_launch_application">アプリケーション起動</string>
 	<string name="link_notification_and_ringer_volume">通知音と着信音をリンク</string>
     <string name="title_activity_about">Volume Profileについて</string>
-
+    <string name="action_lock_all">全てロック</string>
+    <string name="action_unlock_all">全てアンロック</string>
+    
 </resources>

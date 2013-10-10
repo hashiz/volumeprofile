@@ -150,6 +150,9 @@ public class VolumeProfileActivity extends FragmentActivity implements
 			ProfileNameDialog dialog = ProfileNameDialog.newInstance(profile, this);
 			dialog.show(getSupportFragmentManager(), dialog.getClass().getCanonicalName());
 			return true;
+		case R.id.action_about:
+			startActivity(new Intent(this, AboutActivity.class));
+			return true;
 		}
 		return false;
 	}
