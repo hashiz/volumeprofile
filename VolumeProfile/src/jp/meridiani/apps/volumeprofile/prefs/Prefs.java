@@ -21,6 +21,7 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	static final String KEY_VIBRATEONPROFILECHANGE      = "vibrate_on_profile_change";
 	static final String KEY_PLAYSOUNDONVOLUMECHANGE     = "play_sound_on_volume_change";
 	static final String KEY_SOUNDLEVELALERTHACK         = "sound_level_alert_hack";
+	static final String KEY_DISPLAYTOASTONVOLUMELOCK    = "display_toast_on_volume_lock";
 
 	private static final String PREFS_START = "<preferences>";
 	private static final String PREFS_END   = "</preferences>";
@@ -112,6 +113,13 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	}
 	public void setSoundLevelAlertHack(boolean value) {
 		setBooleanValue(KEY_SOUNDLEVELALERTHACK, value);
+	}
+
+	public boolean isDisplayToastOnVolumeLock() {
+		return mSharedPrefs.getBoolean(KEY_DISPLAYTOASTONVOLUMELOCK, false);
+	}
+	public void setDisplayToastOnVolumeLock(boolean value) {
+		setBooleanValue(KEY_DISPLAYTOASTONVOLUMELOCK, value);
 	}
 
 	public void writeToText(BufferedWriter wtr) throws IOException {

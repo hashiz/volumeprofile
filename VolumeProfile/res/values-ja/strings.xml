@@ -17,8 +17,10 @@
     <string name="ringer_mode_vibrate">バイブレーション</string>
     <string name="voicecall_volume_title">通話音</string>
     <string name="display_toast_on_profile_change">Toast表示</string>
+    <string name="display_toast_on_volume_lock">ロックでToast表示</string>
     <string name="msg_profile_notfound">%1$s が見つかりません</string>
     <string name="msg_profile_applied">%1$s を適用しました</string>
+    <string name="msg_volume_locked">ボリュームはロックされています</string>
     <string name="play_sound_on_volume_change">音を鳴らす</string>
     <string name="vibrate_on_profile_change">バイブレーション</string>
     <string name="action_delete_profile">削除</string>
@@ -32,6 +34,7 @@
     <string name="pref_category_misc">その他</string>
     <string name="pref_category_on_profile_apply">プロファイル適用時</string>
     <string name="pref_category_on_volume_change">ボリューム変更時</string>
+    <string name="pref_category_volume_lock">ボリュームロック</string>
     <string name="action_launch_application">アプリケーション起動</string>
 	<string name="link_notification_and_ringer_volume">通知音と着信音をリンク</string>
     <string name="title_activity_about">Volume Profileについて</string>
