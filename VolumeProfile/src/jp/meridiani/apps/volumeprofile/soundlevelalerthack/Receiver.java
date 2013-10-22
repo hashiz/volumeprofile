@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
@@ -18,6 +19,8 @@ public class Receiver extends BroadcastReceiver {
 	private static final String EXTRA_ALERT_SHOW         = "com.sonyericsson.media.SOUND_LEVEL_ALERT_SHOW";
 	private static final String EXTRA_CHALLENGE          = "com.sonyericsson.media.SOUND_LEVEL_ALERT_CHALLENGE";
 	private static final String ACTION_ACKNOWLEDGE       = "com.sonyericsson.media.SOUND_LEVEL_ALERT_ACKNOWLEDGE";
+	private static final int RETRY_MAX = 5;
+	private static final long RETRY_WAIT = 1000;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -61,14 +64,23 @@ public class Receiver extends BroadcastReceiver {
 		if (profile == null) {
 			return;
 		}
-		new AudioUtil(context).applyProfile(profile);
+		AudioUtil audio = new AudioUtil(context);
 		Prefs prefs = Prefs.getInstance(context);
-		if (prefs.isDisplayToastOnProfileChange()) {
-			Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
-		}
-		if (prefs.isVibrateOnProfileChange()) {
-			Vibrator viblator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-			viblator.vibrate(100);
+
+		for (int trycount = 0; trycount < RETRY_MAX && profile.getMusicVolume() != audio.getVolume(StreamType.MUSIC); trycount++) {
+			audio.applyProfile(profile);
+			if (prefs.isDisplayToastOnProfileChange()) {
+				Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
+			}
+			if (prefs.isVibrateOnProfileChange()) {
+				Vibrator viblator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+				viblator.vibrate(100);
+			}
+			try {
+				Thread.sleep(RETRY_WAIT);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
