@@ -77,6 +77,40 @@ public class AudioUtil {
 		return profile;
 	}
 
+	public boolean isVolumeLinkNotification() {
+		int prevRingerMode = mAmgr.getRingerMode();
+		int prevRinger = mAmgr.getStreamVolume(AudioManager.STREAM_RING);
+		int prevNotification = mAmgr.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+
+		try {
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 1, 0);
+			mAmgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, 1, 0);
+	
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 5, 0);
+			if (mAmgr.getStreamVolume(AudioManager.STREAM_RING) == 
+					mAmgr.getStreamVolume(AudioManager.STREAM_NOTIFICATION)) {
+				return true;
+			}
+			return false;
+		}
+		finally {
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, prevRinger, 0);
+			mAmgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, prevNotification, 0);
+			switch (prevRingerMode) {
+			case AudioManager.RINGER_MODE_NORMAL:
+				mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+				break;
+			case AudioManager.RINGER_MODE_VIBRATE:
+				mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
+				mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+				break;
+			case AudioManager.RINGER_MODE_SILENT:
+				mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
+				mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+			}
+		}
+	}
+
 	public static int getStreamType(StreamType type) {
 		switch (type) {
 		case ALARM:

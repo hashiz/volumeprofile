@@ -72,15 +72,17 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main_volumeedit,
 				container, false);
+		Prefs prefs = Prefs.getInstance(getActivity());
 
-		if (!Prefs.getInstance(getActivity()).hasVolumeLinkNotification()) {
+		if (!prefs.hasVolumeLinkNotification()) {
 			View linkContainer = rootView.findViewById(R.id.link_notification_volume_container);
 			linkContainer.setVisibility(View.GONE);
-
-			View notificationContainer = rootView.findViewById(R.id.notification_volume_container);
-			notificationContainer.setVisibility(View.GONE);
-			TextView ringVolumeText = (TextView)rootView.findViewById(R.id.ring_volume_text);
-			ringVolumeText.setText(R.string.ring_notification_volume_title);
+			if (prefs.isVolumeLinkNotification()) {
+				View notificationContainer = rootView.findViewById(R.id.notification_volume_container);
+				notificationContainer.setVisibility(View.GONE);
+				TextView ringVolumeText = (TextView)rootView.findViewById(R.id.ring_volume_text);
+				ringVolumeText.setText(R.string.ring_notification_volume_title);
+			}
 		}
 		return rootView;
 	}

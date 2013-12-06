@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,13 +24,17 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	static final String KEY_SOUNDLEVELALERTHACK         = "sound_level_alert_hack";
 	static final String KEY_DISPLAYTOASTONVOLUMELOCK    = "display_toast_on_volume_lock";
 
+	// hidden parameter
+	static final String KEY_VOLUME_LINK_NOTIFICATION    = "volume_link_notification";
+
+	// backup restore
 	private static final String PREFS_START = "<preferences>";
 	private static final String PREFS_END   = "</preferences>";
 
 	// for cyanogenmod
 	private static final String VOLUME_LINK_NOTIFICATION = "VOLUME_LINK_NOTIFICATION";
-	private boolean mHasVolumeLinkNotification = false;
-	private String  mKeyVolumeLinkNotification = null;
+	private String  mKeyVOLUME_LINK_NOTIFICATION = null;
+	private boolean mHasVOLUME_LINK_NOTIFICATION = false;
 
 	private Context mContext;
 	private SharedPreferences mSharedPrefs;
@@ -43,11 +48,11 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		PreferenceManager.setDefaultValues(context, getPrefsResId(), false);
 		mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
-		Class<System> c = android.provider.Settings.System.class;
+		Class<System> c = System.class;
 		try {
 			Field f = c.getField(VOLUME_LINK_NOTIFICATION);
-			mKeyVolumeLinkNotification = (String)f.get(null);
-			mHasVolumeLinkNotification = true;
+			mKeyVOLUME_LINK_NOTIFICATION = (String)f.get(null);
+			mHasVOLUME_LINK_NOTIFICATION = true;
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -56,6 +61,14 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 			e.printStackTrace();
 		} catch (ClassCastException e) {
 			e.printStackTrace();
+		}
+
+		if (!mHasVOLUME_LINK_NOTIFICATION) {
+			if (!mSharedPrefs.contains(KEY_VOLUME_LINK_NOTIFICATION)) {
+				Editor editor = mSharedPrefs.edit();
+				editor.putBoolean(KEY_VOLUME_LINK_NOTIFICATION, new AudioUtil(context).isVolumeLinkNotification());
+				editor.apply();
+			}
 		}
 	}
 
@@ -126,13 +139,17 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 		Map <String, ?> map = mSharedPrefs.getAll();
 		wtr.write(PREFS_START); wtr.newLine();
 		for (String key : map.keySet()) {
+			if (key.equals(KEY_VOLUME_LINK_NOTIFICATION)) {
+				// do not save this
+				continue;
+			}
 			wtr.write(key + "=" + map.get(key)); wtr.newLine();
 		}
 		wtr.write(PREFS_END); wtr.newLine();
 	}
 
 	public boolean hasVolumeLinkNotification() {
-		return mHasVolumeLinkNotification;
+		return mHasVOLUME_LINK_NOTIFICATION;
 	}
 
 	public void setVolumeLinkNotification(boolean link) {
@@ -143,15 +160,17 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 		if (link) {
 			value = 1;
 		}
-		android.provider.Settings.System.putInt(mContext.getContentResolver(), mKeyVolumeLinkNotification, value);
+		android.provider.Settings.System.putInt(mContext.getContentResolver(), mKeyVOLUME_LINK_NOTIFICATION, value);
 	}
 
 	public boolean isVolumeLinkNotification() {
-		if (! hasVolumeLinkNotification()) {
-			return true;
+		if (hasVolumeLinkNotification()) {
+			int linkNotification = 	android.provider.Settings.System.getInt(mContext.getContentResolver(), mKeyVOLUME_LINK_NOTIFICATION, 1);
+			return linkNotification == 1;
 		}
-		int linkNotification = 	android.provider.Settings.System.getInt(mContext.getContentResolver(), mKeyVolumeLinkNotification, 1);
-		return linkNotification == 1;
+		else {
+			return mSharedPrefs.getBoolean(KEY_VOLUME_LINK_NOTIFICATION, true);
+		}
 	}
 
 	public void setFromText(BufferedReader rdr) throws IOException {
