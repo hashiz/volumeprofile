@@ -29,8 +29,10 @@ public class VolumeProfile implements Parcelable {
 		RINGVOLUMELOCK,
 		NOTIFICATIONVOLUME,
 		NOTIFICATIONVOLUMELOCK,
-		VOICECALLVALUME,
-		VOICECALLVALUMELOCK;
+		VOICECALLVOLUME,
+		VOICECALLVOLUMELOCK,
+		SYSTEMVOLUME,
+		SYSTEMVOLUMELOCK;
 
 		private final static Key[] sKeys;
 		private final static Key[] sDataKeys;
@@ -73,6 +75,8 @@ public class VolumeProfile implements Parcelable {
 	private boolean mNotificationVolumeLock;
 	private int mVoiceCallVolume;
 	private boolean mVoiceCallVolumeLock;
+	private int mSystemVolume;
+	private boolean mSystemVolumeLock;
 	
 	VolumeProfile() {
 		this((UUID)null);
@@ -126,10 +130,14 @@ public class VolumeProfile implements Parcelable {
 			return Integer.toString(getNotificationVolume());
 		case NOTIFICATIONVOLUMELOCK:
 			return Boolean.toString(getNotificationVolumeLock());
-		case VOICECALLVALUME:
+		case VOICECALLVOLUME:
 			return Integer.toString(getVoiceCallVolume());
-		case VOICECALLVALUMELOCK:
+		case VOICECALLVOLUMELOCK:
 			return Boolean.toString(getVoiceCallVolumeLock());
+		case SYSTEMVOLUME:
+			return Integer.toString(getSystemVolume());
+		case SYSTEMVOLUMELOCK:
+			return Boolean.toString(getSystemVolumeLock());
 		}
 		return null;
 	}
@@ -191,11 +199,17 @@ public class VolumeProfile implements Parcelable {
 		case NOTIFICATIONVOLUMELOCK:
 			setNotificationVolumeLock(Boolean.parseBoolean(value));
 			break;
-		case VOICECALLVALUME:
+		case VOICECALLVOLUME:
 			setVoiceCallVolume(Integer.parseInt(value));
 			break;
-		case VOICECALLVALUMELOCK:
+		case VOICECALLVOLUMELOCK:
 			setVoiceCallVolumeLock(Boolean.parseBoolean(value));
+			break;
+		case SYSTEMVOLUME:
+			setSystemVolume(Integer.parseInt(value));
+			break;
+		case SYSTEMVOLUMELOCK:
+			setSystemVolumeLock(Boolean.parseBoolean(value));
 			break;
 		}
 	}
@@ -216,6 +230,8 @@ public class VolumeProfile implements Parcelable {
 			return getNotificationVolume();
 		case VOICE_CALL:
 			return getVoiceCallVolume();
+		case SYSTEM:
+			return getSystemVolume();
 		}
 		return 0;
 	}
@@ -237,6 +253,9 @@ public class VolumeProfile implements Parcelable {
 		case VOICE_CALL:
 			setVoiceCallVolume(volume);
 			break;
+		case SYSTEM:
+			setSystemVolume(volume);
+			break;
 		}
 	}
 
@@ -252,6 +271,8 @@ public class VolumeProfile implements Parcelable {
 			return getNotificationVolumeLock();
 		case VOICE_CALL:
 			return getVoiceCallVolumeLock();
+		case SYSTEM:
+			return getSystemVolumeLock();
 		}
 		return false;
 	}
@@ -272,6 +293,9 @@ public class VolumeProfile implements Parcelable {
 			break;
 		case VOICE_CALL:
 			setVoiceCallVolumeLock(lock);
+			break;
+		case SYSTEM:
+			setSystemVolumeLock(lock);
 			break;
 		}
 	}
@@ -396,6 +420,22 @@ public class VolumeProfile implements Parcelable {
 		mVoiceCallVolumeLock = lock;
 	}
 
+	public int getSystemVolume() {
+		return mSystemVolume;
+	}
+
+	public void setSystemVolume(int volume) {
+		mSystemVolume = volume;
+	}
+
+	public boolean getSystemVolumeLock() {
+		return mSystemVolumeLock;
+	}
+
+	public void setSystemVolumeLock(boolean lock) {
+		mSystemVolumeLock = lock;
+	}
+
 	@Override
 	public String toString() {
 		return this.getName();
@@ -423,6 +463,8 @@ public class VolumeProfile implements Parcelable {
     	out.writeInt(mNotificationVolumeLock ? 1 : 0);
     	out.writeInt(mVoiceCallVolume);
     	out.writeInt(mVoiceCallVolumeLock ? 1 : 0);
+    	out.writeInt(mSystemVolume);
+    	out.writeInt(mSystemVolumeLock ? 1 : 0);
 	}
 
 	public VolumeProfile(Parcel in) {
@@ -441,6 +483,8 @@ public class VolumeProfile implements Parcelable {
     	mNotificationVolumeLock = in.readInt() != 0;
     	mVoiceCallVolume     = in.readInt();
     	mVoiceCallVolumeLock = in.readInt() != 0;
+    	mSystemVolume        = in.readInt();
+    	mSystemVolumeLock    = in.readInt() != 0;
 	}
 
     public static final Parcelable.Creator<VolumeProfile> CREATOR = new Parcelable.Creator<VolumeProfile>() {

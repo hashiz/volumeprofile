@@ -26,6 +26,7 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 		R.id.ring_volume_lock,
 		R.id.notification_volume_lock,
 		R.id.voicecall_volume_lock,
+		R.id.system_volume_lock,
 	};
 
 	private static final StreamType[] STREAM_TYPES = new StreamType[] {
@@ -34,6 +35,7 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 		StreamType.RING,
 		StreamType.NOTIFICATION,
 		StreamType.VOICE_CALL,
+		StreamType.SYSTEM,
 	};
 
 
@@ -90,6 +92,9 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 					break;
 				case R.id.voicecall_volume_lock_checkbox:
 					onVolumeLockChanged(StreamType.VOICE_CALL, checked);
+					break;
+				case R.id.system_volume_lock_checkbox:
+					onVolumeLockChanged(StreamType.SYSTEM, checked);
 					break;
 				}
 			}
@@ -253,6 +258,9 @@ public class ProfileEditFragment extends VolumeEditFragmentBase {
 			break;
 		case VOICE_CALL:
 			id = R.id.voicecall_volume_lock;
+			break;
+		case SYSTEM:
+			id = R.id.system_volume_lock;
 			break;
 		default:
 			return null;

@@ -21,6 +21,7 @@ public class AudioUtil {
 		RING,
 		NOTIFICATION,
 		VOICE_CALL,
+		SYSTEM,
 	}
 
 	public static int[] supportStreams = {
@@ -29,6 +30,7 @@ public class AudioUtil {
 		AudioManager.STREAM_RING,
 		AudioManager.STREAM_NOTIFICATION,
 		AudioManager.STREAM_VOICE_CALL,
+		AudioManager.STREAM_SYSTEM,
 	};
 
 	public AudioUtil(Context context) {
@@ -123,6 +125,8 @@ public class AudioUtil {
 			return AudioManager.STREAM_NOTIFICATION;
 		case VOICE_CALL:
 			return AudioManager.STREAM_VOICE_CALL;
+		case SYSTEM:
+			return AudioManager.STREAM_SYSTEM;
 		}
 		return AudioManager.STREAM_RING;
 	}
@@ -139,6 +143,8 @@ public class AudioUtil {
 			return StreamType.NOTIFICATION;
 		case AudioManager.STREAM_VOICE_CALL:
 			return StreamType.VOICE_CALL;
+		case AudioManager.STREAM_SYSTEM:
+			return StreamType.SYSTEM;
 		}
 		return StreamType.RING;
 	}

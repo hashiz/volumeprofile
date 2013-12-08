@@ -35,7 +35,7 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 				mString = context.getString(R.string.ringer_mode_vibrate);
 				break;
 			case SILENT:
-				mString = context.getString(R.string.ringer_mode_sirent);
+				mString = context.getString(R.string.ringer_mode_silent);
 				break;
 			}
 		}
@@ -210,6 +210,9 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 		case R.id.voicecall_volume_value:
 		case R.id.voicecall_volume_seekBar:
 			return StreamType.VOICE_CALL;
+		case R.id.system_volume_value:
+		case R.id.system_volume_seekBar:
+			return StreamType.SYSTEM;
 		default:
 			return null;
 		}
@@ -233,6 +236,9 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			break;
 		case VOICE_CALL:
 			id = R.id.voicecall_volume_value;
+			break;
+		case SYSTEM:
+			id = R.id.system_volume_value;
 			break;
 		}
 		return (TextView)rootView.findViewById(id);
@@ -259,6 +265,9 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			break;
 		case VOICE_CALL:
 			id = R.id.voicecall_volume_seekBar;
+			break;
+		case SYSTEM:
+			id = R.id.system_volume_seekBar;
 			break;
 		}
 		return (SeekBar)rootView.findViewById(id);
@@ -297,7 +306,8 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 				StreamType.MUSIC,
 				StreamType.RING,
 				StreamType.NOTIFICATION,
-				StreamType.VOICE_CALL}) {
+				StreamType.VOICE_CALL,
+				StreamType.SYSTEM}) {
 
 			updateVolume(streamType, newListener);
 		}
