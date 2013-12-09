@@ -97,17 +97,12 @@ public class AudioUtil {
 			mAmgr.setStreamVolume(AudioManager.STREAM_RING, prevRinger, 0);
 			mAmgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, prevNotification, 0);
 			switch (prevRingerMode) {
-			case AudioManager.RINGER_MODE_NORMAL:
-				mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-				break;
 			case AudioManager.RINGER_MODE_VIBRATE:
-				mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
-				mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-				break;
 			case AudioManager.RINGER_MODE_SILENT:
 				mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
-				mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+				break;
 			}
+			mAmgr.setRingerMode(prevRingerMode);
 		}
 	}
 
