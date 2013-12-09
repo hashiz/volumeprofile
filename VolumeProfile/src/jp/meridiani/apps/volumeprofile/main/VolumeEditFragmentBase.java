@@ -84,6 +84,10 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 				ringVolumeText.setText(R.string.ring_notification_volume_title);
 			}
 		}
+		if (prefs.isVolumeLinkSystem()) {
+			View systemContainer = rootView.findViewById(R.id.system_volume_container);
+			systemContainer.setVisibility(View.GONE);
+		}
 		return rootView;
 	}
 

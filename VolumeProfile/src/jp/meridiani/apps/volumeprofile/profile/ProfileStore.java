@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile.Key;
-
 import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -46,11 +43,8 @@ public class ProfileStore {
 	
 	private static class DBHelper extends SQLiteOpenHelper {
 
-		private static Context mContext;
-
 		public DBHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
-			mContext = context;
 		}
 
 		@Override

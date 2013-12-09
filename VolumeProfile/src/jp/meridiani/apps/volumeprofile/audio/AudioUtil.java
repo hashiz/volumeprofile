@@ -39,11 +39,20 @@ public class AudioUtil {
 	}
 	
 	public void applyProfile(VolumeProfile profile) {
+		Prefs prefs = Prefs.getInstance(mContext);
 		for (int streamType : supportStreams ) {
 			int volume = profile.getVolume(getStreamType(streamType));
-			if (streamType == AudioManager.STREAM_NOTIFICATION &&
-					Prefs.getInstance(mContext).isVolumeLinkNotification()) {
-				volume = profile.getRingVolume();
+			switch (streamType) {
+			case AudioManager.STREAM_NOTIFICATION:
+				if (prefs.isVolumeLinkNotification()) {
+					volume = profile.getRingVolume();
+				}
+				break;
+			case AudioManager.STREAM_SYSTEM:
+				if (prefs.isVolumeLinkSystem()) {
+					volume = profile.getRingVolume();
+				}
+				break;
 			}
 			mAmgr.setStreamVolume(streamType, volume, 0);
 		}
@@ -88,7 +97,7 @@ public class AudioUtil {
 			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 1, 0);
 			mAmgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, 1, 0);
 	
-			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 5, 0);
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 2, 0);
 			if (mAmgr.getStreamVolume(AudioManager.STREAM_RING) == 
 					mAmgr.getStreamVolume(AudioManager.STREAM_NOTIFICATION)) {
 				return true;
@@ -98,6 +107,35 @@ public class AudioUtil {
 		finally {
 			mAmgr.setStreamVolume(AudioManager.STREAM_RING, prevRinger, 0);
 			mAmgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, prevNotification, 0);
+			switch (prevRingerMode) {
+			case AudioManager.RINGER_MODE_VIBRATE:
+			case AudioManager.RINGER_MODE_SILENT:
+				mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
+				break;
+			}
+			mAmgr.setRingerMode(prevRingerMode);
+		}
+	}
+
+	public boolean isVolumeLinkSystem() {
+		int prevRingerMode = mAmgr.getRingerMode();
+		int prevRinger = mAmgr.getStreamVolume(AudioManager.STREAM_RING);
+		int prevSystem = mAmgr.getStreamVolume(AudioManager.STREAM_SYSTEM);
+
+		try {
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 1, 0);
+			mAmgr.setStreamVolume(AudioManager.STREAM_SYSTEM, 1, 0);
+	
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 2, 0);
+			if (mAmgr.getStreamVolume(AudioManager.STREAM_RING) == 
+					mAmgr.getStreamVolume(AudioManager.STREAM_SYSTEM)) {
+				return true;
+			}
+			return false;
+		}
+		finally {
+			mAmgr.setStreamVolume(AudioManager.STREAM_RING, prevRinger, 0);
+			mAmgr.setStreamVolume(AudioManager.STREAM_SYSTEM, prevSystem, 0);
 			switch (prevRingerMode) {
 			case AudioManager.RINGER_MODE_VIBRATE:
 			case AudioManager.RINGER_MODE_SILENT:
