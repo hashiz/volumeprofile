@@ -84,15 +84,20 @@ public class ProfileStore {
 				}
 			}
 			if (oldVersion < 3) {
-				AudioUtil util = new AudioUtil(mContext);
-				int sysvol = util.getVolume(StreamType.SYSTEM);
 				db.beginTransaction();
 				try {
 					db.execSQL(
-							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %6$s, '%7$s', '%8$s' FROM %5$s;",
-							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE,
-							LIST_TABLE_NAME, COL_UUID, VolumeProfile.Key.SYSTEMVOLUME, sysvol)
-							);
+							String.format("UPDATE %1$s SET %2$s='%3$s' WHERE %2$s='%4$s';",
+							DATA_TABLE_NAME, COL_KEY, VolumeProfile.Key.VOICECALLVOLUME, "VOICECALLVALUME"));
+					db.execSQL(
+							String.format("UPDATE %1$s SET %2$s='%3$s' WHERE %2$s='%4$s';",
+							DATA_TABLE_NAME, COL_KEY, VolumeProfile.Key.VOICECALLVOLUMELOCK, "VOICECALLVALUMELOCK"));
+					db.execSQL(
+							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %2$s, '%5$s', %4$s FROM %1$s WHERE %3$s='%6$s';",
+							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.SYSTEMVOLUME, VolumeProfile.Key.RINGVOLUME));
+					db.execSQL(
+							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %2$s, '%5$s', %4$s FROM %1$s WHERE %3$s='%6$s';",
+							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.SYSTEMVOLUMELOCK, VolumeProfile.Key.RINGVOLUMELOCK));
 					db.setTransactionSuccessful();
 				}
 				finally {
