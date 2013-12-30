@@ -1,6 +1,7 @@
 package jp.meridiani.apps.volumeprofile.main;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.main.DragDropListItem.DragDropListener;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
@@ -54,6 +55,15 @@ public class ProfileListAdapter extends BaseAdapter implements DragDropListAdapt
 		}
 		return itemView;
 	};
+
+	public int getPosition(UUID profileId) {
+		for (int i = 0; i < mList.size(); i++) {
+			if (profileId.equals(mList.get(i).getUuid())) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	public void setProfileList(ArrayList<VolumeProfile> list) {
 		synchronized (mLock) {

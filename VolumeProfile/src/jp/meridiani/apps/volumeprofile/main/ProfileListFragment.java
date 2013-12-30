@@ -28,6 +28,8 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 
 	ProfileListAdapter mAdapter = null;
 	DragDropListView   mProfileListView = null;
+	ProfileStore       mProfileStore = null;
+	ProfileStore.OnProfileSwitchedListener mListener = null;
 	
 	public static ProfileListFragment newInstance() {
     	return new ProfileListFragment();
@@ -51,6 +53,16 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 		mProfileListView.setOnItemClickListener(this);
 		mProfileListView.setOnSortedListener(this);
 		registerForContextMenu(mProfileListView);
+		mProfileStore = ProfileStore.getInstance(getActivity());
+		mListener = new ProfileStore.OnProfileSwitchedListener() {
+			@Override
+			public void onProfileSwitched(UUID newId, UUID prevId) {
+				int pos = mAdapter.getPosition(newId);
+				if (pos >= 0) {
+					mProfileListView.setItemChecked(pos, true);
+				}
+			}
+		};
 		return rootView;
 	}
 
@@ -58,6 +70,13 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 	public void onResume() {
 		super.onResume();
 		updateProfileList();
+		mProfileStore.registerOnProfileSwitchedListener(mListener);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		mProfileStore.unregisterOnProfileSwitchedListener(mListener);
 	}
 
 	public void updateProfileList() {

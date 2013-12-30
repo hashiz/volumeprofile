@@ -43,7 +43,9 @@ public class ProfileStore {
 
 	private static final String PROFILES_START = "<profiles>";
 	private static final String PROFILES_END   = "</profiles>";
-	
+
+	private static List<OnProfileSwitchedListener> mOnProfileSwitchedListeners = new ArrayList<OnProfileSwitchedListener>();
+
 	private static class DBHelper extends SQLiteOpenHelper {
 
 		private static Context mContext;
@@ -320,6 +322,10 @@ public class ProfileStore {
 	}
 
 	public void setCurrentProfile(UUID uuid) {
+		UUID prevId = getCurrentProfile();
+		if (uuid.equals(prevId)) {
+			return;
+		}
 		mDB.beginTransaction();
 
 		try {
@@ -338,6 +344,7 @@ public class ProfileStore {
 			}
 
 			mDB.setTransactionSuccessful();
+			fireOnProfileSwitchedListener(uuid, prevId);
 		}
 		finally {
 			mDB.endTransaction();
@@ -366,5 +373,28 @@ public class ProfileStore {
 
 	private void requestBackup() {
 		BackupManager.dataChanged(mContext.getPackageName());
+	}
+
+	public interface OnProfileSwitchedListener {
+		public void onProfileSwitched(UUID newId, UUID prevId);
+	}
+
+	public void registerOnProfileSwitchedListener(OnProfileSwitchedListener listener) {
+		synchronized (mOnProfileSwitchedListeners) {
+			mOnProfileSwitchedListeners.add(listener);
+		}
+	}
+	public void unregisterOnProfileSwitchedListener(OnProfileSwitchedListener listener) {
+		synchronized (mOnProfileSwitchedListeners) {
+			while(mOnProfileSwitchedListeners.remove(listener));
+		}
+	}
+
+	protected void fireOnProfileSwitchedListener(UUID newId, UUID prevId) {
+		synchronized (mOnProfileSwitchedListeners) {
+			for (OnProfileSwitchedListener listener : mOnProfileSwitchedListeners) {
+				listener.onProfileSwitched(newId, prevId);
+			}
+		}
 	}
 }
