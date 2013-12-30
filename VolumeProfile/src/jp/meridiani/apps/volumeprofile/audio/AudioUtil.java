@@ -58,7 +58,6 @@ public class AudioUtil {
 			}
 			setVolume(streamType,  volume, false);
 		}
-
 		setRingerMode(profile.getRingerMode());
 	}
 
