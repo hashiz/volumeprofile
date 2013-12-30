@@ -61,11 +61,9 @@ public class AudioUtil {
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			break;
 		case VIBRATE:
-			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 			break;
 		case SILENT:
-			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 		}
 	}
@@ -107,12 +105,6 @@ public class AudioUtil {
 		finally {
 			mAmgr.setStreamVolume(AudioManager.STREAM_RING, prevRinger, 0);
 			mAmgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, prevNotification, 0);
-			switch (prevRingerMode) {
-			case AudioManager.RINGER_MODE_VIBRATE:
-			case AudioManager.RINGER_MODE_SILENT:
-				mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
-				break;
-			}
 			mAmgr.setRingerMode(prevRingerMode);
 		}
 	}
@@ -136,12 +128,6 @@ public class AudioUtil {
 		finally {
 			mAmgr.setStreamVolume(AudioManager.STREAM_RING, prevRinger, 0);
 			mAmgr.setStreamVolume(AudioManager.STREAM_SYSTEM, prevSystem, 0);
-			switch (prevRingerMode) {
-			case AudioManager.RINGER_MODE_VIBRATE:
-			case AudioManager.RINGER_MODE_SILENT:
-				mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
-				break;
-			}
 			mAmgr.setRingerMode(prevRingerMode);
 		}
 	}
@@ -208,11 +194,9 @@ public class AudioUtil {
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			break;
 		case VIBRATE:
-			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 			break;
 		case SILENT:
-			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 0, 0);
 			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 			break;
 		}
