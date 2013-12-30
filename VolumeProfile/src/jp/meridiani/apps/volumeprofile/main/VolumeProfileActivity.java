@@ -115,11 +115,11 @@ public class VolumeProfileActivity extends FragmentActivity implements
 
 	private void setVolumeLockMenuItem(MenuItem item, boolean locked) {
 		if (locked) {
-			item.setIcon(android.R.drawable.ic_secure);
+			item.setIcon(R.drawable.ic_action_secure);
 			item.setTitle(R.string.action_unlock_volume);
 		}
 		else {
-			item.setIcon(android.R.drawable.ic_partial_secure);
+			item.setIcon(R.drawable.ic_action_not_secure);
 			item.setTitle(R.string.action_lock_volume);
 		}
 	}
