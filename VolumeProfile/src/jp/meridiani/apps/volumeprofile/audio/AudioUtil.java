@@ -40,6 +40,7 @@ public class AudioUtil {
 	
 	public void applyProfile(VolumeProfile profile) {
 		Prefs prefs = Prefs.getInstance(mContext);
+		setRingerMode(profile.getRingerMode());
 		for (StreamType streamType : StreamType.values()) {
 			int volume = profile.getVolume(streamType);
 			switch (streamType) {
@@ -58,7 +59,6 @@ public class AudioUtil {
 			}
 			setVolume(streamType,  volume, false);
 		}
-		setRingerMode(profile.getRingerMode());
 	}
 
 	public VolumeProfile getVolumes(VolumeProfile profile) {
