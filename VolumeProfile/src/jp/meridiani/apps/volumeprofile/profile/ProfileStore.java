@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile.Key;
-
 import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -48,11 +45,8 @@ public class ProfileStore {
 
 	private static class DBHelper extends SQLiteOpenHelper {
 
-		private static Context mContext;
-
 		public DBHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
-			mContext = context;
 		}
 
 		@Override
@@ -86,15 +80,20 @@ public class ProfileStore {
 				}
 			}
 			if (oldVersion < 3) {
-				AudioUtil util = new AudioUtil(mContext);
-				int sysvol = util.getVolume(StreamType.SYSTEM);
 				db.beginTransaction();
 				try {
 					db.execSQL(
-							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %6$s, '%7$s', '%8$s' FROM %5$s;",
-							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE,
-							LIST_TABLE_NAME, COL_UUID, VolumeProfile.Key.SYSTEMVOLUME, sysvol)
-							);
+							String.format("UPDATE %1$s SET %2$s='%3$s' WHERE %2$s='%4$s';",
+							DATA_TABLE_NAME, COL_KEY, VolumeProfile.Key.VOICECALLVOLUME, "VOICECALLVALUME"));
+					db.execSQL(
+							String.format("UPDATE %1$s SET %2$s='%3$s' WHERE %2$s='%4$s';",
+							DATA_TABLE_NAME, COL_KEY, VolumeProfile.Key.VOICECALLVOLUMELOCK, "VOICECALLVALUMELOCK"));
+					db.execSQL(
+							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %2$s, '%5$s', %4$s FROM %1$s WHERE %3$s='%6$s';",
+							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.SYSTEMVOLUME, VolumeProfile.Key.RINGVOLUME));
+					db.execSQL(
+							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %2$s, '%5$s', %4$s FROM %1$s WHERE %3$s='%6$s';",
+							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.SYSTEMVOLUMELOCK, VolumeProfile.Key.RINGVOLUMELOCK));
 					db.setTransactionSuccessful();
 				}
 				finally {

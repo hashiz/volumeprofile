@@ -26,6 +26,7 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 
 	// hidden parameter
 	static final String KEY_VOLUME_LINK_NOTIFICATION    = "volume_link_notification";
+	static final String KEY_VOLUME_LINK_SYSTEM          = "volume_link_system";
 
 	// backup restore
 	private static final String PREFS_START = "<preferences>";
@@ -69,6 +70,11 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 				editor.putBoolean(KEY_VOLUME_LINK_NOTIFICATION, new AudioUtil(context).isVolumeLinkNotification());
 				editor.apply();
 			}
+		}
+		if (!mSharedPrefs.contains(KEY_VOLUME_LINK_SYSTEM)) {
+			Editor editor = mSharedPrefs.edit();
+			editor.putBoolean(KEY_VOLUME_LINK_SYSTEM, new AudioUtil(context).isVolumeLinkSystem());
+			editor.apply();
 		}
 	}
 
@@ -171,6 +177,10 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 		else {
 			return mSharedPrefs.getBoolean(KEY_VOLUME_LINK_NOTIFICATION, true);
 		}
+	}
+
+	public boolean isVolumeLinkSystem() {
+		return mSharedPrefs.getBoolean(KEY_VOLUME_LINK_SYSTEM, true);
 	}
 
 	public void setFromText(BufferedReader rdr) throws IOException {
