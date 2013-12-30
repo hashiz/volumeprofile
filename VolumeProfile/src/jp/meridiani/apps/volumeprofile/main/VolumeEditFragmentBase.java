@@ -289,7 +289,10 @@ public abstract class VolumeEditFragmentBase extends Fragment {
 			if (((RingerModeItem)ringerModeView.getSelectedItem()).getValue() != getRingerMode()) {
 				ringerModeView.setSelection(adapter.getPosition(getRingerMode()));
 			}
-	
+
+			// update ringer mode view
+			updateVolume(StreamType.RING);
+
 			// set listener
 			if (newListener != null) {
 				ringerModeView.setOnItemSelectedListener(newListener);
