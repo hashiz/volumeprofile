@@ -320,7 +320,7 @@ public class ProfileStore {
 		return null;
 	}
 
-	public void setCurrentProfile(UUID uuid) {
+	void setCurrentProfile(UUID uuid) {
 		UUID prevId = getCurrentProfile();
 		if (uuid.equals(prevId)) {
 			return;

@@ -3,8 +3,8 @@ package jp.meridiani.apps.volumeprofile.pluginapi;
 import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
+import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.BroadcastReceiver;
@@ -39,9 +39,7 @@ public class PluginFireReceiver extends BroadcastReceiver {
         	return;
 		}
 
-		AudioUtil audio = new AudioUtil(context);
-		audio.applyProfile(profile);
-		ProfileStore.getInstance(context).setCurrentProfile(profile.getUuid());
+		CurrentProfile.setCurrentProfile(context, profileId);
 		if (displayToast) {
 			Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
 		}

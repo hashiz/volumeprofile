@@ -7,6 +7,7 @@ import java.util.UUID;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.main.DragDropListView.OnSortedListener;
+import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.Context;
@@ -104,8 +105,7 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 		ProfileListAdapter adapter = (ProfileListAdapter)parent.getAdapter();
 		VolumeProfile profile = adapter.getItem(pos);
-		new AudioUtil(parent.getContext()).applyProfile(profile);
-		ProfileStore.getInstance(getActivity()).setCurrentProfile(profile.getUuid());
+		CurrentProfile.setCurrentProfile(parent.getContext(), profile.getUuid());
 	}
 
 	@Override

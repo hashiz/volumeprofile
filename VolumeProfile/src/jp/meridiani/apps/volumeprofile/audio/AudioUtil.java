@@ -6,6 +6,8 @@ import android.content.Context;
 import android.media.AudioManager;
 
 public class AudioUtil {
+	private static Object sLock = new Object();
+
 	private Context      mContext;
 	private AudioManager mAmgr;
 
@@ -39,25 +41,27 @@ public class AudioUtil {
 	}
 	
 	public void applyProfile(VolumeProfile profile) {
-		Prefs prefs = Prefs.getInstance(mContext);
-		setRingerMode(profile.getRingerMode());
-		for (StreamType streamType : StreamType.values()) {
-			int volume = profile.getVolume(streamType);
-			switch (streamType) {
-			case NOTIFICATION:
-				if (prefs.isVolumeLinkNotification()) {
-					volume = profile.getRingVolume();
+		synchronized (sLock) {
+			Prefs prefs = Prefs.getInstance(mContext);
+			setRingerMode(profile.getRingerMode());
+			for (StreamType streamType : StreamType.values()) {
+				int volume = profile.getVolume(streamType);
+				switch (streamType) {
+				case NOTIFICATION:
+					if (prefs.isVolumeLinkNotification()) {
+						volume = profile.getRingVolume();
+					}
+					break;
+				case SYSTEM:
+					if (prefs.isVolumeLinkSystem()) {
+						volume = profile.getRingVolume();
+					}
+					break;
+				default:
+					break;
 				}
-				break;
-			case SYSTEM:
-				if (prefs.isVolumeLinkSystem()) {
-					volume = profile.getRingVolume();
-				}
-				break;
-			default:
-				break;
+				setVolume(streamType,  volume, false);
 			}
-			setVolume(streamType,  volume, false);
 		}
 	}
 
