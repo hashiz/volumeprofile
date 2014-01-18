@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.main.DragDropListView.OnSortedListener;
 import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
