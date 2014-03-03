@@ -4,6 +4,7 @@ import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.Context;
 import android.media.AudioManager;
+import android.util.Log;
 
 public class AudioUtil {
 	private static Object sLock = new Object();
@@ -179,16 +180,21 @@ public class AudioUtil {
 		if (getRingerMode() == mode) {
 			return;
 		}
+		int ringerMode = 0;
 		switch (mode) {
 		case NORMAL:
-			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+			ringerMode = AudioManager.RINGER_MODE_NORMAL;
 			break;
 		case VIBRATE:
-			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+			ringerMode = AudioManager.RINGER_MODE_VIBRATE;
 			break;
 		case SILENT:
-			mAmgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+			ringerMode = AudioManager.RINGER_MODE_SILENT;
 			break;
+		}
+		mAmgr.setRingerMode(ringerMode);
+		if (mAmgr.getRingerMode() != ringerMode) {
+			Log.d("setRingerMode", "can't set ringermode");
 		}
 	}
 
@@ -198,7 +204,7 @@ public class AudioUtil {
 			return;
 		}
 		// check ringer mode and do not set ringer volume
-		if (type == StreamType.RING) {
+		if (type == StreamType.RING || type == StreamType.NOTIFICATION) {
 			RingerMode curRingerMode = getRingerMode();
 			switch (curRingerMode) {
 			case NORMAL:
