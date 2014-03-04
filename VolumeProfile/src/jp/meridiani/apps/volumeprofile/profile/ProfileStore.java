@@ -15,6 +15,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+
 public class ProfileStore {
 
 	private static ProfileStore mInstance = null;
@@ -42,6 +43,7 @@ public class ProfileStore {
 	private static final String PROFILES_END   = "</profiles>";
 
 	private static List<OnProfileSwitchedListener> mOnProfileSwitchedListeners = new ArrayList<OnProfileSwitchedListener>();
+	private static List<OnVolumeLockChangedListener> mOnVoluemLockChangedListeners = new ArrayList<OnVolumeLockChangedListener>();
 
 	private static class DBHelper extends SQLiteOpenHelper {
 
@@ -301,6 +303,7 @@ public class ProfileStore {
 			}
 
 			mDB.setTransactionSuccessful();
+			fireOnVolumeLockChangedListener(locked);
 		}
 		finally {
 			mDB.endTransaction();
@@ -393,6 +396,29 @@ public class ProfileStore {
 		synchronized (mOnProfileSwitchedListeners) {
 			for (OnProfileSwitchedListener listener : mOnProfileSwitchedListeners) {
 				listener.onProfileSwitched(newId, prevId);
+			}
+		}
+	}
+
+	public interface OnVolumeLockChangedListener {
+		public void onVolumeLockChanged(boolean isLocked);
+	}
+
+	public void registerOnVolumeLockChangedListener(OnVolumeLockChangedListener listener) {
+		synchronized (mOnVoluemLockChangedListeners) {
+			mOnVoluemLockChangedListeners.add(listener);
+		}
+	}
+	public void unregisterOnVolumeLockChangedListener(OnVolumeLockChangedListener listener) {
+		synchronized (mOnVoluemLockChangedListeners) {
+			while(mOnVoluemLockChangedListeners.remove(listener));
+		}
+	}
+
+	protected void fireOnVolumeLockChangedListener(boolean isLocked) {
+		synchronized (mOnProfileSwitchedListeners) {
+			for (OnVolumeLockChangedListener listener : mOnVoluemLockChangedListeners) {
+				listener.onVolumeLockChanged(isLocked);
 			}
 		}
 	}

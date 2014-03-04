@@ -5,6 +5,7 @@ import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.prefs.PreferencesActivity;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
+import jp.meridiani.apps.volumeprofile.profile.ProfileStore.OnVolumeLockChangedListener;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -19,12 +20,13 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 public class VolumeProfileActivity extends FragmentActivity implements
-		ActionBar.TabListener, ProfileEditCallback {
+		ActionBar.TabListener, ProfileEditCallback, OnVolumeLockChangedListener {
 
 	private static final String LASTVIEWEDPAGE = "last_viewed_page";
 	private static final int STARTUPPAGE = 1;
 	private int mLastViewedPage = -1;
 	private ProfileStore mProfileStore = null;
+	private MenuItem mVolumeLockMenuItem = null;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -98,7 +100,17 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		else {
 			mViewPager.setCurrentItem(mLastViewedPage);
 		}
+		if (mVolumeLockMenuItem != null) {
+			setVolumeLockMenuItem(mVolumeLockMenuItem, mProfileStore.isVolumeLocked());
+		}
+		mProfileStore.registerOnVolumeLockChangedListener(this);
 	};
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mProfileStore.unregisterOnVolumeLockChangedListener(this);
+	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -129,6 +141,7 @@ public class VolumeProfileActivity extends FragmentActivity implements
 		super.onPrepareOptionsMenu(menu);
 		MenuItem item = menu.findItem(R.id.action_lock_volume);
 		setVolumeLockMenuItem(item, mProfileStore.isVolumeLocked());
+		mVolumeLockMenuItem = item;
 		return true;
 	}
 
@@ -258,5 +271,12 @@ public class VolumeProfileActivity extends FragmentActivity implements
 
 	@Override
 	public void onProfileEditNegative() {
+	}
+
+	@Override
+	public void onVolumeLockChanged(boolean isLocked) {
+		if (mVolumeLockMenuItem != null) {
+			setVolumeLockMenuItem(mVolumeLockMenuItem, isLocked);
+		}
 	}
 }

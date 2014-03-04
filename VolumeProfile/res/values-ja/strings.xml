@@ -4,7 +4,7 @@
     <string name="title_activity_preference">設定</string>
     <string name="alarm_volume_title">アラーム</string>
     <string name="button_cancel">取消</string>
-    <string name="button_select">選択</string>
+    <string name="button_save">保存</string>
     <string name="music_volume_title">音楽/メディア</string>
     <string name="page_title_profileedit">プロファイル</string>
     <string name="page_title_volumeedit">ボリューム</string>
@@ -41,5 +41,10 @@
     <string name="title_activity_about">Volume Profileについて</string>
     <string name="action_lock_all">全てロック</string>
     <string name="action_unlock_all">全てアンロック</string>
+	<string name="plugin_profile_select_title">プロファイルを変更</string>
+	<string name="plugin_volumelock_select_title">ボリュームロックを変更</string>
+	<string name="volumelock_lock">ロック</string>
+	<string name="volumelock_unlock">アンロック</string>
+	<string name="volumelock_toggle">トグル</string>
     
 </resources>

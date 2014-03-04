@@ -4,9 +4,10 @@ import java.util.UUID;
 
 import android.os.Bundle;
 
-public class BundleUtil {
+class BundleUtil {
     public static final String BUNDLE_PROFILEID   = "jp.meridiani.apps.volumeprofile.extra.STRING_PROFILEID";
     public static final String BUNDLE_PROFILENAME = "jp.meridiani.apps.volumeprofile.extra.STRING_PROFILENAME";
+    public static final String BUNDLE_VOLUMELOCK  = "jp.meridiani.apps.volumeprofile.extra.STRING_VOLUMELOCK";
 
 	private Bundle mBundle;
 
@@ -22,15 +23,9 @@ public class BundleUtil {
 		if (mBundle.containsKey(null)) {
 			throw new InvalidBundleException();
 		}
-		if (!mBundle.containsKey(BUNDLE_PROFILEID)) {
-			throw new InvalidBundleException();
-		}
-		if (!mBundle.containsKey(BUNDLE_PROFILENAME)) {
-			throw new InvalidBundleException();
-		}
 	}
 
-	public void setProfileId (UUID uuid) {
+	public void setProfileId(UUID uuid) {
 		mBundle.putString(BUNDLE_PROFILEID, uuid.toString());
 	}
 
@@ -38,12 +33,28 @@ public class BundleUtil {
 		mBundle.putString(BUNDLE_PROFILENAME, name);
 	}
 
+	public void setVolumeLock(PluginEditActivity.VolumeLockValue lock) {
+		mBundle.putString(BUNDLE_VOLUMELOCK,lock.name());
+	}
+
 	public UUID getProfileId () {
+		String uuid = mBundle.getString(BUNDLE_PROFILEID);
+		if (uuid == null) {
+			return null;
+		}
 		return UUID.fromString(mBundle.getString(BUNDLE_PROFILEID));
 	}
 
-	public String getProfileName() {
+	public String getProfileName () {
 		return mBundle.getString(BUNDLE_PROFILENAME);
+	}
+
+	public PluginEditActivity.VolumeLockValue getVolumeLock() {
+		String name = mBundle.getString(BUNDLE_VOLUMELOCK);
+		if (name == null) {
+			return null;
+		}
+		return PluginEditActivity.VolumeLockValue.valueOf(name);
 	}
 
 	public void clear() {

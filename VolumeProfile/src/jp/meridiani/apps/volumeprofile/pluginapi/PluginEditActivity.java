@@ -19,6 +19,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
 
 public class PluginEditActivity extends Activity {
@@ -29,19 +31,34 @@ public class PluginEditActivity extends Activity {
 	private static final String SAVE_SELECTEDVOLUMELOCK= "SAVE_SELECTEDVOLUMELOCK";
 
 	// values
-	private UUID mInitialProfileId = null;
-	private UUID mSelectedProfileId = null;
+	private VolumeProfile mSelectedProfile = null;
 	private boolean mChangeProfile = false;
 	private boolean mChangeVolumeLock  = false;
 	private VolumeLockValue mVolumeLock = null;
 
-	private enum VolumeLockValue {
+	enum VolumeLockValue {
 		LOCK,
 		UNLOCK,
 		TOGGLE;
+
+		public int getResource() {
+			int id = -1;
+			switch (this) {
+			case LOCK:
+				id = R.string.volumelock_lock;
+				break;
+			case UNLOCK:
+				id = R.string.volumelock_unlock;
+				break;
+			case TOGGLE:
+				id = R.string.volumelock_toggle;
+				break;
+			}
+			return id;
+		}
 	}
 
-	private class VolumeLockItem {
+	class VolumeLockItem {
 		private VolumeLockValue mValue;
 
 		public VolumeLockItem(VolumeLockValue value) {
@@ -54,25 +71,11 @@ public class PluginEditActivity extends Activity {
 
 		@Override
 		public String toString() {
-			int id = 0;
-			switch (mValue) {
-			case LOCK:
-				id = R.string.volumelock_lock;
-				break;
-			case UNLOCK:
-				id = R.string.volumelock_unlock;
-				break;
-			case TOGGLE:
-				id = R.string.volumelock_toggle;
-				break;
-			default:
-				return "";
-			}
-			return getString(id);
+			return getString(mValue.getResource());
 		}
 	}
 	
-	private class VolumeLockAdapter<T> extends ArrayAdapter<T> {
+	private class VolumeLockAdapter extends ArrayAdapter<VolumeLockItem> {
 
 		public VolumeLockAdapter(Context context, int resource) {
 			super(context, resource);
@@ -80,7 +83,7 @@ public class PluginEditActivity extends Activity {
 
 		public int getPosition(VolumeLockValue value) {
 			for (int pos = 0; pos < getCount(); pos++) {
-				if (value == getItem(pos)) {
+				if (value == getItem(pos).getValue()) {
 					return pos;
 				}
 			}
@@ -94,7 +97,7 @@ public class PluginEditActivity extends Activity {
 	private Spinner mProfileSelectView = null;
 	private Spinner mVolumeLockView = null;
 	private ArrayAdapter<VolumeProfile> mProfileListAdapter = null;
-	private VolumeLockAdapter<VolumeLockItem> mVolumeLockAdapter = null;
+	private VolumeLockAdapter mVolumeLockAdapter = null;
 	private Button mSaveButton = null;
 	private Button mCancelButton = null;
 	private boolean mCanceled = false;
@@ -103,35 +106,50 @@ public class PluginEditActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		String uuid = null;
 		if (savedInstanceState != null) {
-			mChangeProfile = savedInstanceState.getBoolean(SAVE_CHANGEPROFILE, false);
-			uuid = savedInstanceState.getString(SAVE_SELECTEDPROFILEID);
+			mChangeProfile = savedInstanceState.getBoolean(SAVE_CHANGEPROFILE, true);
+			String uuid = savedInstanceState.getString(SAVE_SELECTEDPROFILEID);
 			if (uuid != null) {
-				mSelectedProfileId = UUID.fromString(uuid);
+				mSelectedProfile = ProfileStore.getInstance(this).loadProfile(UUID.fromString(uuid));
 			}
 			mChangeVolumeLock = savedInstanceState.getBoolean(SAVE_CHANGEVOLUMELOCK, false);
 			mVolumeLock = VolumeLockValue.valueOf(savedInstanceState.getString(SAVE_SELECTEDVOLUMELOCK));
 		}
+		else {
+			// initial value
+			mChangeProfile = false;
+			mSelectedProfile = null;
+			mChangeVolumeLock = false;
+			mVolumeLock = null;
 
-		// receive intent and extra data
-		Intent intent = getIntent();
-		if (!com.twofortyfouram.locale.Intent.ACTION_EDIT_SETTING.equals(intent.getAction())) {
-			super.finish();
-			return;
-		}
-
-		BundleUtil bundle;
-
-		try {
-			bundle = new BundleUtil(getIntent().getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE));
-			mInitialProfileId = bundle.getProfileId();
-		} catch (InvalidBundleException e) {
-			mInitialProfileId = null;
-		}
-
-		if (mSelectedProfileId == null && mInitialProfileId != null) {
-			mSelectedProfileId = mInitialProfileId;
+			// receive intent and extra data
+			Intent intent = getIntent();
+			if (!com.twofortyfouram.locale.Intent.ACTION_EDIT_SETTING.equals(intent.getAction())) {
+				super.finish();
+				return;
+			}
+	
+			BundleUtil bundle;
+	
+			try {
+				bundle = new BundleUtil(getIntent().getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE));
+				UUID uuid = bundle.getProfileId();
+				if (uuid != null) {
+					mChangeProfile = true;
+					mSelectedProfile = ProfileStore.getInstance(this).loadProfile(uuid);
+				}
+				VolumeLockValue lock = bundle.getVolumeLock();
+				if (lock != null) {
+					mChangeVolumeLock = true;
+					mVolumeLock = lock;
+				}
+			} catch (InvalidBundleException e) {
+				// new configuration, set default value
+				mChangeProfile = true;
+				mSelectedProfile = null;
+				mChangeVolumeLock = false;
+				mVolumeLock = VolumeLockValue.LOCK;
+			}
 		}
 
 		mCanceled = false;
@@ -141,26 +159,39 @@ public class PluginEditActivity extends Activity {
 
 		// profile list
 		mChangeProfileCheckBox = (CheckBox)findViewById(R.id.plugin_profile_select_checkbox);
+		mChangeProfileCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				mChangeProfile = isChecked;
+				mProfileSelectView.setEnabled(isChecked);
+			}
+		});
 		mProfileSelectView = (Spinner)findViewById(R.id.plugin_profile_select);
-		mProfileListAdapter = new ArrayAdapter<VolumeProfile>(this,
-				android.R.layout.simple_list_item_single_choice);
+		mProfileListAdapter = new ArrayAdapter<VolumeProfile>(this, android.R.layout.simple_dropdown_item_1line);
 		mProfileSelectView.setAdapter(mProfileListAdapter);
 		mProfileSelectView.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View item, int pos, long id) {
-				mSelectedProfileId = ((VolumeProfile)parent.getAdapter().getItem(pos)).getUuid();
+				mSelectedProfile = ((VolumeProfile)parent.getAdapter().getItem(pos));
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				mSelectedProfileId = null;
+				mSelectedProfile = null;
 			}
 		});
+		mProfileSelectView.setEnabled(mChangeProfile);
 
 		// volume lock
 		mChangeVolumeLockCheckBox = (CheckBox)findViewById(R.id.plugin_volumelock_select_checkbox);
+		mChangeVolumeLockCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				mChangeVolumeLock = isChecked;
+				mVolumeLockView.setEnabled(isChecked);
+			}
+		});
 		mVolumeLockView = (Spinner)findViewById(R.id.plugin_volumelock_select);
-		mVolumeLockAdapter = new VolumeLockAdapter<VolumeLockItem>(this,
-				android.R.layout.simple_list_item_single_choice);
+		mVolumeLockAdapter = new VolumeLockAdapter(this, android.R.layout.simple_dropdown_item_1line);
 		mVolumeLockAdapter.add(new VolumeLockItem(VolumeLockValue.LOCK));
 		mVolumeLockAdapter.add(new VolumeLockItem(VolumeLockValue.UNLOCK));
 		mVolumeLockAdapter.add(new VolumeLockItem(VolumeLockValue.TOGGLE));
@@ -175,6 +206,7 @@ public class PluginEditActivity extends Activity {
 				mVolumeLock = null;
 			}
 		});
+		mVolumeLockView.setEnabled(mChangeVolumeLock);
 
 		// button
 		mSaveButton = (Button)findViewById(R.id.save_button);
@@ -227,7 +259,7 @@ public class PluginEditActivity extends Activity {
 		ArrayList<VolumeProfile> plist = ProfileStore.getInstance(this).listProfiles();
 		for ( VolumeProfile profile : plist) {
 			mProfileListAdapter.add(profile);
-			if (mSelectedProfileId != null && mSelectedProfileId.equals(profile.getUuid())) {
+			if (mSelectedProfile != null && mSelectedProfile.getUuid().equals(profile.getUuid())) {
 				selPos = mProfileListAdapter.getCount() - 1;
 			}
 		}
@@ -239,8 +271,8 @@ public class PluginEditActivity extends Activity {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putBoolean(SAVE_CHANGEPROFILE, mChangeProfile);
-		if (mSelectedProfileId != null) {
-			outState.putString(SAVE_SELECTEDPROFILEID, mSelectedProfileId.toString());
+		if (mSelectedProfile != null) {
+			outState.putString(SAVE_SELECTEDPROFILEID, mSelectedProfile.getUuid().toString());
 		}
 		outState.putBoolean(SAVE_CHANGEVOLUMELOCK, mChangeVolumeLock);
 		outState.putString(SAVE_SELECTEDVOLUMELOCK, mVolumeLock.name());
@@ -250,26 +282,32 @@ public class PluginEditActivity extends Activity {
     public void finish()
     {
         Intent resultIntent = new Intent();
+
         if (mCanceled) {
             setResult(RESULT_CANCELED, resultIntent);
             super.finish();
             return;
         }
 
-        
-        && mSelectedProfileId != null && mSelectedProfileId != null) {
-            BundleUtil resultBundle = new BundleUtil();
-            resultBundle.setProfileId(profile.getUuid());
-            resultBundle.setProfileName(profile.getName());
-
-            resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_STRING_BLURB, profile.getName());
-            resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE, resultBundle.getBundle());
-
-            setResult(RESULT_OK, resultIntent);
+		BundleUtil resultBundle = new BundleUtil();
+		StringBuffer blub = new StringBuffer();
+		String sep = "";
+        if (mChangeProfile && mSelectedProfile != null) {
+            resultBundle.setProfileId(mSelectedProfile.getUuid());
+            resultBundle.setProfileName(mSelectedProfile.getName());
+            blub.append(mSelectedProfile.getName());
+            sep = ",";
         }
-        else {
-            setResult(RESULT_CANCELED, resultIntent);
+        if (mChangeVolumeLock && mVolumeLock != null) {
+            resultBundle.setVolumeLock(mVolumeLock);
+            blub.append(sep);
+            blub.append(getString(mVolumeLock.getResource()));
         }
+        	
+        resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_STRING_BLURB, blub.toString());
+        resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE, resultBundle.getBundle());
+
+        setResult(RESULT_OK, resultIntent);
     	super.finish();
     }
 

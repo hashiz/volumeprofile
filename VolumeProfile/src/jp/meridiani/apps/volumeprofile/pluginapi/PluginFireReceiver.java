@@ -3,6 +3,7 @@ package jp.meridiani.apps.volumeprofile.pluginapi;
 import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity.VolumeLockValue;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
@@ -27,25 +28,62 @@ public class PluginFireReceiver extends BroadcastReceiver {
 			return;
 		}
 		UUID profileId = bundle.getProfileId();
+		VolumeLockValue changeLock = bundle.getVolumeLock();
 		Prefs prefs = Prefs.getInstance(context);
+		ProfileStore store = ProfileStore.getInstance(context);
 		boolean displayToast = prefs.isDisplayToastOnProfileChange();
 		boolean viblate = prefs.isVibrateOnProfileChange();
-		VolumeProfile profile = ProfileStore.getInstance(context).loadProfile(profileId);
-		if ( profile == null ) {
-			if (displayToast) {
-				String profileName = bundle.getProfileName();
-	        	Toast.makeText(context, context.getString(R.string.msg_profile_notfound, profileName), Toast.LENGTH_LONG).show();
+		boolean changed = false;
+		StringBuffer toastString = new StringBuffer();
+		String sep = "";
+		if (profileId != null) {
+			VolumeProfile profile = store.loadProfile(profileId);
+			if ( profile == null ) {
+				if (displayToast) {
+					String profileName = bundle.getProfileName();
+		        	Toast.makeText(context, context.getString(R.string.msg_profile_notfound, profileName), Toast.LENGTH_LONG).show();
+				}
+	        	return;
 			}
-        	return;
+			CurrentProfile.setCurrentProfile(context, profileId);
+			toastString.append(context.getString(R.string.msg_profile_applied, profile.getName()));
+			sep = ",";
+			changed = true;
 		}
+		if (changeLock != null) {
+			boolean isLocked = true;
+			switch (changeLock) {
+			case LOCK:
+				isLocked = true;
+				break;
+			case UNLOCK:
+				isLocked = false;
+				break;
+			case TOGGLE:
+				isLocked = !store.isVolumeLocked();
+				break;
+			}
+			store.setVolumeLocked(isLocked);
+			int resid;
+			if (isLocked) {
+				resid = VolumeLockValue.LOCK.getResource();
+			}
+			else {
+				resid = VolumeLockValue.UNLOCK.getResource();
 
-		CurrentProfile.setCurrentProfile(context, profileId);
-		if (displayToast) {
-			Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
+			}
+			toastString.append(sep);
+			toastString.append(context.getString(resid));
+			changed = true;
 		}
-		if (viblate) {
-			Vibrator viblator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-			viblator.vibrate(100);
+		if (changed) {
+			if (displayToast) {
+				Toast.makeText(context, toastString, Toast.LENGTH_LONG).show();
+			}
+			if (viblate) {
+				Vibrator viblator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+				viblator.vibrate(100);
+			}
 		}
     }
 }
