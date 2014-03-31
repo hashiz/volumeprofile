@@ -25,8 +25,10 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	static final String KEY_DISPLAYTOASTONVOLUMELOCK    = "display_toast_on_volume_lock";
 
 	// hidden parameter
+	static final String KEY_DETECT_DEVICE_FUNCTION      = "detect_device_function";
 	static final String KEY_VOLUME_LINK_NOTIFICATION    = "volume_link_notification";
 	static final String KEY_VOLUME_LINK_SYSTEM          = "volume_link_system";
+	static final String KEY_VOLUME_LINK_RINGERMODE      = "volume_link_ringermode";
 
 	// backup restore
 	private static final String PREFS_START = "<preferences>";
@@ -64,18 +66,25 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 			e.printStackTrace();
 		}
 
+		// detect device function
+		detectDeviceFunction(false);
+	}
+
+	void detectDeviceFunction(boolean force) {
+		AudioUtil audio = new AudioUtil(mContext);
+		Editor editor = mSharedPrefs.edit();
 		if (!mHasVOLUME_LINK_NOTIFICATION) {
-			if (!mSharedPrefs.contains(KEY_VOLUME_LINK_NOTIFICATION)) {
-				Editor editor = mSharedPrefs.edit();
-				editor.putBoolean(KEY_VOLUME_LINK_NOTIFICATION, new AudioUtil(context).isVolumeLinkNotification());
-				editor.apply();
+			if (!mSharedPrefs.contains(KEY_VOLUME_LINK_NOTIFICATION) || force) {
+				editor.putBoolean(KEY_VOLUME_LINK_NOTIFICATION, audio.detectVolumeLinkNotification());
 			}
 		}
-		if (!mSharedPrefs.contains(KEY_VOLUME_LINK_SYSTEM)) {
-			Editor editor = mSharedPrefs.edit();
-			editor.putBoolean(KEY_VOLUME_LINK_SYSTEM, new AudioUtil(context).isVolumeLinkSystem());
-			editor.apply();
+		if (!mSharedPrefs.contains(KEY_VOLUME_LINK_SYSTEM) || force) {
+			editor.putBoolean(KEY_VOLUME_LINK_SYSTEM, audio.detectVolumeLinkSystem());
 		}
+		if (!mSharedPrefs.contains(KEY_VOLUME_LINK_RINGERMODE) || force) {
+			editor.putBoolean(KEY_VOLUME_LINK_RINGERMODE, audio.detectVolumeLinkRingermode());
+		}
+		editor.apply();
 	}
 
 	public static synchronized Prefs getInstance(Context context) {
@@ -181,6 +190,10 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 
 	public boolean isVolumeLinkSystem() {
 		return mSharedPrefs.getBoolean(KEY_VOLUME_LINK_SYSTEM, true);
+	}
+
+	public boolean isVolumeLinkRingermode() {
+		return mSharedPrefs.getBoolean(KEY_VOLUME_LINK_RINGERMODE, true);
 	}
 
 	public void setFromText(BufferedReader rdr) throws IOException {

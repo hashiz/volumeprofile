@@ -36,10 +36,15 @@
     <string name="play_sound_on_volume_change">Play Sound</string>
     <string name="display_toast_on_volume_lock">Display Toast when Lock</string>
     <string name="sound_level_alert_hack">Sony/SEMC Sound Level Alert Hack</string>
+    <string name="detect_device_function">Detect Device</string>
+    <string name="volume_link_notification">Notification linked Ring</string>
+    <string name="volume_link_system">System linked Ring</string>
+    <string name="volume_link_ringermode">Ring linked Ringer mode</string>
     <string name="pref_category_on_profile_apply">On Profile Apply</string>
     <string name="pref_category_on_volume_change">On Volume Change</string>
     <string name="pref_category_volume_lock">Volume Lock</string>
     <string name="pref_category_misc">Misc</string>
+    <string name="pref_category_device">Device</string>
     <string name="input_dialog_description">Input New Profile Name</string>
     <string name="input_dialog_positive_button">Save</string>
     <string name="input_dialog_rename_button">Rename</string>

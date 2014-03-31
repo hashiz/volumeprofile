@@ -72,4 +72,40 @@
 
 	</PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/pref_category_device"
+        >
+
+        <Preference
+            android:key="detect_device_function"
+            android:title="@string/detect_device_function"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+            />
+
+        <CheckBoxPreference
+            android:key="volume_link_notification"
+			android:title="@string/volume_link_notification"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+	       	android:enabled="false"
+            />
+        
+        <CheckBoxPreference
+            android:key="volume_link_system"
+			android:title="@string/volume_link_system"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+	       	android:enabled="false"
+            />
+
+        <CheckBoxPreference
+            android:key="volume_link_ringermode"
+			android:title="@string/volume_link_ringermode"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+	       	android:enabled="false"
+            />
+
+        </PreferenceCategory>
 </PreferenceScreen>
