@@ -1,11 +1,8 @@
 package jp.meridiani.apps.volumeprofile.prefs;
 
 import jp.meridiani.apps.volumeprofile.R;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.FragmentActivity;
