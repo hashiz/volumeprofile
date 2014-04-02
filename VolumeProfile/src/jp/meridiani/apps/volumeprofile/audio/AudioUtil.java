@@ -120,29 +120,6 @@ public class AudioUtil {
 		}
 	}
 
-	public boolean detectVolumeLinkRingermode() {
-		int prevRingerMode = mAmgr.getRingerMode();
-		int prevRinger = mAmgr.getStreamVolume(AudioManager.STREAM_RING);
-
-		try {
-			// initialize
-			mAmgr.setStreamVolume(AudioManager.STREAM_RING, 1, 0);
-			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-	
-			mAmgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-			mAmgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-
-			if (mAmgr.getStreamVolume(AudioManager.STREAM_RING) == 0) {
-				return true;
-			}
-			return false;
-		}
-		finally {
-			mAmgr.setStreamVolume(AudioManager.STREAM_RING, prevRinger, 0);
-			mAmgr.setRingerMode(prevRingerMode);
-		}
-	}
-
 	public static int getStreamType(StreamType type) {
 		switch (type) {
 		case ALARM:

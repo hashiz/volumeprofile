@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings.System;
 
@@ -24,7 +25,6 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	static final String KEY_SOUNDLEVELALERTHACK         = "sound_level_alert_hack";
 	static final String KEY_DISPLAYTOASTONVOLUMELOCK    = "display_toast_on_volume_lock";
 
-	// hidden parameter
 	static final String KEY_DETECT_DEVICE_FUNCTION      = "detect_device_function";
 	static final String KEY_VOLUME_LINK_NOTIFICATION    = "volume_link_notification";
 	static final String KEY_VOLUME_LINK_SYSTEM          = "volume_link_system";
@@ -42,14 +42,10 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 	private Context mContext;
 	private SharedPreferences mSharedPrefs;
 
-	public int getPrefsResId() {
-		return R.xml.prefs;
-	}
-
 	private Prefs(Context context) {
 		mContext = context;
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-		PreferenceManager.setDefaultValues(context, getPrefsResId(), false);
+		PreferenceManager.setDefaultValues(context, R.xml.prefs, false);
 		mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
 		Class<System> c = System.class;
 		try {
@@ -82,7 +78,12 @@ public class Prefs implements OnSharedPreferenceChangeListener {
 			editor.putBoolean(KEY_VOLUME_LINK_SYSTEM, audio.detectVolumeLinkSystem());
 		}
 		if (!mSharedPrefs.contains(KEY_VOLUME_LINK_RINGERMODE) || force) {
-			editor.putBoolean(KEY_VOLUME_LINK_RINGERMODE, audio.detectVolumeLinkRingermode());
+			if (Build.DEVICE.equals("SO-05D") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+				editor.putBoolean(KEY_VOLUME_LINK_RINGERMODE, true);
+			}
+			else {
+				editor.putBoolean(KEY_VOLUME_LINK_RINGERMODE, false);
+			}
 		}
 		editor.apply();
 	}

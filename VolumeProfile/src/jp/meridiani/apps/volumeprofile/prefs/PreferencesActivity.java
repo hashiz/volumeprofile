@@ -1,7 +1,11 @@
 package jp.meridiani.apps.volumeprofile.prefs;
 
+import jp.meridiani.apps.volumeprofile.R;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.FragmentActivity;
@@ -18,24 +22,22 @@ public class PreferencesActivity extends FragmentActivity {
     }
 
 	public static class PrefsFragment extends PreferenceFragment {
-		Prefs mPrefs;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 
-			mPrefs = Prefs.getInstance(getActivity());
-			addPreferencesFromResource(mPrefs.getPrefsResId());
+			addPreferencesFromResource(R.xml.prefs);
 
 			Preference detectDevice = findPreference(Prefs.KEY_DETECT_DEVICE_FUNCTION);
 			detectDevice.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-
+				
 				@Override
 				public boolean onPreferenceClick(Preference pref) {
-					mPrefs.detectDeviceFunction(true);
+					Prefs.getInstance(getActivity()).detectDeviceFunction(true);
+					getActivity().finish();
 					return true;
 				}
-				
 			});
 		}
 	}

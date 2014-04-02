@@ -104,7 +104,7 @@
 			android:title="@string/volume_link_ringermode"
 	       	android:layout_width="wrap_content"
 	       	android:layout_height="wrap_content"
-	       	android:enabled="false"
+	       	android:enabled="true"
             />
 
         </PreferenceCategory>
