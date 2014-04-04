@@ -2,6 +2,7 @@ package jp.meridiani.apps.volumeprofile.profile;
 
 import java.util.UUID;
 
+import jp.meridiani.apps.volumeprofile.DisplayToast;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.VolumeChangedReceiver;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
@@ -16,7 +17,7 @@ public class Receiver extends VolumeChangedReceiver {
 	ProfileStore mProfileStore = null;
 	Context      mContext      = null;
 	boolean     mDisplayToast = false;
-	
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		mProfileStore = ProfileStore.getInstance(context);
@@ -69,7 +70,7 @@ public class Receiver extends VolumeChangedReceiver {
 			}
 			new AudioUtil(mContext).setVolume(streamType, profile.getVolume(streamType), false);
 			if (mDisplayToast) {
-				Toast.makeText(mContext, R.string.msg_volume_locked, Toast.LENGTH_SHORT).show();
+				DisplayToast.show(mContext, R.string.msg_volume_locked, Toast.LENGTH_SHORT);
 			}
 		}
 	}
@@ -90,7 +91,7 @@ public class Receiver extends VolumeChangedReceiver {
 			}
 			new AudioUtil(mContext).setRingerMode(profile.getRingerMode());
 			if (mDisplayToast) {
-				Toast.makeText(mContext, R.string.msg_volume_locked, Toast.LENGTH_SHORT).show();
+				DisplayToast.show(mContext, R.string.msg_volume_locked, Toast.LENGTH_SHORT);
 			}
 		}
 	}

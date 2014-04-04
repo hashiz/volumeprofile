@@ -2,6 +2,7 @@ package jp.meridiani.apps.volumeprofile.pluginapi;
 
 import java.util.UUID;
 
+import jp.meridiani.apps.volumeprofile.DisplayToast;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity.VolumeLockValue;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
@@ -15,7 +16,7 @@ import android.os.Vibrator;
 import android.widget.Toast;
 
 public class PluginFireReceiver extends BroadcastReceiver {
-
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
     	if (!com.twofortyfouram.locale.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
@@ -41,7 +42,7 @@ public class PluginFireReceiver extends BroadcastReceiver {
 			if ( profile == null ) {
 				if (displayToast) {
 					String profileName = bundle.getProfileName();
-		        	Toast.makeText(context, context.getString(R.string.msg_profile_notfound, profileName), Toast.LENGTH_LONG).show();
+		        	DisplayToast.show(context, context.getString(R.string.msg_profile_notfound, profileName), Toast.LENGTH_SHORT);
 				}
 	        	return;
 			}
@@ -78,7 +79,7 @@ public class PluginFireReceiver extends BroadcastReceiver {
 		}
 		if (changed) {
 			if (displayToast) {
-				Toast.makeText(context, toastString, Toast.LENGTH_LONG).show();
+				DisplayToast.show(context, toastString, Toast.LENGTH_SHORT);
 			}
 			if (viblate) {
 				Vibrator viblator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);

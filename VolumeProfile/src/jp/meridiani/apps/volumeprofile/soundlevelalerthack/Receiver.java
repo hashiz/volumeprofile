@@ -2,6 +2,7 @@ package jp.meridiani.apps.volumeprofile.soundlevelalerthack;
 
 import java.util.UUID;
 
+import jp.meridiani.apps.volumeprofile.DisplayToast;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
@@ -70,7 +71,7 @@ public class Receiver extends BroadcastReceiver {
 		for (int trycount = 0; trycount < RETRY_MAX && profile.getMusicVolume() != audio.getVolume(StreamType.MUSIC); trycount++) {
 			audio.applyProfile(profile);
 			if (prefs.isDisplayToastOnProfileChange()) {
-				Toast.makeText(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG).show();
+				DisplayToast.show(context, context.getString(R.string.msg_profile_applied, profile.getName()), Toast.LENGTH_LONG);
 			}
 			if (prefs.isVibrateOnProfileChange()) {
 				Vibrator viblator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
