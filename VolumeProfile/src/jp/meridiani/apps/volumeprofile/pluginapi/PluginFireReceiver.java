@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.DisplayToast;
 import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity.ClearAudioPlusStateValue;
 import jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity.VolumeLockValue;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
@@ -30,6 +32,7 @@ public class PluginFireReceiver extends BroadcastReceiver {
 		}
 		UUID profileId = bundle.getProfileId();
 		VolumeLockValue changeLock = bundle.getVolumeLock();
+		ClearAudioPlusStateValue changeCaState = bundle.getClearAudioPlusState();
 		Prefs prefs = Prefs.getInstance(context);
 		ProfileStore store = ProfileStore.getInstance(context);
 		boolean displayToast = prefs.isDisplayToastOnProfileChange();
@@ -44,12 +47,13 @@ public class PluginFireReceiver extends BroadcastReceiver {
 					String profileName = bundle.getProfileName();
 		        	DisplayToast.show(context, context.getString(R.string.msg_profile_notfound, profileName), Toast.LENGTH_SHORT);
 				}
-	        	return;
 			}
-			CurrentProfile.setCurrentProfile(context, profileId);
-			toastString.append(context.getString(R.string.msg_profile_applied, profile.getName()));
-			sep = ",";
-			changed = true;
+			else {
+				CurrentProfile.setCurrentProfile(context, profileId);
+				toastString.append(context.getString(R.string.msg_profile_applied, profile.getName()));
+				sep = ",";
+				changed = true;
+			}
 		}
 		if (changeLock != null) {
 			boolean isLocked = true;
@@ -75,7 +79,37 @@ public class PluginFireReceiver extends BroadcastReceiver {
 			}
 			toastString.append(sep);
 			toastString.append(context.getString(resid));
+			sep = ",";
 			changed = true;
+		}
+		if (changeCaState != null) {
+			AudioUtil au = new AudioUtil(context);
+			if (au.isSupportedClearAudioPlus()) {
+				boolean isOn = true;
+				switch (changeCaState) {
+				case ON:
+					isOn = true;
+					break;
+				case OFF:
+					isOn = false;
+					break;
+				case TOGGLE:
+					isOn = !au.getClearAudioPlusState();
+					break;
+				}
+				au.setClearAudioPlusState(isOn);
+				int resid;
+				if (isOn) {
+					resid = ClearAudioPlusStateValue.ON.getResource();
+				}
+				else {
+					resid = ClearAudioPlusStateValue.OFF.getResource();
+	
+				}
+				toastString.append(sep);
+				toastString.append(context.getString(resid));
+				changed = true;
+			}
 		}
 		if (changed) {
 			if (displayToast) {

@@ -50,5 +50,9 @@
     <string name="volume_link_notification">通知音と着信音がリンク</string>
     <string name="volume_link_system">システム音と着信音がリンク</string>
     <string name="volume_link_ringermode">着信音モードと着信音がリンク</string>
-	
+	<string name="plugin_clearaudioplus_changestate">ClearAudio+を変更</string>
+	<string name="clearaudioplus_state_on">オン</string>
+	<string name="clearaudioplus_state_off">オフ</string>
+	<string name="clearaudioplus_state_toggle">トグル</string>
+    	
 </resources>
