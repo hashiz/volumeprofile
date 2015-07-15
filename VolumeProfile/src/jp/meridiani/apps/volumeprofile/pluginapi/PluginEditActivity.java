@@ -38,8 +38,8 @@ public class PluginEditActivity extends Activity {
 	private boolean mChangeProfile = false;
 	private boolean mChangeVolumeLock  = false;
 	private boolean mChangeClearAudioPlusState  = false;
-	private VolumeLockValue mVolumeLock = null;
-	private ClearAudioPlusStateValue mClearAudioPlusState = null;
+	private VolumeLockValue mVolumeLock = VolumeLockValue.LOCK;
+	private ClearAudioPlusStateValue mClearAudioPlusState = ClearAudioPlusStateValue.ON;
 
 	enum VolumeLockValue {
 		LOCK,
@@ -176,9 +176,15 @@ public class PluginEditActivity extends Activity {
 				mSelectedProfile = ProfileStore.getInstance(this).loadProfile(UUID.fromString(uuid));
 			}
 			mChangeVolumeLock = savedInstanceState.getBoolean(SAVE_CHANGEVOLUMELOCK, false);
-			mVolumeLock = VolumeLockValue.valueOf(savedInstanceState.getString(SAVE_SELECTEDVOLUMELOCK));
+			String volumelock = savedInstanceState.getString(SAVE_SELECTEDVOLUMELOCK);
+			if (volumelock != null) {
+				mVolumeLock = VolumeLockValue.valueOf(volumelock);
+			}
 			mChangeClearAudioPlusState = savedInstanceState.getBoolean(SAVE_CHANGECLEARAUDIOPLUSSTATE, false);
-			mClearAudioPlusState = ClearAudioPlusStateValue.valueOf(savedInstanceState.getString(SAVE_SELECTEDCLEARAUDIOPLUSSTATE));
+			String capState = savedInstanceState.getString(SAVE_SELECTEDCLEARAUDIOPLUSSTATE);
+			if (capState != null) {
+				mClearAudioPlusState = ClearAudioPlusStateValue.valueOf(capState);
+			}
 		}
 		else {
 			// initial value
@@ -386,9 +392,13 @@ public class PluginEditActivity extends Activity {
 			outState.putString(SAVE_SELECTEDPROFILEID, mSelectedProfile.getUuid().toString());
 		}
 		outState.putBoolean(SAVE_CHANGEVOLUMELOCK, mChangeVolumeLock);
-		outState.putString(SAVE_SELECTEDVOLUMELOCK, mVolumeLock.name());
+		if (mVolumeLock != null) {
+			outState.putString(SAVE_SELECTEDVOLUMELOCK, mVolumeLock.name());
+		}
 		outState.putBoolean(SAVE_CHANGECLEARAUDIOPLUSSTATE, mChangeClearAudioPlusState);
-		outState.putString(SAVE_SELECTEDCLEARAUDIOPLUSSTATE, mClearAudioPlusState.name());
+		if (mClearAudioPlusState != null) {
+			outState.putString(SAVE_SELECTEDCLEARAUDIOPLUSSTATE, mClearAudioPlusState.name());
+		}
 	}
 
 	@Override
