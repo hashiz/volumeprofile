@@ -3,7 +3,6 @@ package jp.meridiani.apps.volumeprofile.audio;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.Context;
-import android.content.Intent;
 import android.media.AudioManager;
 import android.util.Log;
 
@@ -12,14 +11,8 @@ public class AudioUtil {
 
 	private Context      mContext;
 	private AudioManager mAmgr;
+	private ClearAudioPlus mClearAudioPlus;
 
-	private static final String ACTION_CLEARAUDIO_PLUS_STATUS = "com.sonymobile.audioeffect.intent.action.CLEARAUDIO_PLUS_STATUS";
-	private static final String EXTRA_CLEARAUDIO_PLUS_STATUS = "com.sonymobile.audioeffect.intent.extra.CLEARAUDIO_PLUS_STATUS";
-
-	private static final String AUDIO_PARAM_SUPPORTED_EFFECT = "Sony_effect;supported_effect";
-	private static final String AUDIO_EFFECT_CLEARAUDIO_PLUS = "ClearAudio+";
-	private static final String AUDIO_PARAM_CLEARAUDIO_PLUS_STATE = "Sony_effect;ca_plus_state";
-	
 	public static enum RingerMode {
 		NORMAL,
 		VIBRATE,
@@ -47,6 +40,8 @@ public class AudioUtil {
 	public AudioUtil(Context context) {
 		mContext = context;
 		mAmgr    = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
+		mClearAudioPlus = new ClearAudioPlus(context, mAmgr);
+		
 	}
 	
 	public void applyProfile(VolumeProfile profile) {
@@ -264,53 +259,14 @@ public class AudioUtil {
 	}
 
 	public boolean isSupportedClearAudioPlus() {
-		String param = mAmgr.getParameters(AUDIO_PARAM_SUPPORTED_EFFECT);
-		if (param == null) {
-			return false;
-		}
-		String[] keyval = param.split("=");
-		if (keyval.length < 2) {
-			return false;
-		}
-		for (String effect : keyval[1].split(":")) {
-			if (effect.equals(AUDIO_EFFECT_CLEARAUDIO_PLUS)) {
-				return true;
-			}
-		}
-		return false;
+		return mClearAudioPlus.isSupported();
 	}
 
 	public boolean getClearAudioPlusState() {
-		if (!isSupportedClearAudioPlus()) {
-			return false;
-		}
-		String param = mAmgr.getParameters(AUDIO_PARAM_CLEARAUDIO_PLUS_STATE);
-		if (param == null) {
-			return false;
-		}
-		String[] keyval = param.split("=");
-		if (keyval.length < 2) {
-			return false;
-		}
-		boolean enabled = false;
-		try {
-			enabled = Integer.parseInt(keyval[1]) == 1 ? true : false;
-		}
-		catch (NumberFormatException e) {
-			enabled = false;
-		}
-		return enabled;
+		return mClearAudioPlus.getState();
 	}
 
 	public void setClearAudioPlusState(boolean enabled) {
-		if (getClearAudioPlusState() == enabled) {
-			return;
-		}
-		int state = enabled ? 1 : 0;
-		String keyval = AUDIO_PARAM_CLEARAUDIO_PLUS_STATE + "=" + state;
-		mAmgr.setParameters(keyval);
-		Intent intent = new Intent(ACTION_CLEARAUDIO_PLUS_STATUS);
-		intent.putExtra(EXTRA_CLEARAUDIO_PLUS_STATUS, state);
-		mContext.sendBroadcast(intent);
+		mClearAudioPlus.setState(enabled);
 	}
 }
