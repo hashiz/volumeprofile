@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="jp.meridiani.apps.volumeprofile"
     android:installLocation="auto"
-    android:versionCode="2018"
-    android:versionName="2.18" >
+    android:versionCode="2019"
+    android:versionName="2.19" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -87,6 +87,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".main.VolumeProfileActivity" />
         </activity>
+    	<uses-library
+    	    android:name="com.sonymobile.audioeffect"
+    	    android:required="false"
+    	    />
     </application>
 
 </manifest>
