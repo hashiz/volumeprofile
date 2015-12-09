@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <PreferenceCategory
+        android:title="@string/pref_category_on_profile_apply"
+        >
+
+        <CheckBoxPreference
+	        android:id="@+id/vibrate_on_profile_change_checkbox"
+	        android:key="vibrate_on_profile_change"
+	        android:title="@string/vibrate_on_profile_change"
+	        android:defaultValue="true"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        />
+	
+	    <CheckBoxPreference
+	        android:id="@+id/display_toast_on_profile_change_checkbox"
+	        android:key="display_toast_on_profile_change"
+	        android:title="@string/display_toast_on_profile_change"
+	        android:defaultValue="true"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        />
+
+	</PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_on_volume_change"
+        >
+
+    	<CheckBoxPreference
+		    android:id="@+id/play_sound_on_volume_change_checkbox"
+		    android:key="play_sound_on_volume_change"
+		    android:title="@string/play_sound_on_volume_change"
+		    android:defaultValue="true"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    />
+
+	</PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_volume_lock"
+        >
+
+    	<CheckBoxPreference
+			android:id="@+id/display_toast_on_volume_lock"
+			android:key="display_toast_on_volume_lock"
+			android:title="@string/display_toast_on_volume_lock"
+			android:defaultValue="false"
+			android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+	        />
+
+	</PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_misc"
+        >
+
+    	<CheckBoxPreference
+			android:id="@+id/sound_level_alert_hack_checkbox"
+			android:key="sound_level_alert_hack"
+			android:title="@string/sound_level_alert_hack"
+			android:defaultValue="true"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+	        />
+
+	</PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_device"
+        >
+
+        <Preference
+            android:key="detect_device_function"
+            android:title="@string/detect_device_function"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+            />
+
+        <CheckBoxPreference
+            android:key="volume_link_notification"
+			android:title="@string/volume_link_notification"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+	       	android:enabled="false"
+            />
+        
+        <CheckBoxPreference
+            android:key="volume_link_system"
+			android:title="@string/volume_link_system"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+	       	android:enabled="false"
+            />
+
+        <CheckBoxPreference
+            android:key="volume_link_ringermode"
+			android:title="@string/volume_link_ringermode"
+	       	android:layout_width="wrap_content"
+	       	android:layout_height="wrap_content"
+	       	android:enabled="true"
+            />
+
+        </PreferenceCategory>
+</PreferenceScreen>

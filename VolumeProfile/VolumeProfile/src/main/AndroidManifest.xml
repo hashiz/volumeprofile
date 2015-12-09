@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="jp.meridiani.apps.volumeprofile"
+    android:installLocation="auto"
+    android:versionCode="2020"
+    android:versionName="2.20" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <application
+        android:allowBackup="true"
+        android:backupAgent="jp.meridiani.apps.volumeprofile.backup.DataBackup"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="com.google.android.backup.api_key"
+            android:value="AEdPqrEAAAAI_XRjj0L3E2815Ek3Rsm-SptAK0QPjeu5QkuNog" />
+
+        <activity
+            android:name="jp.meridiani.apps.volumeprofile.main.VolumeProfileActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity"
+            android:label="@string/title_activity_plugin_edit" >
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="jp.meridiani.apps.volumeprofile.pluginapi.PluginFireReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver" >
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="jp.meridiani.apps.volumeprofile.soundlevelalerthack.Receiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver" >
+            <intent-filter>
+                <action android:name="com.sonyericsson.media.SOUND_LEVEL_ALERT" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="jp.meridiani.apps.volumeprofile.profile.Receiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver" >
+            <intent-filter>
+                <action android:name="android.media.RINGER_MODE_CHANGED" />
+                <action android:name="android.media.VOLUME_CHANGED_ACTION" />
+            </intent-filter>
+        </receiver>
+        
+        <activity
+            android:name="jp.meridiani.apps.volumeprofile.prefs.PreferencesActivity"
+            android:label="@string/title_activity_preference" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.VolumeProfileActivity" />
+        </activity>
+        <activity
+            android:name="jp.meridiani.apps.volumeprofile.main.ProfileEditActivity"
+            android:label="@string/title_activity_profile_edit" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.VolumeProfileActivity" />
+        </activity>
+        <activity
+            android:name="jp.meridiani.apps.volumeprofile.main.AboutActivity"
+            android:label="@string/title_activity_about" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.VolumeProfileActivity" />
+        </activity>
+    	<uses-library
+    	    android:name="com.sonymobile.audioeffect"
+    	    android:required="false"
+    	    />
+    </application>
+
+</manifest>
