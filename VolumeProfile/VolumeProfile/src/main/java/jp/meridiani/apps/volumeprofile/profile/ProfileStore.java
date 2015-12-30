@@ -129,7 +129,7 @@ public class ProfileStore {
 				int order = listCur.getInt(listCur.getColumnIndex(COL_DISPORDER));
 				VolumeProfile profile = new VolumeProfile(uuid);
 				profile.setDisplayOrder(order);
-				loadProfileInternal(profile);
+				loadProfileData(profile);
 				list.add(profile);
 			}
 		}
@@ -161,7 +161,7 @@ public class ProfileStore {
 		}
 	}
 
-	private VolumeProfile loadProfileInternal(VolumeProfile profile) {
+	private void loadProfileData(VolumeProfile profile) {
 		String uuid = profile.getUuid().toString();
 		Cursor dataCur = mDB.query(DATA_TABLE_NAME, null, COL_UUID + "=?", new String[]{uuid}, null, null, null);
 		try {
@@ -174,23 +174,54 @@ public class ProfileStore {
 		finally {
 			dataCur.close();
 		}
-		return profile;
 	}
 
-	public VolumeProfile loadProfile(UUID uuid) {
+	private VolumeProfile loadProfileInternal(UUID uuid) throws ProfileNotFoundException {
+		VolumeProfile profile = null;
 		Cursor listCur = mDB.query(LIST_TABLE_NAME, null, COL_UUID + "=?", new String[] {uuid.toString()}, null, null, null);
 		try {
 			if (listCur.moveToFirst()) {
 				int order = listCur.getInt(listCur.getColumnIndex(COL_DISPORDER));
-				VolumeProfile profile = new VolumeProfile(uuid);
+				profile = new VolumeProfile(uuid);
 				profile.setDisplayOrder(order);
-				return loadProfileInternal(profile);
+			}
+			else {
+				throw new ProfileNotFoundException();
 			}
 		}
 		finally {
 			listCur.close();
 		}
-		return null;
+
+		loadProfileData(profile);
+		return profile;
+	}
+
+	public VolumeProfile loadProfile(String name) throws ProfileNotFoundException {
+		Cursor dataCur = mDB.query(
+				DATA_TABLE_NAME,
+				null,
+				String.format("%s=? and %s=?", COL_KEY, COL_VALUE),
+				new String[] {Key.PROFILENAME.toString(), name},
+				null,
+				null,
+				null);
+		try {
+			if (dataCur.moveToFirst()) {
+				UUID uuid = UUID.fromString(dataCur.getString(dataCur.getColumnIndex(COL_UUID)));
+				return loadProfileInternal(uuid);
+			}
+			else {
+				throw new ProfileNotFoundException();
+			}
+		}
+		finally {
+			dataCur.close();
+		}
+	}
+
+	public VolumeProfile loadProfile(UUID uuid) throws ProfileNotFoundException {
+		return loadProfileInternal(uuid);
 	}
 
 	public void storeProfile(VolumeProfile profile) {

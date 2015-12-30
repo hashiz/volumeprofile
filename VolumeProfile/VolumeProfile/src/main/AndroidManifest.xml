@@ -2,13 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="jp.meridiani.apps.volumeprofile"
-    android:installLocation="auto"
-    android:versionCode="2020"
-    android:versionName="2.20" >
+    android:installLocation="auto">
 
+    <!--
+        android:versionCode="2020"
+        android:versionName="2.20"
+    -->
+
+<!--
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="21" />
+-->
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />

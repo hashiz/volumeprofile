@@ -1,21 +1,49 @@
 apply plugin: 'com.android.application'
 android {
+    signingConfigs {
+        release {
+            keyAlias 'hashiz'
+            storeFile file('C:/home/kjcs_hashi/android/keystore/hashiz.keystore')
+            keyPassword 'jitte5i'
+            storePassword 'jitte5i'
+        }
+    }
     compileSdkVersion 21
     buildToolsVersion "23.0.2"
-
     defaultConfig {
-        applicationId "jp.meridiani.apps.volumeprofile"
+        applicationId 'jp.meridiani.apps.volumeprofile'
         minSdkVersion 14
         targetSdkVersion 21
+        versionCode 2020
+        versionName '2.20'
+        signingConfig signingConfigs.release
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
         }
     }
+    applicationVariants.all { variant ->
+        if (variant.buildType.name.equals('release')) {
+            variant.outputs.each { output ->
+                if (output.outputFile != null && output.outputFile.name.endsWith('.apk')) {
+                    // Rename APK
+                    def versionName = defaultConfig.versionName
+                    def newName = output.outputFile.name.replace('.apk', '-' + versionName + '.apk')
+                    output.outputFile = new File(output.outputFile.parent, newName)
+                }
+            }
+        }
+    }
+    productFlavors {
+    }
 }
+
 dependencies {
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.twofortyfouram:android-plugin-api-for-locale:[1.0.2,2.0]'

@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class CurrentProfile {
 
-	public static synchronized void setCurrentProfile(Context context, UUID profileId) {
+	public static synchronized void setCurrentProfile(Context context, UUID profileId) throws ProfileNotFoundException {
 		AudioUtil audio = new AudioUtil(context);
 		ProfileStore store = ProfileStore.getInstance(context);
 		VolumeProfile profile = store.loadProfile(profileId);

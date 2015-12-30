@@ -7,6 +7,7 @@ import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
+import jp.meridiani.apps.volumeprofile.profile.ProfileNotFoundException;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.BroadcastReceiver;
@@ -61,8 +62,11 @@ public class Receiver extends BroadcastReceiver {
 		if (profileId == null) {
 			return;
 		}
-		VolumeProfile profile = ProfileStore.getInstance(context).loadProfile(profileId);
-		if (profile == null) {
+		VolumeProfile profile;
+		try {
+			profile = ProfileStore.getInstance(context).loadProfile(profileId);
+		}
+		catch (ProfileNotFoundException e) {
 			return;
 		}
 		AudioUtil audio = new AudioUtil(context);

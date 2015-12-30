@@ -7,6 +7,7 @@ import java.util.UUID;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.main.DragDropListView.OnSortedListener;
 import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
+import jp.meridiani.apps.volumeprofile.profile.ProfileNotFoundException;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.Context;
@@ -104,7 +105,12 @@ public class ProfileListFragment extends Fragment implements OnItemClickListener
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 		ProfileListAdapter adapter = (ProfileListAdapter)parent.getAdapter();
 		VolumeProfile profile = adapter.getItem(pos);
-		CurrentProfile.setCurrentProfile(parent.getContext(), profile.getUuid());
+		try {
+			CurrentProfile.setCurrentProfile(parent.getContext(), profile.getUuid());
+		}
+		catch (ProfileNotFoundException e){
+			// ignore
+		}
 	}
 
 	@Override

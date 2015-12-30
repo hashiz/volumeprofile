@@ -3,8 +3,10 @@ package jp.meridiani.apps.volumeprofile.pluginapi;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import jp.meridiani.apps.volumeprofile.MessageText;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.profile.ProfileNotFoundException;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.app.Activity;
@@ -169,11 +171,18 @@ public class PluginEditActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		ProfileStore store = ProfileStore.getInstance(this);
+
 		if (savedInstanceState != null) {
 			mChangeProfile = savedInstanceState.getBoolean(SAVE_CHANGEPROFILE, true);
 			String uuid = savedInstanceState.getString(SAVE_SELECTEDPROFILEID);
 			if (uuid != null) {
-				mSelectedProfile = ProfileStore.getInstance(this).loadProfile(UUID.fromString(uuid));
+				try {
+					mSelectedProfile = store.loadProfile(UUID.fromString(uuid));
+				}
+				catch (ProfileNotFoundException e) {
+					// ignore
+				}
 			}
 			mChangeVolumeLock = savedInstanceState.getBoolean(SAVE_CHANGEVOLUMELOCK, false);
 			String volumelock = savedInstanceState.getString(SAVE_SELECTEDVOLUMELOCK);
@@ -209,7 +218,21 @@ public class PluginEditActivity extends Activity {
 				UUID uuid = bundle.getProfileId();
 				if (uuid != null) {
 					mChangeProfile = true;
-					mSelectedProfile = ProfileStore.getInstance(this).loadProfile(uuid);
+					try {
+						mSelectedProfile = store.loadProfile(uuid);
+					}
+					catch (ProfileNotFoundException e) {
+						// search profile by name if uuid not found.
+						String name = bundle.getProfileName();
+						if (name != null) {
+							try {
+								mSelectedProfile = store.loadProfile(name);
+							}
+							catch (ProfileNotFoundException e2) {
+								mSelectedProfile = null;
+							}
+						}
+					}
 				}
 				VolumeLockValue lock = bundle.getVolumeLock();
 				if (lock != null) {
@@ -413,27 +436,22 @@ public class PluginEditActivity extends Activity {
         }
 
 		BundleUtil resultBundle = new BundleUtil();
-		StringBuffer blub = new StringBuffer();
-		String sep = "";
+		MessageText blurb = new MessageText(",");
         if (mChangeProfile && mSelectedProfile != null) {
             resultBundle.setProfileId(mSelectedProfile.getUuid());
             resultBundle.setProfileName(mSelectedProfile.getName());
-            blub.append(mSelectedProfile.getName());
-            sep = ",";
+            blurb.addText(mSelectedProfile.getName());
         }
         if (mChangeVolumeLock && mVolumeLock != null) {
             resultBundle.setVolumeLock(mVolumeLock);
-            blub.append(sep);
-            blub.append(getString(mVolumeLock.getResource()));
-            sep = ",";
+            blurb.addText(getString(mVolumeLock.getResource()));
         }
         if (mChangeClearAudioPlusState && mClearAudioPlusState != null) {
             resultBundle.setClearAudioPlusState(mClearAudioPlusState);
-            blub.append(sep);
-            blub.append(getString(mClearAudioPlusState.getResource()));
+            blurb.addText(getString(mClearAudioPlusState.getResource()));
         }
         	
-        resultIntent.putExtra(com.twofortyfouram.locale.api.Intent.EXTRA_STRING_BLURB, blub.toString());
+        resultIntent.putExtra(com.twofortyfouram.locale.api.Intent.EXTRA_STRING_BLURB, blurb.toString());
         resultIntent.putExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE, resultBundle.getBundle());
 
         setResult(RESULT_OK, resultIntent);

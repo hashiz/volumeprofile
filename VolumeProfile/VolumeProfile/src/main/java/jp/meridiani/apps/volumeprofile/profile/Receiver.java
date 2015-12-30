@@ -59,8 +59,11 @@ public class Receiver extends VolumeChangedReceiver {
 		if (profileId == null) {
 			return;
 		}
-		VolumeProfile profile = mProfileStore.loadProfile(profileId);
-		if (profile == null) {
+		VolumeProfile profile = null;
+		try {
+			profile = mProfileStore.loadProfile(profileId);
+		}
+		catch (ProfileNotFoundException e) {
 			return;
 		}
 		AudioUtil.StreamType streamType = AudioUtil.getStreamType(type);
@@ -80,8 +83,11 @@ public class Receiver extends VolumeChangedReceiver {
 		if (profileId == null) {
 			return;
 		}
-		VolumeProfile profile = mProfileStore.loadProfile(profileId);
-		if (profile == null) {
+		VolumeProfile profile = null;
+		try {
+			profile = mProfileStore.loadProfile(profileId);
+		}
+		catch (ProfileNotFoundException e) {
 			return;
 		}
 		AudioUtil.RingerMode ringerMode = AudioUtil.getRingerMode(mode);
