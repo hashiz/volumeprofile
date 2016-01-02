@@ -48,17 +48,23 @@ public class AudioUtil {
 		synchronized (sLock) {
 			Prefs prefs = Prefs.getInstance(mContext);
 			setRingerMode(profile.getRingerMode());
+			RingerMode r = getRingerMode();
 			for (StreamType streamType : StreamType.values()) {
 				int volume = profile.getVolume(streamType);
 				switch (streamType) {
+				case RING:
+					if (r == RingerMode.SILENT || r == RingerMode.VIBRATE) {
+						continue;
+					}
+					break;
 				case NOTIFICATION:
 					if (prefs.isVolumeLinkNotification()) {
-						volume = profile.getRingVolume();
+						continue;
 					}
 					break;
 				case SYSTEM:
 					if (prefs.isVolumeLinkSystem()) {
-						volume = profile.getRingVolume();
+						continue;
 					}
 					break;
 				default:
