@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 21
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 24
+    buildToolsVersion '25.0.3'
     defaultConfig {
         applicationId 'jp.meridiani.apps.volumeprofile'
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 2021
-        versionName '2.21'
+        versionCode 2022
+        versionName '2.22'
     }
     buildTypes {
         release {
@@ -32,8 +32,8 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.3'
     compile 'com.twofortyfouram:android-plugin-api-for-locale:[1.0.2,2.0]'
+    compile 'com.android.support:support-v4:24.2.0'
 }
 
 repositories {
