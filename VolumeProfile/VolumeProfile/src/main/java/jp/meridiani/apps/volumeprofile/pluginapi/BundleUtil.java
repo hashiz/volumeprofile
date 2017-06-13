@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import android.os.Bundle;
 
-class BundleUtil {
+public class BundleUtil {
     public static final String BUNDLE_PROFILEID   = "jp.meridiani.apps.volumeprofile.extra.STRING_PROFILEID";
     public static final String BUNDLE_PROFILENAME = "jp.meridiani.apps.volumeprofile.extra.STRING_PROFILENAME";
     public static final String BUNDLE_VOLUMELOCK  = "jp.meridiani.apps.volumeprofile.extra.STRING_VOLUMELOCK";
