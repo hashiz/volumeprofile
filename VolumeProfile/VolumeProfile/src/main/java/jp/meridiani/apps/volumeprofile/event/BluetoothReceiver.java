@@ -15,6 +15,9 @@ import jp.meridiani.apps.volumeprofile.DisplayToast;
 import jp.meridiani.apps.volumeprofile.MessageText;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.pluginapi.BundleUtil;
+import jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity;
+import jp.meridiani.apps.volumeprofile.pluginapi.PluginFireReceiver;
 import jp.meridiani.apps.volumeprofile.prefs.Prefs;
 import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
 import jp.meridiani.apps.volumeprofile.profile.ProfileNotFoundException;
@@ -54,10 +57,10 @@ public class BluetoothReceiver extends BroadcastReceiver {
 		else if (intent.hasExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE)) {
 			switch (intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, BluetoothAdapter.STATE_CONNECTED)) {
 				case BluetoothAdapter.STATE_CONNECTED:
-					state = ConnState.CONNECTED;
+					state = Event.BTState.CONNECTED;
 					break;
 				case BluetoothAdapter.STATE_DISCONNECTED:
-					state = ConnState.DISCONNECTED;
+					state = Event.BTState.DISCONNECTED;
 					break;
 				default:
 					return;
@@ -87,100 +90,20 @@ public class BluetoothReceiver extends BroadcastReceiver {
 					continue;
 				}
 			}
-			if (event.getBTState() != state)
-			switch (state) {
-				case CONNECTED:
-				case CONNECTING:
-					break;
-				default:
+
+			if (event.getBTState() != Event.BTState.ANY) {
+				if (event.getBTState() != state) {
 					continue;
-			}
-
-			event.getBTProfile();
-			if (!(event.getBTProfile() == Event.BTProfile.ANY) && event.)
-
-		}
-
-		if (profileId != null) {
-			VolumeProfile profile = null;
-			try {
-				try {
-					profile = store.loadProfile(profileId);
 				}
-				catch (ProfileNotFoundException e) {
-					profile = store.loadProfile(profileName);
-					profileId = profile.getUuid();
-				}
-				CurrentProfile.setCurrentProfile(context, profileId);
-				toastString.addText(context.getString(R.string.msg_profile_applied, profile.getName()));
-				changed = true;
 			}
-			catch (ProfileNotFoundException e) {
-				toastString.addText(context.getString(R.string.msg_profile_notfound, profileName));
-				changed = true;
-			}
-		}
-		if (changeLock != null) {
-			boolean isLocked = true;
-			switch (changeLock) {
-			case LOCK:
-				isLocked = true;
-				break;
-			case UNLOCK:
-				isLocked = false;
-				break;
-			case TOGGLE:
-				isLocked = !store.isVolumeLocked();
-				break;
-			}
-			store.setVolumeLocked(isLocked);
-			int resid;
-			if (isLocked) {
-				resid = VolumeLockValue.LOCK.getResource();
-			}
-			else {
-				resid = VolumeLockValue.UNLOCK.getResource();
-
-			}
-			toastString.addText(context.getString(resid));
-			changed = true;
-		}
-		if (changeCaState != null) {
-			AudioUtil au = new AudioUtil(context);
-			if (au.isSupportedClearAudioPlus()) {
-				boolean isOn = true;
-				switch (changeCaState) {
-				case ON:
-					isOn = true;
-					break;
-				case OFF:
-					isOn = false;
-					break;
-				case TOGGLE:
-					isOn = !au.getClearAudioPlusState();
-					break;
-				}
-				au.setClearAudioPlusState(isOn);
-				int resid;
-				if (isOn) {
-					resid = ClearAudioPlusStateValue.ON.getResource();
-				}
-				else {
-					resid = ClearAudioPlusStateValue.OFF.getResource();
-	
-				}
-				toastString.addText(context.getString(resid));
-				changed = true;
-			}
-		}
-		if (changed) {
-			if (displayToast) {
-				DisplayToast.show(context, toastString.getText(), Toast.LENGTH_SHORT);
-			}
-			if (vibrate) {
-				Vibrator vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-				vibrator.vibrate(100);
-			}
+			Intent fire = new Intent(context, PluginFireReceiver.class);
+			BundleUtil bundle = new BundleUtil();
+			bundle.setProfileId(event.getVProfileId());
+			bundle.setClearAudioPlusState(event.getClearAudioPlus());
+			fire.putExtras(bundle.getBundle());
+			fire.setAction(com.twofortyfouram.locale.api.Intent.ACTION_FIRE_SETTING);
+			context.startActivity(fire);
+			break;
 		}
     }
 }

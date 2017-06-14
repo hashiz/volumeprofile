@@ -254,8 +254,4 @@ public class EventStore {
 	private void requestBackup() {
 		BackupManager.dataChanged(mContext.getPackageName());
 	}
-
-	public interface OnProfileSwitchedListener {
-		public void onProfileSwitched(UUID newId, UUID prevId);
-	}
 }

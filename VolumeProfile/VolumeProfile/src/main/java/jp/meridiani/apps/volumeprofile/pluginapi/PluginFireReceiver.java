@@ -1,23 +1,24 @@
 package jp.meridiani.apps.volumeprofile.pluginapi;
 
-import java.util.UUID;
-
-import jp.meridiani.apps.volumeprofile.MessageText;
-import jp.meridiani.apps.volumeprofile.DisplayToast;
-import jp.meridiani.apps.volumeprofile.R;
-import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity.ClearAudioPlusStateValue;
-import jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity.VolumeLockValue;
-import jp.meridiani.apps.volumeprofile.prefs.Prefs;
-import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
-import jp.meridiani.apps.volumeprofile.profile.ProfileNotFoundException;
-import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
-import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Vibrator;
 import android.widget.Toast;
+
+import java.util.UUID;
+
+import jp.meridiani.apps.volumeprofile.DisplayToast;
+import jp.meridiani.apps.volumeprofile.MessageText;
+import jp.meridiani.apps.volumeprofile.R;
+import jp.meridiani.apps.volumeprofile.ui.VolumeLockValue;
+import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
+import jp.meridiani.apps.volumeprofile.prefs.Prefs;
+import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;
+import jp.meridiani.apps.volumeprofile.profile.ProfileNotFoundException;
+import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
+import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
+import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusStateValue;
 
 public class PluginFireReceiver extends BroadcastReceiver {
 	

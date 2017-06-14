@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import android.os.Bundle;
 
+import jp.meridiani.apps.volumeprofile.ui.VolumeLockValue;
+import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusStateValue;
+
 public class BundleUtil {
     public static final String BUNDLE_PROFILEID   = "jp.meridiani.apps.volumeprofile.extra.STRING_PROFILEID";
     public static final String BUNDLE_PROFILENAME = "jp.meridiani.apps.volumeprofile.extra.STRING_PROFILENAME";
@@ -34,11 +37,11 @@ public class BundleUtil {
 		mBundle.putString(BUNDLE_PROFILENAME, name);
 	}
 
-	public void setVolumeLock(PluginEditActivity.VolumeLockValue lock) {
+	public void setVolumeLock(VolumeLockValue lock) {
 		mBundle.putString(BUNDLE_VOLUMELOCK,lock.name());
 	}
 
-	public void setClearAudioPlusState(PluginEditActivity.ClearAudioPlusStateValue state) {
+	public void setClearAudioPlusState(ClearAudioPlusStateValue state) {
 		mBundle.putString(BUNDLE_CLEARAUDIOPLUSSTATE,state.name());
 	}
 
@@ -54,20 +57,20 @@ public class BundleUtil {
 		return mBundle.getString(BUNDLE_PROFILENAME);
 	}
 
-	public PluginEditActivity.VolumeLockValue getVolumeLock() {
+	public VolumeLockValue getVolumeLock() {
 		String name = mBundle.getString(BUNDLE_VOLUMELOCK);
 		if (name == null) {
 			return null;
 		}
-		return PluginEditActivity.VolumeLockValue.valueOf(name);
+		return VolumeLockValue.valueOf(name);
 	}
 
-	public PluginEditActivity.ClearAudioPlusStateValue getClearAudioPlusState() {
+	public ClearAudioPlusStateValue getClearAudioPlusState() {
 		String name = mBundle.getString(BUNDLE_CLEARAUDIOPLUSSTATE);
 		if (name == null) {
 			return null;
 		}
-		return PluginEditActivity.ClearAudioPlusStateValue.valueOf(name);
+		return ClearAudioPlusStateValue.valueOf(name);
 	}
 
 	public void clear() {

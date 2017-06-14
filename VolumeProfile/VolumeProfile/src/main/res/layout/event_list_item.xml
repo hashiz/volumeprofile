@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jp.meridiani.apps.volumeprofile.main.DragDropListItem
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:meridiani="http://schemas.meridiani.jp/apk/res/meridiani"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    meridiani:dragHandleItem="@+id/event_list_item_icon"
+    meridiani:checkableItem="@+id/event_list_item_chekedtext"
+    >
+
+    <ImageView
+        android:id="@+id/event_list_item_icon"
+        android:tag="drag_handle"
+        android:src="@android:drawable/ic_menu_sort_by_size"
+        android:contentDescription="@string/drag_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        />
+
+	<TextView
+	    android:id="@+id/event_list_item_text"
+	    android:layout_width="match_parent"
+	    android:layout_height="?android:attr/listPreferredItemHeight"
+	    android:textAppearance="?android:attr/textAppearanceLarge"
+	    android:gravity="center_vertical"
+	    android:checkMark="?android:attr/listChoiceIndicatorSingle"
+	    android:paddingLeft="6dip"
+	    android:paddingRight="6dip"
+	    android:text="@string/event_list_item"
+		/>
+
+</jp.meridiani.apps.volumeprofile.main.DragDropListItem>

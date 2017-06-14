@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Volume Profile</string>
+    <string name="app_name" translatable="false">Volume Profile</string>
     <string name="action_settings">Settings</string>
     <string name="action_save_as_new_profile">Save As New Profile</string>
     <string name="action_lock_volume">Lock Volume</string>
@@ -10,7 +10,7 @@
     <string name="action_edit_profile">Edit</string>
     <string name="action_delete_profile">Delete</string>
     <string name="action_launch_application">Launch Application</string>
-    <string name="action_about">About</string>
+    <string name="action_about" translatable="false">About</string>
     <string name="title_activity_preference">Settings</string>
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
@@ -25,7 +25,7 @@
     <string name="ringer_mode_normal">Normal</string>
     <string name="ringer_mode_vibrate">Vibrate</string>
     <string name="ringer_mode_silent">Silent</string>
-    <string name="zerozero">00/00</string>
+    <string name="zerozero" translatable="false">00/00</string>
     <string name="page_title_volumeedit">Volumes</string>
     <string name="page_title_profileedit">Profiles</string>
     <string name="msg_profile_notfound">"%1$s" not found.</string>
@@ -35,7 +35,7 @@
     <string name="display_toast_on_profile_change">Display Toast</string>
     <string name="play_sound_on_volume_change">Play Sound</string>
     <string name="display_toast_on_volume_lock">Display Toast when Lock</string>
-    <string name="sound_level_alert_hack">Sony/SEMC Sound Level Alert Hack</string>
+    <string name="sound_level_alert_hack" translatable="false">Sony/SEMC Sound Level Alert Hack</string>
     <string name="detect_device_function">Detect Device</string>
     <string name="volume_link_notification">Link Notification and Ring</string>
     <string name="volume_link_system">Link System and Ring</string>
@@ -49,7 +49,7 @@
     <string name="input_dialog_positive_button">Save</string>
     <string name="input_dialog_rename_button">Rename</string>
     <string name="input_dialog_negative_button">Cancel</string>
-    <string name="title_activity_plugin_edit">Volume Profile</string>
+    <string name="title_activity_plugin_edit" translatable="false">Volume Profile</string>
     <string name="title_activity_profile_edit">Profile Edit</string>
     <string name="action_save_profile">Save</string>
     <string name="action_cancel_edit_profile">Cancel</string>
@@ -60,13 +60,13 @@
     <string name="notification_volume_lock_title">Lock</string>
     <string name="voicecall_volume_lock_title">Lock</string>
     <string name="system_volume_lock_title">Lock</string>
-    <string name="drag_handle">Drag Handle</string>
-    <string name="profile_list_item">Dummy Profile Name</string>
+    <string name="drag_handle" translatable="false">Drag Handle</string>
+    <string name="profile_list_item" translatable="false">Dummy Profile Name</string>
     <string name="link_notification_and_ringer_volume">Link Notification and Ringer Volume</string>
     <string name="title_activity_about">About Volume Profile</string>
-    <string name="about_version_title">Version:</string>
-    <string name="about_changelog_title">Changes:</string>
-    <string name="about_copyright">Copyright(C) 2013-2017 reczcgo All rights reserved.</string>
+    <string name="about_version_title" translatable="false">Version:</string>
+    <string name="about_changelog_title" translatable="false">Changes:</string>
+    <string name="about_copyright" translatable="false">Copyright(C) 2013-2017 reczcgo All rights reserved.</string>
     <string name="action_lock_all">Lock All</string>
     <string name="action_unlock_all">Unlock All</string>
 	<string name="plugin_profile_select_title">Change Profile</string>
@@ -78,8 +78,7 @@
 	<string name="clearaudioplus_state_on">On</string>
 	<string name="clearaudioplus_state_off">Off</string>
 	<string name="clearaudioplus_state_toggle">Toggle</string>
-	
-	<!-- do not translate blow -->
-    <string name="lock_checkbox_tag">lockCheckBoxTag</string>
+    <string name="event_list_item" translatable="false">Dummy Event Name</string>
+    <string name="lock_checkbox_tag" translatable="false">lockCheckBoxTag</string>
 
 </resources>

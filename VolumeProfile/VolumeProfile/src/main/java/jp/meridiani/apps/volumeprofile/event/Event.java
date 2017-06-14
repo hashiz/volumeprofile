@@ -10,35 +10,12 @@ import java.util.UUID;
 
 public class Event implements Parcelable {
 
-	private static final String EVENT_START = "<event>";
-	private static final String EVENT_END   = "</event>";
-
-	public static enum BTProfile {
-		ANY,
-		A2DP,
-		HEADSET;
-	}
-
-	public static enum BTState {
-		ANY,
-		CONNECTED,
-		DISCONNECTED;
-	}
-
-	public static enum ClearAudioPlusState {
-		NOCHANGE,
-		ON,
-		OFF;
-	}
+	private static final String TAG_START = "<event>";
+	private static final String TAG_END = "</event>";
 
 	public static enum Key {
 		EVENTID,
-		ORDER,
-		DEVICEADDR,
-		BTPROFILE,
-		BTSTATE,
-		VPROFILE,
-		CLEARAUDIOPLUS;
+		ORDER;
 
 		private final static Key[] sKeys;
 		private final static Key[] sDataKeys;
@@ -67,11 +44,8 @@ public class Event implements Parcelable {
 
 	private UUID mEventId;
 	private int mOrder;
-	private String mDeviceAddress;
-	private BTProfile mBTProfile;
-	private BTState mBTState;
-	private UUID mVProfileId;
-	private ClearAudioPlusState mClearAudioPlus;
+	private EventContext mEventContext;
+	private EventAction mAction;
 
 	Event() {
 		this((UUID)null);
@@ -85,22 +59,17 @@ public class Event implements Parcelable {
 		mEventId = eventId;
 	}
 
+	public Event(Parcel in) {
+		mEventId = UUID.fromString(in.readString());
+		mOrder = in.readInt();
+	}
+
 	String getValue(Key key) {
 		switch (key) {
 			case EVENTID:
 				return getId().toString();
 			case ORDER:
 				return Integer.toString(getOrder());
-			case DEVICEADDR:
-				return getDeviceAddress().toString();
-			case BTPROFILE:
-				return getBTProfile().toString();
-			case BTSTATE:
-				return getBTState().toString();
-			case VPROFILE:
-				return getVProfileId().toString();
-			case CLEARAUDIOPLUS:
-				return getClearAudioPlus().toString();
 		}
 		return null;
 	}
@@ -129,31 +98,6 @@ public class Event implements Parcelable {
 			case ORDER:
 				setOrder(Integer.parseInt(value));
 				break;
-			case DEVICEADDR:
-				setDeviceAddress(value);
-				break;
-			case BTPROFILE:
-				try {
-					setBTProfile(BTProfile.valueOf(value));
-				}
-				catch (IllegalArgumentException e) {
-					setBTProfile(BTProfile.ANY);
-				}
-				break;
-			case BTSTATE:
-				try {
-					setBTState(BTState.valueOf(value));
-				}
-				catch (IllegalArgumentException e) {
-					setBTState(BTState.ANY);
-				}
-				break;
-			case VPROFILE:
-				setVProfileId(UUID.fromString(value));
-				break;
-			case CLEARAUDIOPLUS:
-				setClearAudioPlus(ClearAudioPlusState.valueOf(value));
-				break;
 		}
 	}
 
@@ -177,26 +121,6 @@ public class Event implements Parcelable {
 		mOrder = order;
 	}
 
-	public String getDeviceAddress() { return mDeviceAddress; }
-
-	public void setDeviceAddress(String address) { mDeviceAddress = address; }
-
-	public BTProfile getBTProfile() { return mBTProfile; }
-
-	public void setBTProfile(BTProfile btProfile) { mBTProfile = btProfile; }
-
-	public BTState getBTState() { return mBTState; }
-
-	public void setBTState(BTState btState) { mBTState = btState; }
-
-	public UUID getVProfileId() { return mVProfileId; }
-
-	public void setVProfileId(UUID vProfileId) { mVProfileId = vProfileId; }
-
-	public ClearAudioPlusState getClearAudioPlus() { return mClearAudioPlus; }
-
-	public void setClearAudioPlus(ClearAudioPlusState state) { mClearAudioPlus = state; }
-
 	@Override
 	public String toString() {
 		return getId().toString();
@@ -213,11 +137,6 @@ public class Event implements Parcelable {
     	out.writeInt(mOrder);
 	}
 
-	public Event(Parcel in) {
-		mEventId            = UUID.fromString(in.readString());
-    	mOrder              = in.readInt();
-	}
-
     public static final Creator<Event> CREATOR = new Creator<Event>() {
 		public Event createFromParcel(Parcel in) {
 		    return new Event(in);
@@ -230,7 +149,7 @@ public class Event implements Parcelable {
 
     // for backup
     public void writeToText(BufferedWriter out) throws IOException {
-    	out.write(EVENT_START);
+    	out.write(TAG_START);
     	out.newLine();
     	for (Key key : Key.getKeys()) {
     		String value = getValue(key);
@@ -239,7 +158,7 @@ public class Event implements Parcelable {
     			out.newLine();
     		}
     	}
-    	out.write(EVENT_END);
+    	out.write(TAG_END);
     	out.newLine();
     }
 
@@ -249,7 +168,7 @@ public class Event implements Parcelable {
     	String line;
 		while ((line = rdr.readLine()) != null) {
 			if (started) {
-				if (EVENT_END.equals(line)) {
+				if (TAG_END.equals(line)) {
 					break;
 				}
 				String[] tmp = line.split("=", 2);
@@ -259,7 +178,7 @@ public class Event implements Parcelable {
 				event.setValue(tmp[0], tmp[1]);
 			}
 			else {
-				if (EVENT_START.equals(line)) {
+				if (TAG_START.equals(line)) {
 					started = true;
 					event = new Event();
 				}
