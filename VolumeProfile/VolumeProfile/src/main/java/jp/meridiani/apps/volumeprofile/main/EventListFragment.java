@@ -17,10 +17,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.event.Event;
+import jp.meridiani.apps.volumeprofile.event.EventEditActivity;
 import jp.meridiani.apps.volumeprofile.event.EventStore;
 import jp.meridiani.apps.volumeprofile.main.DragDropListView.OnSortedListener;
 import jp.meridiani.apps.volumeprofile.profile.CurrentProfile;

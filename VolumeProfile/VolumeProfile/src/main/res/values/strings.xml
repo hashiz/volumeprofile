@@ -80,5 +80,10 @@
 	<string name="clearaudioplus_state_toggle">Toggle</string>
     <string name="event_list_item" translatable="false">Dummy Event Name</string>
     <string name="lock_checkbox_tag" translatable="false">lockCheckBoxTag</string>
+    <string name="event_edit_title_action">Action</string>
+    <string name="event_edit_title_context">Context</string>
+    <string name="event_btdevice_select_title">Specify device</string>
+    <string name="event_btprofile_select_title">Profile</string>
+    <string name="event_connectionstate_select_title">Connection State</string>
 
 </resources>

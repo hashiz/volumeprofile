@@ -2,21 +2,19 @@ package jp.meridiani.apps.volumeprofile.ui;
 
 import android.app.Activity;
 
-import jp.meridiani.apps.volumeprofile.pluginapi.PluginEditActivity;
-
 /**
  * Created by kjcs_hashi on 2017/06/14.
  */
 public class ClearAudioPlusStateItem {
     private Activity mEditActivity;
-    private ClearAudioPlusStateValue mValue;
+    private ClearAudioPlusState mValue;
 
-    public ClearAudioPlusStateItem(Activity editActivity, ClearAudioPlusStateValue value) {
+    public ClearAudioPlusStateItem(Activity editActivity, ClearAudioPlusState value) {
         mEditActivity = editActivity;
         mValue = value;
     }
 
-    public ClearAudioPlusStateValue getValue() {
+    public ClearAudioPlusState getValue() {
         return mValue;
     }
 

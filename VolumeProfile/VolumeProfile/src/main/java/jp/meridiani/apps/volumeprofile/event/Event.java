@@ -1,51 +1,29 @@
 package jp.meridiani.apps.volumeprofile.event;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
-public class Event implements Parcelable {
+import jp.meridiani.apps.volumeprofile.DataHolder;
+
+public class Event extends DataHolder {
 
 	private static final String TAG_START = "<event>";
 	private static final String TAG_END = "</event>";
-
-	public static enum Key {
-		EVENTID,
-		ORDER;
-
-		private final static Key[] sKeys;
-		private final static Key[] sDataKeys;
-		private final static int sSkip = 2;
-		static {
-			Key[] values = values();
-			sKeys = new Key[values.length];
-			sDataKeys = new Key[values.length-sSkip];
-			for (int i = 0; i < values.length; i++) {
-				Key key = values[i];
-				sKeys[i] = key;
-				if (i >= sSkip) {
-					sDataKeys[i-sSkip] = key;
-				}
-			}
-		};
-
-		public static Key[] getKeys() {
-			return sKeys;
-		}
-
-		public static Key[] getDataKeys() {
-			return sDataKeys;
-		}
-	}
+	private static final String EVENTID = "EVENTID";
+	private static final String ORDER = "ORDER";
+	private static final String[] KEYS = {
+			EVENTID,
+			ORDER
+	};
 
 	private UUID mEventId;
 	private int mOrder;
-	private EventContext mEventContext;
-	private EventAction mAction;
+	private EventContext mEventContext = new EventContext();
+	private EventAction mEventAction = new EventAction();
 
 	Event() {
 		this((UUID)null);
@@ -55,54 +33,27 @@ public class Event implements Parcelable {
 		if (eventId == null) {
 			eventId = UUID.randomUUID();
 		}
-
 		mEventId = eventId;
 	}
 
 	public Event(Parcel in) {
-		mEventId = UUID.fromString(in.readString());
-		mOrder = in.readInt();
+		super(in);
+		mEventContext = new EventContext(in);
+		mEventAction = new EventAction(in);
 	}
 
-	String getValue(Key key) {
-		switch (key) {
-			case EVENTID:
-				return getId().toString();
-			case ORDER:
-				return Integer.toString(getOrder());
-		}
-		return null;
+	@Override
+	protected String[] getKeys() {
+		return KEYS;
+	}
+	@Override
+	protected String TAG_START() {
+		return TAG_START;
 	}
 
-	void setValue(String key, String value) {
-		Key k;
-		try {
-			k = Key.valueOf(key);
-		}
-		catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			return;
-		}
-		catch (NullPointerException e) {
-			e.printStackTrace();
-			return;
-		}
-		setValue(k, value);
-	}
-
-	void setValue(Key key, String value) {
-		switch (key) {
-			case EVENTID:
-				setId(UUID.fromString(value));
-				break;
-			case ORDER:
-				setOrder(Integer.parseInt(value));
-				break;
-		}
-	}
-
-	static Key[] listDataKeys() {
-		return Key.getDataKeys();
+	@Override
+	protected String TAG_END() {
+		return TAG_END;
 	}
 
 	public UUID getId() {
@@ -121,69 +72,55 @@ public class Event implements Parcelable {
 		mOrder = order;
 	}
 
+	public EventContext Context() {
+		return mEventContext;
+	}
+
+	public EventAction Action() {
+		return mEventAction;
+	}
+
 	@Override
 	public String toString() {
 		return getId().toString();
 	}
 
 	@Override
-	public int describeContents() {
-		return 0;
+	protected String getValue(String key) {
+		switch (key) {
+			case EVENTID:
+				return getId().toString();
+			case ORDER:
+				return Integer.toString(getOrder());
+		}
+		return null;
 	}
 
-    @Override
-	public void writeToParcel(Parcel out, int flags) {
-    	out.writeString(mEventId.toString());
-    	out.writeInt(mOrder);
+	@Override
+	protected void setValue(String key, String value) {
+		switch (key) {
+			case EVENTID:
+				setId(UUID.fromString(value));
+				break;
+			case ORDER:
+				setOrder(Integer.parseInt(value));
+				break;
+		}
 	}
 
     public static final Creator<Event> CREATOR = new Creator<Event>() {
 		public Event createFromParcel(Parcel in) {
 		    return new Event(in);
 		}
-		
 		public Event[] newArray(int size) {
 		    return new Event[size];
 		}
     };
 
-    // for backup
-    public void writeToText(BufferedWriter out) throws IOException {
-    	out.write(TAG_START);
-    	out.newLine();
-    	for (Key key : Key.getKeys()) {
-    		String value = getValue(key);
-    		if (value != null) {
-    			out.write(key.name() + '=' + value );
-    			out.newLine();
-    		}
-    	}
-    	out.write(TAG_END);
-    	out.newLine();
-    }
-
-    public static Event createFromText(BufferedReader rdr) throws IOException {
-    	Event event = null;
-    	boolean started = false;
-    	String line;
-		while ((line = rdr.readLine()) != null) {
-			if (started) {
-				if (TAG_END.equals(line)) {
-					break;
-				}
-				String[] tmp = line.split("=", 2);
-				if (tmp.length < 2) {
-					continue;
-				}
-				event.setValue(tmp[0], tmp[1]);
-			}
-			else {
-				if (TAG_START.equals(line)) {
-					started = true;
-					event = new Event();
-				}
-			}
-		}
-    	return event;
-    }
+	@Override
+	public void writeToParcel(Parcel out, int flags) {
+		super.writeToParcel(out, flags);
+		mEventContext.writeToParcel(out, flags);
+		mEventAction.writeToParcel(out, flags);
+	}
 }

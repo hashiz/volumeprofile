@@ -1,11 +1,10 @@
 package jp.meridiani.apps.volumeprofile.event;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -18,59 +17,54 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusStateItem;
-import jp.meridiani.apps.volumeprofile.ui.VolumeLockValue;
-import jp.meridiani.apps.volumeprofile.MessageText;
+import jp.meridiani.apps.volumeprofile.ui.VolumeLockState;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
-import jp.meridiani.apps.volumeprofile.pluginapi.BundleUtil;
-import jp.meridiani.apps.volumeprofile.pluginapi.InvalidBundleException;
 import jp.meridiani.apps.volumeprofile.ui.VolumeLockItem;
-import jp.meridiani.apps.volumeprofile.profile.ProfileNotFoundException;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
 import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusStateAdapter;
-import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusStateValue;
+import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusState;
 import jp.meridiani.apps.volumeprofile.ui.VolumeLockAdapter;
 
 public class EventEditActivity extends Activity {
 
-	private static final String SAVE_BTDEVICE = "SAVE_BTDEVICE";
-	private static final String SAVE_BTPROFILE = "SAVE_BTPROFILE";
-	private static final String SAVE_BTSTATE = "SAVE_BTSTATE";
-	private static final String SAVE_CHANGEPROFILE = "SAVE_CHANGEPROFILE";
-	private static final String SAVE_CHANGEVOLUMELOCK = "SAVE_CHANGEVOLUMELOCK";
-	private static final String SAVE_CHANGECLEARAUDIOPLUS = "SAVE_CHANGECLEARAUDIOPLUS";
-	private static final String SAVE_VOLUMEPROFILE = "SAVE_VOLUMEPROFILE";
-	private static final String SAVE_VOLUMELOCKSTATE = "SAVE_VOLUMELOCKSTATE";
-	private static final String SAVE_CLEARAUDIOPLUSSTATE = "SAVE_CLEARAUDIOPLUSSTATE";
+	public static final String EXTRA_EVENT = "jp.meridiani.apps.volumeprofile.extra.EVENT";
+	private static final String SAVE_EVENT = "SAVE_EVENT";
 
 	// values
-	private BluetoothDevice mBTDevice = null;
-	private Event.BTProfile mBTProfile = Event.BTProfile.ANY;
-	private Event.BTState mBTState = Event.BTState.CONNECTED;
-	private boolean mChangeProfile = false;
-	private boolean mChangeVolumeLock  = false;
-	private boolean mChangeClearAudioPlus = false;
-	private VolumeProfile mSelectedProfile = null;
-	private VolumeLockValue mVolumeLockState = VolumeLockValue.LOCK;
-	private ClearAudioPlusStateValue mClearAudioPlusState = ClearAudioPlusStateValue.ON;
+	private Event mEvent = new Event();
 
 	// widgets
-	private Te
+	// Context
+	private CheckBox mBTDeviceCheckBox = null;
+	private Spinner mBTDeviceSelectView = null;
+	private ArrayAdapter<BluetoothDevice> mBTDeviceListAdapter = null;
+
+	private Spinner mBTProfileSelectView = null;
+	private ArrayAdapter<EventContext.BTProfile> mBTProfileListAdapter = null;
+
+	private Spinner mBTStateSelectView = null;
+	private ArrayAdapter<EventContext.BTState> mBTStateListAdapter = null;
+
+	// Action
 	private CheckBox mChangeProfileCheckBox = null;
-	private CheckBox mChangeVolumeLockCheckBox = null;
-	private CheckBox mChangeClearAudioPlusStateCheckBox = null;
 	private Spinner mProfileSelectView = null;
-	private Spinner mVolumeLockView = null;
-	private Spinner mClearAudioPlusStateView = null;
 	private ArrayAdapter<VolumeProfile> mProfileListAdapter = null;
+
+	private CheckBox mChangeVolumeLockCheckBox = null;
+	private Spinner mVolumeLockView = null;
 	private VolumeLockAdapter mVolumeLockAdapter = null;
+
+	private CheckBox mChangeClearAudioPlusStateCheckBox = null;
+	private Spinner mClearAudioPlusStateView = null;
 	private ClearAudioPlusStateAdapter mClearAudioPlusStateAdapter = null;
+
 	private Button mSaveButton = null;
 	private Button mCancelButton = null;
+
 	private boolean mCanceled = false;
 
 	@Override
@@ -80,111 +74,144 @@ public class EventEditActivity extends Activity {
 		ProfileStore store = ProfileStore.getInstance(this);
 
 		if (savedInstanceState != null) {
-			mBTDevice = savedInstanceState.getParcelable(SAVE_BTDEVICE);
-			mBTProfile = Event.BTProfile.valueOf(savedInstanceState.getString(SAVE_BTPROFILE));
-			mBTState = Event.BTState.valueOf(savedInstanceState.getString(SAVE_BTSTATE));
-			mChangeProfile = savedInstanceState.getBoolean(SAVE_CHANGEPROFILE);
-			mChangeVolumeLock  = savedInstanceState.getBoolean(SAVE_CHANGEVOLUMELOCK);
-			mChangeClearAudioPlus = savedInstanceState.getBoolean(SAVE_CHANGECLEARAUDIOPLUS);
-			mSelectedProfile = savedInstanceState.getParcelable(SAVE_VOLUMEPROFILE);
-			mVolumeLockState = VolumeLockValue.valueOf(savedInstanceState.getString(SAVE_VOLUMELOCKSTATE));
-			mClearAudioPlusState = ClearAudioPlusStateValue.valueOf(savedInstanceState.getString(SAVE_CLEARAUDIOPLUSSTATE));
+			mEvent = savedInstanceState.getParcelable(SAVE_EVENT);
 		}
 		else {
 			// initial value
-			mBTDevice = null;
-			mBTProfile = Event.BTProfile.ANY;
-			mBTState = Event.BTState.ANY;
-			mChangeProfile = false;
-			mChangeVolumeLock = false;
-			mChangeClearAudioPlus = false;
-			mSelectedProfile = null;
-			mVolumeLockState = VolumeLockValue.LOCK;
-			mClearAudioPlusState = ClearAudioPlusStateValue.ON;
+			mEvent.Context().setBTDevice(null);
+			mEvent.Context().setBTProfile(EventContext.BTProfile.ANY);
+			mEvent.Context().setBTState(EventContext.BTState.ANY);
+			mEvent.Action().setChangeVolumeProfile(false);
+			mEvent.Action().setChangeVolumeLockState(false);
+			mEvent.Action().setChangeClearAudioPlusState(false);
+			mEvent.Action().setVolumeProfileId(null);
+			mEvent.Action().setVolumeLockState(VolumeLockState.LOCK);
+			mEvent.Action().setClearAudioPlusState(ClearAudioPlusState.ON);
 		}
 
 		mCanceled = false;
 
+		//-----------------------------------------
 		// set view
+		//-----------------------------------------
 		setContentView(R.layout.activity_event_edit);
 
-		// profile list
-		mChangeProfileCheckBox = (CheckBox)findViewById(R.id.plugin_profile_select_checkbox);
+		//-----------------------------------------
+		// Context
+		//-----------------------------------------
+		// BT Device
+		mBTDeviceCheckBox = (CheckBox)findViewById(R.id.event_btdevice_select_checkbox);
+		mBTDeviceCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				mEvent.Context().setCheckBTDevice(isChecked);
+				mBTDeviceSelectView.setEnabled(isChecked);
+			}
+		});
+		mBTDeviceSelectView = (Spinner)findViewById(R.id.event_btdevice_select);
+		mBTDeviceListAdapter = new ArrayAdapter<BluetoothDevice>(this, android.R.layout.simple_dropdown_item_1line);
+		mBTDeviceSelectView.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				mEvent.Context().setBTDevice((BluetoothDevice)parent.getAdapter().getItem(position));
+			}
+			@Override public void onNothingSelected(AdapterView<?> parent) {}
+		});
+		mBTDeviceSelectView.setEnabled(mBTDeviceCheckBox.isChecked());
+
+		// BT Profile
+		mBTProfileSelectView = (Spinner)findViewById(R.id.event_btprofile_select);
+		mBTProfileSelectView.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				mEvent.Context().setBTProfile((EventContext.BTProfile)parent.getAdapter().getItem(position));
+			}
+			@Override public void onNothingSelected(AdapterView<?> parent) {	}
+		});
+
+		// BT Connection State
+		mBTStateSelectView = (Spinner)findViewById(R.id.event_connectionstate_select);
+		mBTStateSelectView.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				mEvent.Context().setBTState((EventContext.BTState)parent.getAdapter().getItem(position));
+			}
+			@Override public void onNothingSelected(AdapterView<?> parent) {}
+		});
+
+		//-----------------------------------------
+		// Action
+		//-----------------------------------------
+		// Volume Profile
+		mChangeProfileCheckBox = (CheckBox)findViewById(R.id.event_profile_select_checkbox);
 		mChangeProfileCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				mChangeProfile = isChecked;
+				mEvent.Action().setChangeVolumeProfile(isChecked);
 				mProfileSelectView.setEnabled(isChecked);
 			}
 		});
-		mProfileSelectView = (Spinner)findViewById(R.id.plugin_profile_select);
+		mChangeProfileCheckBox.setChecked(mEvent.Action().getChangeVolumeProfile());
+		mProfileSelectView = (Spinner)findViewById(R.id.event_profile_select);
 		mProfileListAdapter = new ArrayAdapter<VolumeProfile>(this, android.R.layout.simple_dropdown_item_1line);
 		mProfileSelectView.setAdapter(mProfileListAdapter);
 		mProfileSelectView.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View item, int pos, long id) {
-				mSelectedProfile = ((VolumeProfile)parent.getAdapter().getItem(pos));
+				mEvent.Action().setVolumeProfileId(((VolumeProfile)parent.getAdapter().getItem(pos)).getUuid());
 			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				mSelectedProfile = null;
-			}
+			@Override public void onNothingSelected(AdapterView<?> parent) {	}
 		});
-		mProfileSelectView.setEnabled(mChangeProfile);
+		mProfileSelectView.setEnabled(mChangeProfileCheckBox.isChecked());
 
-		// volume lock
-		mChangeVolumeLockCheckBox = (CheckBox)findViewById(R.id.plugin_volumelock_select_checkbox);
+		// Volume Lock
+		mChangeVolumeLockCheckBox = (CheckBox)findViewById(R.id.event_volumelock_select_checkbox);
 		mChangeVolumeLockCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				mChangeVolumeLock = isChecked;
+				mEvent.Action().setChangeVolumeLockState(isChecked);
 				mVolumeLockView.setEnabled(isChecked);
 			}
 		});
-		mVolumeLockView = (Spinner)findViewById(R.id.plugin_volumelock_select);
+		mChangeVolumeLockCheckBox.setChecked(mEvent.Action().getChangeVolumeLockState());
+		mVolumeLockView = (Spinner)findViewById(R.id.event_volumelock_select);
 		mVolumeLockAdapter = new VolumeLockAdapter(this, android.R.layout.simple_dropdown_item_1line);
-		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockValue.LOCK));
-		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockValue.UNLOCK));
-		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockValue.TOGGLE));
+		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockState.LOCK));
+		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockState.UNLOCK));
+		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockState.TOGGLE));
 		mVolumeLockView.setAdapter(mVolumeLockAdapter);
 		mVolumeLockView.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View item, int pos, long id) {
-				mVolumeLockState = ((VolumeLockItem)parent.getAdapter().getItem(pos)).getValue();
+				mEvent.Action().setVolumeLockState(((VolumeLockItem)parent.getAdapter().getItem(pos)).getValue());
 			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				mVolumeLockState = null;
-			}
+			@Override public void onNothingSelected(AdapterView<?> parent) {}
 		});
-		mVolumeLockView.setEnabled(mChangeVolumeLock);
+		mVolumeLockView.setEnabled(mChangeVolumeLockCheckBox.isChecked());
 
 		// ClearAudio+ state
-		mChangeClearAudioPlusStateCheckBox = (CheckBox)findViewById(R.id.plugin_clearaudioplus_changestate);
+		mChangeClearAudioPlusStateCheckBox = (CheckBox)findViewById(R.id.event_clearaudioplus_changestate);
 		mChangeClearAudioPlusStateCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				mChangeClearAudioPlus = isChecked;
+				mEvent.Action().setChangeClearAudioPlusState(isChecked);
 				mClearAudioPlusStateView.setEnabled(isChecked);
 			}
 		});
-		mClearAudioPlusStateView = (Spinner)findViewById(R.id.plugin_clearaudioplus_state);
+		mClearAudioPlusStateView = (Spinner)findViewById(R.id.event_clearaudioplus_state);
 		mClearAudioPlusStateAdapter = new ClearAudioPlusStateAdapter(this, android.R.layout.simple_dropdown_item_1line);
-		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusStateValue.ON));
-		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusStateValue.OFF));
-		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusStateValue.TOGGLE));
+		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusState.ON));
+		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusState.OFF));
+		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusState.TOGGLE));
 		mClearAudioPlusStateView.setAdapter(mClearAudioPlusStateAdapter);
 		mClearAudioPlusStateView.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View item, int pos, long id) {
-				mClearAudioPlusState = ((ClearAudioPlusStateItem)parent.getAdapter().getItem(pos)).getValue();
+				mEvent.Action().setClearAudioPlusState(((ClearAudioPlusStateItem)parent.getAdapter().getItem(pos)).getValue());
 			}
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				mClearAudioPlusState = null;
-			}
+			@Override public void onNothingSelected(AdapterView<?> parent) {	}
 		});
-		mClearAudioPlusStateView.setEnabled(mChangeClearAudioPlus);
+		mClearAudioPlusStateView.setEnabled(mChangeClearAudioPlusStateCheckBox.isChecked());
 		if (new AudioUtil(getApplicationContext()).isSupportedClearAudioPlus()) {
 			mChangeClearAudioPlusStateCheckBox.setVisibility(View.VISIBLE);
 			mClearAudioPlusStateView.setVisibility(View.VISIBLE);
@@ -213,31 +240,39 @@ public class EventEditActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.plugin_edit, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.action_launch_application:
-			startActivity(new Intent(getPackageManager().getLaunchIntentForPackage(getPackageName())));
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public void onResume() {
 		super.onResume();
-		mChangeProfileCheckBox.setChecked(mChangeProfile);
+		// Context
+		mBTDeviceCheckBox.setChecked(mEvent.Context().getCheckBTDevice());
+		mBTDeviceSelectView.setSelection(mBTDeviceListAdapter.getPosition(mEvent.Context().getBTDevice()));
+		updateBTDeviceList();
+		mBTDeviceSelectView.setEnabled(mBTDeviceCheckBox.isChecked());
+		mBTProfileSelectView.setSelection(mBTProfileListAdapter.getPosition(mEvent.Context().getBTProfile()));
+		mBTStateSelectView.setSelection(mBTStateListAdapter.getPosition(mEvent.Context().getBTState()));
+
+		// Action
+		mChangeProfileCheckBox.setChecked(mEvent.Action().getChangeVolumeProfile());
 		updateProfileList();
-		mChangeVolumeLockCheckBox.setChecked(mChangeVolumeLock);
-		mVolumeLockView.setSelection(mVolumeLockAdapter.getPosition(mVolumeLockState));
-		mChangeClearAudioPlusStateCheckBox.setChecked(mChangeClearAudioPlus);
-		mClearAudioPlusStateView.setSelection(mClearAudioPlusStateAdapter.getPosition(mClearAudioPlusState));
+		mChangeVolumeLockCheckBox.setChecked(mEvent.Action().getChangeVolumeLockState());
+		mVolumeLockView.setSelection(mVolumeLockAdapter.getPosition(mEvent.Action().getVolumeLockState()));
+		mVolumeLockView.setEnabled(mChangeVolumeLockCheckBox.isChecked());
+		mChangeClearAudioPlusStateCheckBox.setChecked(mEvent.Action().getChangeClearAudioPlusState());
+		mClearAudioPlusStateView.setSelection(mClearAudioPlusStateAdapter.getPosition(mEvent.Action().getClearAudioPlusState()));
+		mClearAudioPlusStateView.setEnabled(mChangeClearAudioPlusStateCheckBox.isChecked());
+	}
+
+	private void updateBTDeviceList() {
+		int selPos = -1;
+		mBTDeviceListAdapter.clear();
+
+		for ( BluetoothDevice device : BluetoothAdapter.getDefaultAdapter().getBondedDevices()) {
+			mBTDeviceListAdapter.add(device);
+			if (mEvent.Context().getBTDevice() != null && mEvent.Context().getBTDevice().getAddress().equals(device.getAddress())) {
+				selPos = mBTDeviceListAdapter.getCount() - 1;
+			}
+		}
+		mBTDeviceSelectView.setSelection(selPos);
+		mBTDeviceListAdapter.notifyDataSetChanged();
 	}
 
 	private void updateProfileList() {
@@ -247,7 +282,7 @@ public class EventEditActivity extends Activity {
 		ArrayList<VolumeProfile> plist = ProfileStore.getInstance(this).listProfiles();
 		for ( VolumeProfile profile : plist) {
 			mProfileListAdapter.add(profile);
-			if (mSelectedProfile != null && mSelectedProfile.getUuid().equals(profile.getUuid())) {
+			if (mEvent.Action().getVolumeProfileId() != null && mEvent.Action().getVolumeProfileId().equals(profile.getUuid())) {
 				selPos = mProfileListAdapter.getCount() - 1;
 			}
 		}
@@ -258,18 +293,7 @@ public class EventEditActivity extends Activity {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putBoolean(SAVE_CHANGEPROFILE, mChangeProfile);
-		if (mSelectedProfile != null) {
-			outState.putString(SAVE_SELECTEDPROFILEID, mSelectedProfile.getUuid().toString());
-		}
-		outState.putBoolean(SAVE_CHANGEVOLUMELOCK, mChangeVolumeLock);
-		if (mVolumeLockState != null) {
-			outState.putString(SAVE_SELECTEDVOLUMELOCK, mVolumeLockState.name());
-		}
-		outState.putBoolean(SAVE_CHANGECLEARAUDIOPLUSSTATE, mChangeClearAudioPlus);
-		if (mClearAudioPlusState != null) {
-			outState.putString(SAVE_SELECTEDCLEARAUDIOPLUSSTATE, mClearAudioPlusState.name());
-		}
+		outState.putParcelable(SAVE_EVENT, mEvent);
 	}
 
 	@Override
@@ -283,24 +307,8 @@ public class EventEditActivity extends Activity {
             return;
         }
 
-		BundleUtil resultBundle = new BundleUtil();
-		MessageText blurb = new MessageText(",");
-        if (mChangeProfile && mSelectedProfile != null) {
-            resultBundle.setProfileId(mSelectedProfile.getUuid());
-            resultBundle.setProfileName(mSelectedProfile.getName());
-            blurb.addText(mSelectedProfile.getName());
-        }
-        if (mChangeVolumeLock && mVolumeLockState != null) {
-            resultBundle.setVolumeLock(mVolumeLockState);
-            blurb.addText(getString(mVolumeLockState.getResource()));
-        }
-        if (mChangeClearAudioPlus && mClearAudioPlusState != null) {
-            resultBundle.setClearAudioPlusState(mClearAudioPlusState);
-            blurb.addText(getString(mClearAudioPlusState.getResource()));
-        }
-        	
-        resultIntent.putExtra(com.twofortyfouram.locale.api.Intent.EXTRA_STRING_BLURB, blurb.toString());
-        resultIntent.putExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE, resultBundle.getBundle());
+        EventStore store = EventStore.getInstance(this);
+		store.storeEvent(mEvent);
 
         setResult(RESULT_OK, resultIntent);
     	super.finish();

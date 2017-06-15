@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import jp.meridiani.apps.volumeprofile.profile.VolumeProfile.Key;
 import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -73,7 +72,7 @@ public class ProfileStore {
 				try {
 					db.execSQL(
 							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %2$s, '%5$s', %4$s FROM %1$s WHERE %3$s='%6$s';",
-							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.NOTIFICATIONVOLUME, VolumeProfile.Key.RINGVOLUME)
+							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, "NOTIFICATIONVOLUME", "RINGVOLUME")
 							);
 					db.setTransactionSuccessful();
 				}
@@ -86,16 +85,16 @@ public class ProfileStore {
 				try {
 					db.execSQL(
 							String.format("UPDATE %1$s SET %2$s='%3$s' WHERE %2$s='%4$s';",
-							DATA_TABLE_NAME, COL_KEY, VolumeProfile.Key.VOICECALLVOLUME, "VOICECALLVALUME"));
+							DATA_TABLE_NAME, COL_KEY, VolumeProfile.VOICECALLVOLUME, "VOICECALLVALUME"));
 					db.execSQL(
 							String.format("UPDATE %1$s SET %2$s='%3$s' WHERE %2$s='%4$s';",
-							DATA_TABLE_NAME, COL_KEY, VolumeProfile.Key.VOICECALLVOLUMELOCK, "VOICECALLVALUMELOCK"));
+							DATA_TABLE_NAME, COL_KEY, VolumeProfile.VOICECALLVOLUMELOCK, "VOICECALLVALUMELOCK"));
 					db.execSQL(
 							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %2$s, '%5$s', %4$s FROM %1$s WHERE %3$s='%6$s';",
-							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.SYSTEMVOLUME, VolumeProfile.Key.RINGVOLUME));
+							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.SYSTEMVOLUME, "RINGVOLUME"));
 					db.execSQL(
 							String.format("INSERT INTO %1$s (%2$s, %3$s, %4$s) SELECT %2$s, '%5$s', %4$s FROM %1$s WHERE %3$s='%6$s';",
-							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.Key.SYSTEMVOLUMELOCK, VolumeProfile.Key.RINGVOLUMELOCK));
+							DATA_TABLE_NAME, COL_UUID, COL_KEY, COL_VALUE, VolumeProfile.SYSTEMVOLUMELOCK, "RINGVOLUMELOCK"));
 					db.setTransactionSuccessful();
 				}
 				finally {
@@ -202,7 +201,7 @@ public class ProfileStore {
 				DATA_TABLE_NAME,
 				null,
 				String.format("%s=? and %s=?", COL_KEY, COL_VALUE),
-				new String[] {Key.PROFILENAME.toString(), name},
+				new String[] {VolumeProfile.PROFILENAME, name},
 				null,
 				null,
 				null);
@@ -242,15 +241,15 @@ public class ProfileStore {
 				}
 			}
 			// update/insert data
-			for (Key key : VolumeProfile.listDataKeys()) {
+			for (String key : profile.getKeys()) {
 				values.clear();
 				values.put(COL_VALUE, profile.getValue(key));
 				int rows = mDB.update(DATA_TABLE_NAME, values,
 						String.format("%1$s=? and %2$s=?", COL_UUID, COL_KEY),
-						new String[]{profile.getUuid().toString(), key.name()});
+						new String[]{profile.getUuid().toString(), key});
 				if (rows < 1) {
 					values.put(COL_UUID, profile.getUuid().toString());
-					values.put(COL_KEY, key.name());
+					values.put(COL_KEY, key);
 					mDB.insert(DATA_TABLE_NAME, null, values);
 				}
 			}
@@ -392,12 +391,12 @@ public class ProfileStore {
 		wtr.write(PROFILES_END); wtr.newLine();
 	}
 
-	public void readFromText(BufferedReader rdr) throws IOException {
+	public void readFromText(BufferedReader rdr) throws IOException, InstantiationException, IllegalAccessException {
     	String line;
 		while ((line = rdr.readLine()) != null) {
 			if (PROFILES_START.equals(line)) {
 	            VolumeProfile profile;
-	            while ((profile = VolumeProfile.createFromText(rdr)) != null) {
+	            while ((profile = VolumeProfile.createFromText(VolumeProfile.class, rdr)) != null) {
 	            	storeProfile(profile);
 	            }
 			}

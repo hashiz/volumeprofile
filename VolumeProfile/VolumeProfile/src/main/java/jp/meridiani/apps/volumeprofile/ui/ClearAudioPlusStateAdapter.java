@@ -12,7 +12,7 @@ public class ClearAudioPlusStateAdapter extends ArrayAdapter<ClearAudioPlusState
         super(context, resource);
     }
 
-    public int getPosition(ClearAudioPlusStateValue value) {
+    public int getPosition(ClearAudioPlusState value) {
         for (int pos = 0; pos < getCount(); pos++) {
             if (value == getItem(pos).getValue()) {
                 return pos;

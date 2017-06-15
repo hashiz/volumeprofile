@@ -17,90 +17,187 @@
     <ScrollView
         android:layout_width="match_parent" 
         android:layout_height="match_parent"
-		android:layout_above="@+id/select_profile_buttonbar"
+		android:layout_above="@+id/event_edit_buttonbar"
         >
-
         <LinearLayout
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:orientation="vertical"
+			android:divider="?android:dividerHorizontal"
 		    >
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				>
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/event_edit_title_context"
+					android:textAppearance="?android:attr/textAppearanceLarge"
+					/>
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					>
 
-	            <CheckBox
-	                android:id="@+id/plugin_profile_select_checkbox"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	            	android:text="@string/plugin_profile_select_title"
-	                />
+					<CheckBox
+						android:id="@+id/event_btdevice_select_checkbox"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/event_btdevice_select_title"
+						android:textAppearance="?android:textAppearance"
+						/>
 
-	            <Spinner
-			        android:id="@+id/plugin_profile_select"
-			        android:layout_width="match_parent"
-			        android:layout_height="wrap_content"
-			        android:padding="0dp"
-			        android:layout_marginLeft="20dp"
-			        />
+					<Spinner
+						android:id="@+id/event_btdevice_select"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="0dp"
+						android:layout_marginLeft="20dp"
+						/>
 
-	        </LinearLayout>
+				</LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					>
 
-				<CheckBox
-				    android:id="@+id/plugin_volumelock_select_checkbox"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:text="@string/plugin_volumelock_select_title"
-				    />
-	        		
-	            <Spinner
-			        android:id="@+id/plugin_volumelock_select"
-			        android:layout_width="match_parent"
-			        android:layout_height="wrap_content"
-			        android:padding="0dp"
-			        android:layout_marginLeft="20dp"
-			        />
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/event_btprofile_select_title"
+						android:layout_marginLeft="20dp"
+						android:textAppearance="?android:textAppearance"
+						/>
 
-	        </LinearLayout>
-	        
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
+					<Spinner
+						android:id="@+id/event_btprofile_select"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="0dp"
+						android:layout_marginLeft="20dp"
+						/>
 
-				<CheckBox
-				    android:id="@+id/plugin_clearaudioplus_changestate"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:text="@string/plugin_clearaudioplus_changestate"
-				    />
-	        		
-	            <Spinner
-			        android:id="@+id/plugin_clearaudioplus_state"
-			        android:layout_width="match_parent"
-			        android:layout_height="wrap_content"
-			        android:padding="0dp"
-			        android:layout_marginLeft="20dp"
-			        />
+				</LinearLayout>
 
-	        </LinearLayout>
-	        
-            
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					>
+
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/event_connectionstate_select_title"
+						android:layout_marginLeft="20dp"
+						android:textAppearance="?android:textAppearance"
+						/>
+
+					<Spinner
+						android:id="@+id/event_connectionstate_select"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="0dp"
+						android:layout_marginLeft="20dp"
+						/>
+
+				</LinearLayout>
+			</LinearLayout>
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				>
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/event_edit_title_action"
+					android:textAppearance="?android:attr/textAppearanceLarge"
+					/>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					>
+
+					<CheckBox
+						android:id="@+id/event_profile_select_checkbox"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/plugin_profile_select_title"
+						android:textAppearance="?android:textAppearance"
+						/>
+
+					<Spinner
+						android:id="@+id/event_profile_select"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="0dp"
+						android:layout_marginLeft="20dp"
+						/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					>
+
+					<CheckBox
+						android:id="@+id/event_volumelock_select_checkbox"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/plugin_volumelock_select_title"
+						android:textAppearance="?android:textAppearance"
+						/>
+
+					<Spinner
+						android:id="@+id/event_volumelock_select"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="0dp"
+						android:layout_marginLeft="20dp"
+						/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					>
+
+					<CheckBox
+						android:id="@+id/event_clearaudioplus_changestate"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/plugin_clearaudioplus_changestate"
+						/>
+
+					<Spinner
+						android:id="@+id/event_clearaudioplus_state"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="0dp"
+						android:layout_marginLeft="20dp"
+						android:textAppearance="?android:textAppearance"
+						/>
+
+				</LinearLayout>
+			</LinearLayout>
 		</LinearLayout>
     </ScrollView>
 
     <LinearLayout
-        android:id="@+id/select_profile_buttonbar"
+        android:id="@+id/event_edit_buttonbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

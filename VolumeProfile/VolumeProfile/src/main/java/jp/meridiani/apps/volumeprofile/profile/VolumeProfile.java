@@ -5,61 +5,65 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.UUID;
 
+import jp.meridiani.apps.volumeprofile.DataHolder;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.RingerMode;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil.StreamType;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class VolumeProfile implements Parcelable {
+public class VolumeProfile extends DataHolder {
 
-	private static final String PROFILE_START = "<profile>";
-	private static final String PROFILE_END   = "</profile>";
+	private static final String TAG_START = "<profile>";
+	private static final String TAG_END = "</profile>";
+	private static final String PROFILEID = "PROFILEID";
+	private static final String DISPLAYORDER = "DISPLAYORDER";
+	static final String PROFILENAME = "PROFILENAME";
+	private static final String RINGERMODE = "RINGERMODE";
+	private static final String RINGERMODELOCK = "RINGERMODELOCK";
+	private static final String ALARMVOLUME = "ALARMVOLUME";
+	private static final String ALARMVOLUMELOCK = "ALARMVOLUMELOCK";
+	private static final String MUSICVOLUME = "MUSICVOLUME";
+	private static final String MUSICVOLUMELOCK = "MUSICVOLUMELOCK";
+	private static final String RINGVOLUME = "RINGVOLUME";
+	private static final String RINGVOLUMELOCK = "RINGVOLUMELOCK";
+	private static final String NOTIFICATIONVOLUME = "NOTIFICATIONVOLUME";
+	private static final String NOTIFICATIONVOLUMELOCK = "NOTIFICATIONVOLUMELOCK";
+	static final String VOICECALLVOLUME = "VOICECALLVOLUME";
+	static final String VOICECALLVOLUMELOCK = "VOICECALLVOLUMELOCK";
+	static final String SYSTEMVOLUME = "SYSTEMVOLUME";
+	static final String SYSTEMVOLUMELOCK = "SYSTEMVOLUMELOCK";
+	private static final String[] KEYS = {
+			PROFILEID,
+			DISPLAYORDER,
+			PROFILENAME,
+			RINGERMODE,
+			RINGERMODELOCK,
+			ALARMVOLUME,
+			ALARMVOLUMELOCK,
+			MUSICVOLUME,
+			MUSICVOLUMELOCK,
+			RINGVOLUME,
+			RINGVOLUMELOCK,
+			NOTIFICATIONVOLUME,
+			NOTIFICATIONVOLUMELOCK,
+			VOICECALLVOLUME,
+			VOICECALLVOLUMELOCK,
+			SYSTEMVOLUME,
+			SYSTEMVOLUMELOCK,
+	};
 
-	public static enum Key {
-		UUID,
-		DISPLAYORDER,
-		PROFILENAME,
-		RINGERMODE,
-		RINGERMODELOCK,
-		ALARMVOLUME,
-		ALARMVOLUMELOCK,
-		MUSICVOLUME,
-		MUSICVOLUMELOCK,
-		RINGVOLUME,
-		RINGVOLUMELOCK,
-		NOTIFICATIONVOLUME,
-		NOTIFICATIONVOLUMELOCK,
-		VOICECALLVOLUME,
-		VOICECALLVOLUMELOCK,
-		SYSTEMVOLUME,
-		SYSTEMVOLUMELOCK;
-
-		private final static Key[] sKeys;
-		private final static Key[] sDataKeys;
-		private final static int sSkip = 2;
-		static {
-			Key[] values = values();
-			sKeys = new Key[values.length];
-			sDataKeys = new Key[values.length-sSkip];
-			for (int i = 0; i < values.length; i++) {
-				Key key = values[i];
-				sKeys[i] = key;
-				if (i >= sSkip) {
-					sDataKeys[i-sSkip] = key;
-				}
-			}
-		};
-
-		public static Key[] getKeys() {
-			return sKeys;
-		}
-
-		public static Key[] getDataKeys() {
-			return sDataKeys;
-		}
+	protected String[] getKeys() {
+		return KEYS;
+	}
+	protected String TAG_START() {
+		return TAG_START;
 	}
 
-	private UUID mUuid;
+	protected String TAG_END() {
+		return TAG_END;
+	}
+
+	private UUID mProfileId;
 	private String mName;
 	private int mDisplayOrder;
 
@@ -87,7 +91,7 @@ public class VolumeProfile implements Parcelable {
 			uuid = UUID.randomUUID();
 		}
 		
-		mUuid = uuid;
+		mProfileId = uuid;
 		mName = "";
 
 		mRingerMode = RingerMode.NORMAL;
@@ -102,9 +106,9 @@ public class VolumeProfile implements Parcelable {
 		mVoiceCallVolumeLock = false;
 	}
 
-	String getValue(Key key) {
+	protected String getValue(String key) {
 		switch (key) {
-		case UUID:
+		case PROFILEID:
 			return getUuid().toString();
 		case DISPLAYORDER:
 			return Integer.toString(getDisplayOrder());
@@ -142,25 +146,9 @@ public class VolumeProfile implements Parcelable {
 		return null;
 	}
 
-	void setValue(String key, String value) {
-		Key k;
-		try {
-			k = Key.valueOf(key);
-		}
-		catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			return;
-		}
-		catch (NullPointerException e) {
-			e.printStackTrace();
-			return;
-		}
-		setValue(k, value);
-	}
-
-	void setValue(Key key, String value) {
+	protected void setValue(String key, String value) {
 		switch (key) {
-		case UUID:
+		case PROFILEID:
 			setUuid(UUID.fromString(value)) ;
 			break;
 		case DISPLAYORDER:
@@ -212,10 +200,6 @@ public class VolumeProfile implements Parcelable {
 			setSystemVolumeLock(Boolean.parseBoolean(value));
 			break;
 		}
-	}
-
-	static Key[] listDataKeys() {
-		return Key.getDataKeys();
 	}
 
 	public int getVolume(StreamType type) {
@@ -301,11 +285,11 @@ public class VolumeProfile implements Parcelable {
 	}
 
 	public UUID getUuid() {
-		return mUuid;
+		return mProfileId;
 	}
 
 	public void setUuid(UUID uuid) {
-		mUuid = uuid;
+		mProfileId = uuid;
 	}
 
 	public String getName() {
@@ -441,50 +425,8 @@ public class VolumeProfile implements Parcelable {
 		return this.getName();
 	}
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-    @Override
-	public void writeToParcel(Parcel out, int flags) {
-    	out.writeString(mUuid.toString());
-    	out.writeString(mName);
-    	out.writeInt(mDisplayOrder);
-    	out.writeString(mRingerMode.name());
-    	out.writeInt(mRingerModeLock ? 1 : 0);
-    	out.writeInt(mAlarmVolume);
-    	out.writeInt(mAlarmVolumeLock ? 1 : 0);
-    	out.writeInt(mMusicVolume);
-    	out.writeInt(mMusicVolumeLock ? 1 : 0);
-    	out.writeInt(mRingVolume);
-    	out.writeInt(mRingVolumeLock ? 1 : 0);
-    	out.writeInt(mNotificationVolume);
-    	out.writeInt(mNotificationVolumeLock ? 1 : 0);
-    	out.writeInt(mVoiceCallVolume);
-    	out.writeInt(mVoiceCallVolumeLock ? 1 : 0);
-    	out.writeInt(mSystemVolume);
-    	out.writeInt(mSystemVolumeLock ? 1 : 0);
-	}
-
 	public VolumeProfile(Parcel in) {
-		mUuid                = UUID.fromString(in.readString());
-    	mName                = in.readString();
-    	mDisplayOrder        = in.readInt();
-    	mRingerMode          = RingerMode.valueOf(in.readString());
-    	mRingerModeLock      = in.readInt() != 0;
-    	mAlarmVolume         = in.readInt();
-    	mAlarmVolumeLock     = in.readInt() != 0;
-    	mMusicVolume         = in.readInt();
-    	mMusicVolumeLock     = in.readInt() != 0;
-    	mRingVolume          = in.readInt();
-    	mRingVolumeLock      = in.readInt() != 0;
-    	mNotificationVolume  = in.readInt();
-    	mNotificationVolumeLock = in.readInt() != 0;
-    	mVoiceCallVolume     = in.readInt();
-    	mVoiceCallVolumeLock = in.readInt() != 0;
-    	mSystemVolume        = in.readInt();
-    	mSystemVolumeLock    = in.readInt() != 0;
+		super(in);
 	}
 
     public static final Parcelable.Creator<VolumeProfile> CREATOR = new Parcelable.Creator<VolumeProfile>() {
@@ -496,44 +438,4 @@ public class VolumeProfile implements Parcelable {
 		    return new VolumeProfile[size];
 		}
     };
-
-    // for backup
-    public void writeToText(BufferedWriter out) throws IOException {
-    	out.write(PROFILE_START);
-    	out.newLine();
-    	for (Key key : Key.getKeys()) {
-    		String value = getValue(key);
-    		if (value != null) {
-    			out.write(key.name() + '=' + value );
-    			out.newLine();
-    		}
-    	}
-    	out.write(PROFILE_END);
-    	out.newLine();
-    }
-
-    public static VolumeProfile createFromText(BufferedReader rdr) throws IOException {
-    	VolumeProfile profile = null;
-    	boolean started = false;
-    	String line;
-		while ((line = rdr.readLine()) != null) {
-			if (started) {
-				if (PROFILE_END.equals(line)) {
-					break;
-				}
-				String[] tmp = line.split("=", 2);
-				if (tmp.length < 2) {
-					continue;
-				}
-				profile.setValue(tmp[0], tmp[1]);
-			}
-			else {
-				if (PROFILE_START.equals(line)) {
-					started = true;
-					profile = new VolumeProfile();
-				}
-			}
-		}
-    	return profile;
-    }
 }

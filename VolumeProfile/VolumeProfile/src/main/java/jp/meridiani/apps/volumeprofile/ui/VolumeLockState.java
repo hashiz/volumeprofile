@@ -6,7 +6,7 @@ import jp.meridiani.apps.volumeprofile.R;
  * Created by kjcs_hashi on 2017/06/14.
  */
 
-public enum VolumeLockValue {
+public enum VolumeLockState {
     LOCK,
     UNLOCK,
     TOGGLE;

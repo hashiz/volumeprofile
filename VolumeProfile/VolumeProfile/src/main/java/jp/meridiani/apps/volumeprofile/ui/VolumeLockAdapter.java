@@ -12,7 +12,7 @@ public class VolumeLockAdapter extends ArrayAdapter<VolumeLockItem> {
         super(context, resource);
     }
 
-    public int getPosition(VolumeLockValue value) {
+    public int getPosition(VolumeLockState value) {
         for (int pos = 0; pos < getCount(); pos++) {
             if (value == getItem(pos).getValue()) {
                 return pos;

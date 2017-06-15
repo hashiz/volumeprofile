@@ -5,7 +5,7 @@ import jp.meridiani.apps.volumeprofile.R;
 /**
  * Created by kjcs_hashi on 2017/06/14.
  */
-public enum ClearAudioPlusStateValue {
+public enum ClearAudioPlusState {
     ON,
     OFF,
     TOGGLE;

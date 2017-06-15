@@ -7,14 +7,14 @@ import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusStateAdapter;
 import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusStateItem;
 import jp.meridiani.apps.volumeprofile.ui.VolumeLockAdapter;
 import jp.meridiani.apps.volumeprofile.ui.VolumeLockItem;
-import jp.meridiani.apps.volumeprofile.ui.VolumeLockValue;
+import jp.meridiani.apps.volumeprofile.ui.VolumeLockState;
 import jp.meridiani.apps.volumeprofile.MessageText;
 import jp.meridiani.apps.volumeprofile.R;
 import jp.meridiani.apps.volumeprofile.audio.AudioUtil;
 import jp.meridiani.apps.volumeprofile.profile.ProfileNotFoundException;
 import jp.meridiani.apps.volumeprofile.profile.ProfileStore;
 import jp.meridiani.apps.volumeprofile.profile.VolumeProfile;
-import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusStateValue;
+import jp.meridiani.apps.volumeprofile.ui.ClearAudioPlusState;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -46,8 +46,8 @@ public class PluginEditActivity extends Activity {
 	private boolean mChangeProfile = false;
 	private boolean mChangeVolumeLock  = false;
 	private boolean mChangeClearAudioPlusState  = false;
-	private VolumeLockValue mVolumeLock = VolumeLockValue.LOCK;
-	private ClearAudioPlusStateValue mClearAudioPlusState = ClearAudioPlusStateValue.ON;
+	private VolumeLockState mVolumeLock = VolumeLockState.LOCK;
+	private ClearAudioPlusState mClearAudioPlusState = ClearAudioPlusState.ON;
 
 	// widgets
 	private CheckBox mChangeProfileCheckBox = null;
@@ -83,12 +83,12 @@ public class PluginEditActivity extends Activity {
 			mChangeVolumeLock = savedInstanceState.getBoolean(SAVE_CHANGEVOLUMELOCK, false);
 			String volumelock = savedInstanceState.getString(SAVE_SELECTEDVOLUMELOCK);
 			if (volumelock != null) {
-				mVolumeLock = VolumeLockValue.valueOf(volumelock);
+				mVolumeLock = VolumeLockState.valueOf(volumelock);
 			}
 			mChangeClearAudioPlusState = savedInstanceState.getBoolean(SAVE_CHANGECLEARAUDIOPLUSSTATE, false);
 			String capState = savedInstanceState.getString(SAVE_SELECTEDCLEARAUDIOPLUSSTATE);
 			if (capState != null) {
-				mClearAudioPlusState = ClearAudioPlusStateValue.valueOf(capState);
+				mClearAudioPlusState = ClearAudioPlusState.valueOf(capState);
 			}
 		}
 		else {
@@ -130,12 +130,12 @@ public class PluginEditActivity extends Activity {
 						}
 					}
 				}
-				VolumeLockValue lock = bundle.getVolumeLock();
+				VolumeLockState lock = bundle.getVolumeLock();
 				if (lock != null) {
 					mChangeVolumeLock = true;
 					mVolumeLock = lock;
 				}
-				ClearAudioPlusStateValue state = bundle.getClearAudioPlusState();
+				ClearAudioPlusState state = bundle.getClearAudioPlusState();
 				if (state != null) {
 					mChangeClearAudioPlusState = true;
 					mClearAudioPlusState = state;
@@ -145,9 +145,9 @@ public class PluginEditActivity extends Activity {
 				mChangeProfile = true;
 				mSelectedProfile = null;
 				mChangeVolumeLock = false;
-				mVolumeLock = VolumeLockValue.LOCK;
+				mVolumeLock = VolumeLockState.LOCK;
 				mChangeClearAudioPlusState = false;
-				mClearAudioPlusState = ClearAudioPlusStateValue.ON;
+				mClearAudioPlusState = ClearAudioPlusState.ON;
 			}
 		}
 
@@ -191,9 +191,9 @@ public class PluginEditActivity extends Activity {
 		});
 		mVolumeLockView = (Spinner)findViewById(R.id.plugin_volumelock_select);
 		mVolumeLockAdapter = new VolumeLockAdapter(this, android.R.layout.simple_dropdown_item_1line);
-		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockValue.LOCK));
-		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockValue.UNLOCK));
-		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockValue.TOGGLE));
+		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockState.LOCK));
+		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockState.UNLOCK));
+		mVolumeLockAdapter.add(new VolumeLockItem(this, VolumeLockState.TOGGLE));
 		mVolumeLockView.setAdapter(mVolumeLockAdapter);
 		mVolumeLockView.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
@@ -218,9 +218,9 @@ public class PluginEditActivity extends Activity {
 		});
 		mClearAudioPlusStateView = (Spinner)findViewById(R.id.plugin_clearaudioplus_state);
 		mClearAudioPlusStateAdapter = new ClearAudioPlusStateAdapter(this, android.R.layout.simple_dropdown_item_1line);
-		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusStateValue.ON));
-		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusStateValue.OFF));
-		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusStateValue.TOGGLE));
+		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusState.ON));
+		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusState.OFF));
+		mClearAudioPlusStateAdapter.add(new ClearAudioPlusStateItem(this, ClearAudioPlusState.TOGGLE));
 		mClearAudioPlusStateView.setAdapter(mClearAudioPlusStateAdapter);
 		mClearAudioPlusStateView.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override

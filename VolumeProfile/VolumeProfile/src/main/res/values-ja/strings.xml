@@ -67,5 +67,7 @@
     <string name="system_volume_lock_title">ロック</string>
     <string name="title_activity_profile_edit">プロファイル編集</string>
     <string name="voicecall_volume_lock_title">ロック</string>
+    <string name="event_edit_title_action">アクション</string>
+    <string name="event_edit_title_context">条件</string>
 
 </resources>
